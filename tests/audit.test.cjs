@@ -31,6 +31,29 @@ const fixture = {
   estimated_value_low: null, estimated_value_high: null,
   price_confidence: 0, price_basis: 'unavailable', price_sources: [], reasoning_summary: [],
 };
+test('allows an explained general estimate without market sources', () => {
+  assert.equal(schema.ObjectAnalysisSchema.safeParse({ ...fixture,
+    price_basis: 'general_estimate', estimated_value_low: 5, estimated_value_high: 30,
+    reasoning_summary: ['Estimation approximative fondée sur la catégorie visible.'],
+  }).success, true);
+});
+test('rejects an unavailable result with a numeric price', () => {
+  assert.equal(schema.ObjectAnalysisSchema.safeParse({ ...fixture,
+    price_basis: 'unavailable', estimated_value_low: 5,
+  }).success, false);
+});
+test('general estimates require a nonblank explanation', () => {
+  assert.equal(schema.ObjectAnalysisSchema.safeParse({ ...fixture,
+    price_basis: 'general_estimate', estimated_value_low: 5, estimated_value_high: 30,
+    reasoning_summary: ['   '],
+  }).success, false);
+});
+test('generated game analyses satisfy the current data contract', () => {
+  const items = require('../lib/game/items.generated.json');
+  for (const item of items) {
+    assert.equal(schema.ObjectAnalysisSchema.safeParse(item.analysis).success, true, item.id);
+  }
+});
 test('allows an honest result without a price', () => {
   assert.equal(schema.ObjectAnalysisSchema.safeParse(fixture).success, true);
 });

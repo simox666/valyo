@@ -10,6 +10,16 @@ import GameReveal from "@/components/GameReveal";
 type Stage = "intro" | "round" | "reveal" | "final";
 const ROUND_COUNT = 5;
 
+// Reference items are priced in whatever currency the pipeline found them
+// in (mixed EUR/USD across the set) — a guess must be compared against the
+// same currency it targets, or the score is meaningless for that round
+// (project.md E1). No conversion: just ask for the guess in the right unit.
+function currencyLabel(currency: string): string {
+  if (currency === "EUR") return "€";
+  if (currency === "USD") return "$";
+  return currency;
+}
+
 export default function GamePage() {
   const [stage, setStage] = useState<Stage>("intro");
   const [rounds, setRounds] = useState<GameItem[]>([]);
@@ -88,13 +98,17 @@ export default function GamePage() {
             {[currentItem.analysis.brand, currentItem.analysis.model].filter(Boolean).join(" ") ||
               currentItem.analysis.category}
           </p>
+          <p className="text-sm text-neutral-600">
+            Combien vaut cet objet {targetRange(currentItem).basis === "retail" ? "à l'état neuf" : "d'occasion"}{" "}
+            aujourd&apos;hui, en {currencyLabel(currentItem.analysis.currency)} ?
+          </p>
           <input
             type="number"
             inputMode="decimal"
             min={0}
             value={guess}
             onChange={(e) => setGuess(e.target.value)}
-            placeholder="Votre estimation en €"
+            placeholder={`Votre estimation en ${currencyLabel(currentItem.analysis.currency)}`}
             className="w-full rounded-lg border border-neutral-300 p-3 text-center text-lg"
           />
           <button

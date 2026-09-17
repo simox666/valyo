@@ -68,7 +68,8 @@
         "Valeur fortement dépendante du fonctionnement réel (obturateur, cellule, joints) non vérifiable sur photo",
         "Ensemble complet (boîtier + objectif) cotéré entre 70 € (particulier, non testé) et 141 € (vendeur pro avec garantie)",
         "Fourchette seconde main France estimée 55–120 € selon l'état du fonctionnement"
-      ]
+      ],
+      "price_basis": "market_evidence"
     }
   },
   {
@@ -133,7 +134,8 @@
         "Génération du modèle non déterminée à partir de cette angle de prise de vue ; l'écart de valeur entre générations est significatif",
         "Fonctionnement non vérifié et état interne (chaudière, joints) non évaluable ; ces facteurs pèsent fortement sur la valeur réelle pour une machine à échangeur thermique",
         "Valeur estimée ancrée sur la décote habituelle d'une machine E61 domestique en bon état cosmétique mais non testée"
-      ]
+      ],
+      "price_basis": "market_evidence"
     }
   },
   {
@@ -216,7 +218,8 @@
         "Prix demandés en ligne (109–149 USD) nettement supérieurs à l'estimation d'expert (40–50 USD), reflétant une écart entre attentes vendeurs et valeurs réelles",
         "Marché principalement américain ; revente probable en France/Europe dans la fourchette basse (40–60 EUR)",
         "Confiance modérée : aucune vente conclue documentée, variations importantes selon état et couleur ; évaluation du dessous et des roulements nécessaire pour affiner"
-      ]
+      ],
+      "price_basis": "market_evidence"
     }
   },
   {
@@ -302,7 +305,8 @@
         "Écart énorme entre annonces actuelles (290–1 500 USD) suggère forte variabilité de condition ou d'authenticité",
         "Prix retail neuf hautement contradictoire entre sources (970 vs 1 650–1 710 USD) : non fiable",
         "Un sac non authentifié ou en mauvais état se négocie bien en dessous de cette fourchette"
-      ]
+      ],
+      "price_basis": "market_evidence"
     }
   },
   {
@@ -396,7 +400,8 @@
         "Fourchette estimée 7 500 € à 10 500 € selon présence de boîte/papiers, révision récente, et fonctionnement confirmé",
         "Trois inconnues majeures réduisent la confiance : authenticité non vérifiable en photo seule, référence exacte non lue, absence d'infos sur millésime et accompagnement (boîte/papiers/révision)",
         "Les prix affichés par revendeurs (Cresus) incluent garantie et marge ; prix privé sans accompagnement situé en bas de fourchette"
-      ]
+      ],
+      "price_basis": "market_evidence"
     }
   }
 ]

@@ -13,6 +13,11 @@ const items = raw as unknown as GameItem[];
 export interface TargetRange {
   low: number;
   high: number;
+  // Which question the round is actually asking — silently mixing "guess
+  // the second-hand value" and "guess the retail price" rounds without
+  // telling the player which one applies made every guess potentially
+  // meaningless (project.md E1/Codex review).
+  basis: "second_hand" | "retail";
 }
 
 // Builds the "answer key" range for scoring from whatever our own pipeline
@@ -22,18 +27,18 @@ export function targetRange(item: GameItem): TargetRange {
   const { estimated_value_low, estimated_value_high, retail_price_new } = item.analysis;
 
   if (estimated_value_low !== null && estimated_value_high !== null) {
-    return { low: estimated_value_low, high: estimated_value_high };
+    return { low: estimated_value_low, high: estimated_value_high, basis: "second_hand" };
   }
   if (estimated_value_low !== null) {
-    return { low: estimated_value_low, high: estimated_value_low * 1.3 };
+    return { low: estimated_value_low, high: estimated_value_low * 1.3, basis: "second_hand" };
   }
   if (estimated_value_high !== null) {
-    return { low: estimated_value_high * 0.7, high: estimated_value_high };
+    return { low: estimated_value_high * 0.7, high: estimated_value_high, basis: "second_hand" };
   }
   if (retail_price_new !== null) {
     // Only a point retail price, no second-hand range — a modest tolerance
     // band instead of demanding an exact match.
-    return { low: retail_price_new * 0.85, high: retail_price_new * 1.15 };
+    return { low: retail_price_new * 0.85, high: retail_price_new * 1.15, basis: "retail" };
   }
   throw new Error(`Game item ${item.id} has no usable price — should have been filtered out at generation time`);
 }

@@ -116,11 +116,18 @@ export async function analyzeObject(
   // the (already paid for) research phase. One corrective retry — handing
   // the model its own validation error — is far cheaper than losing the
   // scan outright.
+  //
+  // Only retry for that specific failure — a broad `catch (err instanceof
+  // Error)` also matched network/auth/rate-limit/cancellation errors,
+  // wasting an extra call on failures a schema fix can't help, and could
+  // even retry after the caller already aborted (project.md E3).
   let extraction;
   try {
     extraction = await runExtraction();
   } catch (err) {
-    if (err instanceof Error) {
+    const isAbort = err instanceof Error && err.name === "AbortError";
+    const isValidationFailure = err instanceof Error && /failed to parse structured output/i.test(err.message);
+    if (!isAbort && isValidationFailure) {
       extraction = await runExtraction(
         `IMPORTANT: your previous attempt failed schema validation with this error — fix it and resubmit the full analysis, keeping everything else (including any other valid price_sources) unchanged:\n${err.message}`,
       );

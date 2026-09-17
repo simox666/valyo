@@ -118,12 +118,27 @@ export const ObjectAnalysisSchema = BaseObjectAnalysisSchema.superRefine((data, 
   } else if (data.price_basis === "general_estimate") {
     // No search-backed source required, but the model must actually explain
     // itself — a bare number with no stated reasoning is exactly the
-    // fabrication risk this whole schema exists to prevent.
-    if (hasAnyPrice && data.reasoning_summary.length === 0) {
+    // fabrication risk this whole schema exists to prevent. A whitespace-only
+    // entry is the same as no explanation at all.
+    const hasNonBlankReasoning = data.reasoning_summary.some((line) => line.trim().length > 0);
+    if (hasAnyPrice && !hasNonBlankReasoning) {
       ctx.addIssue({
         code: "custom",
         path: ["reasoning_summary"],
         message: "a general_estimate price must explain what general knowledge it's based on",
+      });
+    }
+    // price_basis is a single field covering the whole result, and the UI
+    // only surfaces a "general estimate" caveat next to the second-hand
+    // range — a general_estimate retail_price_new would render as if it
+    // were a verified current retail price with no caveat attached
+    // (project.md E5). A specific "current retail price" should always be
+    // something you can actually look up, not extrapolate.
+    if (data.retail_price_new !== null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["retail_price_new"],
+        message: "retail_price_new requires market_evidence — a general estimate can only cover the second-hand range",
       });
     }
   } else if (hasAnyPrice) {
