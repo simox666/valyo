@@ -16,7 +16,11 @@ const MAX_TOOL_ITERATIONS = 5;
 // well past it. This is the real deadline, propagated as an AbortSignal
 // into every SDK call, combined with the inbound request's own signal so a
 // client disconnect actually cancels the upstream work too (project.md C5).
-const SERVER_TIMEOUT_MS = 110_000;
+// Researching any object thoroughly (not just LEGO/electronics/sneakers)
+// can genuinely take longer than a narrow in-scope lookup — keep this in
+// sync with app/api/analyze/route.ts's maxDuration and the client's own
+// fetch timeout in app/scan/page.tsx.
+const SERVER_TIMEOUT_MS = 170_000;
 
 function requestSignal(external?: AbortSignal): AbortSignal {
   const timeoutSignal = AbortSignal.timeout(SERVER_TIMEOUT_MS);
@@ -63,7 +67,7 @@ export async function analyzeObject(
       {
         model: RESEARCH_MODEL,
         max_tokens: 4000,
-        system: researchSystemPrompt(round, maxRounds, correctionNote),
+        system: researchSystemPrompt(round, maxRounds, { correctionNote }),
         tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 2 }],
         output_config: { effort: "medium" },
         messages,
@@ -88,16 +92,39 @@ export async function analyzeObject(
     throw new Error("No findings were produced for this photo.");
   }
 
-  const extraction = await anthropic.messages.parse(
-    {
-      model: EXTRACTION_MODEL,
-      max_tokens: 4096,
-      system: extractionSystemPrompt,
-      messages: [{ role: "user", content: researchNotes }],
-      output_config: { format: zodOutputFormat(ObjectAnalysisSchema) },
-    },
-    { signal },
-  );
+  async function runExtraction(extraSystemNote?: string) {
+    return anthropic.messages.parse(
+      {
+        model: EXTRACTION_MODEL,
+        max_tokens: 4096,
+        system: extraSystemNote ? `${extractionSystemPrompt}\n\n${extraSystemNote}` : extractionSystemPrompt,
+        messages: [{ role: "user", content: researchNotes }],
+        output_config: { format: zodOutputFormat(ObjectAnalysisSchema) },
+      },
+      { signal },
+    );
+  }
+
+  // The SDK's structured-output parser doesn't return parsed_output: null
+  // for every validation failure — when the model's JSON fails one of our
+  // schema invariants (e.g. an invalid price_sources URL, a price with no
+  // evidence), .parse() can throw instead. That was silently turning a
+  // fixable formatting slip into a hard 502 for the whole scan, discarding
+  // the (already paid for) research phase. One corrective retry — handing
+  // the model its own validation error — is far cheaper than losing the
+  // scan outright.
+  let extraction;
+  try {
+    extraction = await runExtraction();
+  } catch (err) {
+    if (err instanceof Error) {
+      extraction = await runExtraction(
+        `IMPORTANT: your previous attempt failed schema validation with this error — fix it and resubmit the full analysis, keeping everything else (including any other valid price_sources) unchanged:\n${err.message}`,
+      );
+    } else {
+      throw err;
+    }
+  }
 
   if (!extraction.parsed_output) {
     throw new Error("Could not structure the analysis output.");

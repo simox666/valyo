@@ -41,7 +41,7 @@ export const PriceSourceSchema = z.object({
 });
 
 const BaseObjectAnalysisSchema = z.object({
-  category: z.string().describe("One of: lego, electronics, sneakers, or other"),
+  category: z.string().describe("A short free-text category for the item, e.g. lego, electronics, sneakers, jewelry, furniture — not limited to a fixed list"),
   brand: z.string().nullable(),
   model: z.string().nullable(),
   variant: z.string().nullable(),

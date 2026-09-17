@@ -10,18 +10,18 @@ import ResultCard from "@/components/ResultCard";
 
 type Stage = "idle" | "analyzing" | "need_more" | "result" | "error";
 const MAX_ROUNDS = 2;
-// Comfortably above the server's own budget (120s, see app/api/analyze/route.ts)
-// so a legitimately slow scan isn't aborted client-side before the server
-// even has a chance to answer or time out itself.
-const FETCH_TIMEOUT_MS = 150_000;
+// Comfortably above the server's own deadline (170s, see lib/vision.ts) so a
+// legitimately slow scan isn't aborted client-side before the server even
+// has a chance to answer or time out itself.
+const FETCH_TIMEOUT_MS = 200_000;
 
 function analyzingMessage(seconds: number): string {
   if (seconds < 8) return "Analyse de la photo…";
   if (seconds < 20) return "Identification en cours…";
   if (seconds < 45) return "Recherche de prix en ligne…";
-  // Honest, not a promise of imminent completion — some scans genuinely take
-  // a minute or two (project.md R7).
-  return "Toujours en cours — certains objets prennent jusqu'à deux minutes.";
+  // Honest, not a promise of imminent completion — some objects genuinely
+  // take a while to research properly (project.md R7).
+  return "Toujours en cours — certains objets prennent jusqu'à trois minutes.";
 }
 
 function useElapsedSeconds(active: boolean): number {
@@ -209,7 +209,7 @@ export default function ScanPage() {
         <div className="w-full max-w-md space-y-4 text-center">
           <h1 className="text-2xl font-semibold text-ink">Photographiez votre objet</h1>
           <p className="text-neutral-600 text-sm">
-            LEGO, électronique ou sneakers — cadrez l&apos;objet entier, bien éclairé.
+            N&apos;importe quel objet — cadrez-le en entier, bien éclairé.
           </p>
           <div className="space-y-3 pt-4">
             <PhotoInput label="Prendre une photo" capture disabled={busy} onSelect={handleFile} />

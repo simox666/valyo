@@ -7,12 +7,13 @@ import { classifyProviderError, newDiagnosticId } from "@/lib/errors";
 import type { ImageInput } from "@/lib/types";
 
 export const runtime = "nodejs";
-// Measured scans run 30-100+s (see project.md, "Travaux réalisés le 17
-// septembre") — 60s was too tight and would cut off in-scope scans. On
-// Vercel Hobby, serverless functions are capped at 60s regardless of this
-// value; a Pro plan (up to 300s) or a background-job architecture is needed
+// Measured scans run 30-170s — PriceMe researches any object thoroughly
+// now, not just LEGO/electronics/sneakers, so this stays in sync with
+// lib/vision.ts's own internal deadline (170s) plus margin. On Vercel
+// Hobby, serverless functions are capped at 60s regardless of this value;
+// a Pro plan (up to 300s) or a background-job architecture is needed
 // before deploying there. No such constraint on a self-hosted Node process.
-export const maxDuration = 120;
+export const maxDuration = 180;
 
 interface AnalyzeRequestBody {
   images: ImageInput[];

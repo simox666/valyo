@@ -25,14 +25,18 @@ export default function Home() {
         </div>
 
         <p className="text-sm text-neutral-500">
-          Pour l&apos;instant : LEGO, électronique et sneakers. D&apos;autres catégories arrivent
-          bientôt.
+          N&apos;importe quel objet — si on ne trouve pas assez d&apos;indices pour l&apos;estimer
+          honnêtement, on vous le dit.
         </p>
 
         <p className="text-xs text-neutral-400">
           Pas d&apos;invention. PriceMe indique toujours d&apos;où viennent ses estimations et sa
           confiance dans le résultat.
         </p>
+
+        <Link href="/game" className="block text-sm text-neutral-500 underline">
+          Ou testez-vous : jouez à &laquo; Devine le prix &raquo;
+        </Link>
       </div>
     </main>
   );

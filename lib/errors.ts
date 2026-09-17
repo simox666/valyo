@@ -14,9 +14,18 @@ export type ErrorCategory =
   | "timeout"
   | "no_findings"
   | "structuring_failed"
+  | "schema_validation_failed"
   | "unknown_error";
 
 export function classifyProviderError(err: unknown): ErrorCategory {
+  // Checked first: the SDK's structured-output parser can throw (rather than
+  // returning parsed_output: null) when the model's JSON fails our schema —
+  // lib/vision.ts already retries this once, so seeing it here means the
+  // retry also failed. Distinct from a generic provider_error so this
+  // specific failure mode (vs. a real API outage) is visible in logs.
+  if (err instanceof Error && /failed to parse structured output/i.test(err.message)) {
+    return "schema_validation_failed";
+  }
   if (err instanceof Anthropic.RateLimitError) return "rate_limited";
   if (err instanceof Anthropic.AuthenticationError) return "auth_error";
   if (err instanceof Anthropic.BadRequestError) return "bad_request";
