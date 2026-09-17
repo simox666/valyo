@@ -1,6 +1,6 @@
 # PriceMe — organisation du projet
 
-Dernière mise à jour : 17 septembre 2026 (retrait du périmètre catégoriel, correctif de bug de production, Lot 6 mode solo — Claude Code).
+Dernière mise à jour : 17 septembre 2026, HEAD `0876431` (résumé consolidé pour Codex — voir « État actuel — résumé pour Codex »).
 
 ## Mode de collaboration
 
@@ -71,20 +71,28 @@ La suppression automatique des photos sous 24 heures est une politique proposée
 
 Statut Lot 2 : décision de principe prise, politique documentée. Reste ouvert : revue juridique différée (sciemment), jeu de référence formel, forçage de la date de source dans le prompt si jugé utile plus tard.
 
-## État observé du dépôt
+## État actuel — résumé pour Codex (17 septembre 2026, HEAD `0876431`)
 
-Inventaire mis à jour le 17 septembre 2026 par Claude Code, après une session de test en conditions réelles avec le porteur (voir "Travaux réalisés" ci-dessous). Remplace le premier inventaire, qui datait déjà de quelques heures.
+Point d'entrée unique pour reprendre la revue : la suite de sections narratives ci-dessous (« Travaux réalisés », rapports Codex successifs, corrections C1–C6/D1–D3) reste l'historique détaillé, mais elle est longue et chronologique. Ce résumé donne l'état présent en un seul passage.
 
-- Next.js 15, React 19, TypeScript, Zod (v4) et SDK Anthropic (`@anthropic-ai/sdk` ^0.126.0) déclarés dans `package.json`.
-- Pages d'accueil et de scan, composants `PhotoInput` et `ResultCard` présents.
-- Routes `/api/analyze` et `/api/event` présentes.
-- Modules d'image (`lib/image.ts`), vision (`lib/vision.ts`), schéma (`lib/schema.ts`), prompts (`lib/prompts.ts`) et analytics (`lib/analytics.ts`) présents dans `lib/`.
-- Scripts déclarés : `dev`, `build`, `start`, `lint`, `typecheck`.
-- `lint` n'est pas utilisable en l'état : `next lint` déclenche une configuration ESLint interactive (choix de config au premier lancement) qui n'a pas été complétée — le script existe mais n'a jamais produit de résultat exploitable.
-- Playwright n'est plus une dépendance du projet : utilisé ponctuellement comme outil de diagnostic (reproduction du bug HEIC dans de vrais moteurs Chromium/WebKit), puis retiré. Aucun script de tests automatisés n'existe dans le projet à ce stade — le Lot 0/Codex part de zéro sur ce plan.
-- Dépôt Git initialisé le 17 septembre 2026 (commit `add2511`, 31 fichiers) — `.env.local` correctement exclu, vérifié avant commit. Les mentions "pas de commit — dépôt sans Git" dans les passages de relais ci-dessous sont antérieures à cette initialisation et reflètent l'état au moment où elles ont été écrites.
-- Aucune persistance : pas de Supabase, pas de base de données, pas de stockage — les images ne sont traitées qu'en mémoire pour l'appel au fournisseur de vision, rien n'est sauvegardé. Conforme au périmètre actuel, à revoir au Lot 4.
-- La présence d'un fichier ou d'une dépendance ne prouve pas que le comportement fonctionne — voir "Travaux réalisés" pour ce qui a été effectivement vérifié en conditions réelles, et ses limites.
+**Depuis la dernière revue Codex (D1–D3, commit `c6743f8`), 4 changements livrés hors cycle formel, à la demande directe du porteur pendant des tests réels — aucun n'a encore été revu par Codex :**
+
+1. **Retrait du périmètre catégoriel** (commit `bbf3f62`) — `lib/prompts.ts` ne limite plus la recherche sérieuse à LEGO/électronique/sneakers ; un objet n'est plus jamais écarté pour sa catégorie, seulement pour absence de preuve visible.
+2. **Bug de production corrigé** (commit `bbf3f62`) — `anthropic.messages.parse()` pouvait lever une exception (au lieu de renvoyer `parsed_output: null`) sur une sortie qui échoue au schéma, faisant échouer tout le scan (502) et perdant la recherche déjà payée. Une relance corrective a été ajoutée. Confirmé comme cause réelle de scans en échec dans les logs de production du porteur.
+3. **Lot 6, jeu « Devine le prix », mode solo** (commit `c26a754`) — 5 objets réels générés via le vrai pipeline (`scripts/generate-game-data.cjs`), pas de contenu inventé. Défis par lien non faits (report explicite).
+4. **Optimisation de latence puis changement de principe** (commits `9f75da9`, `0876431`) — recherche web plafonnée à 1 appel (contre 2), effort réduit, modèle passé à `claude-sonnet-5` : ~150-165s → ~47-54s sur le test répété. **Puis, changement plus profond** : le principe 3 (« ne jamais utiliser les connaissances générales comme preuve de prix ») a été explicitement révisé par le porteur — voir la section dédiée plus bas et le principe 3 révisé en tête de document. Nouveau champ `price_basis` (`market_evidence` / `general_estimate` / `unavailable`) dans `lib/schema.ts` : un prix sans source citée est désormais autorisé s'il est étiqueté `general_estimate` et justifié par un raisonnement, au lieu d'être systématiquement rejeté. Testé en réel (bracelet sans marque, 22s, estimation 5-30€ honnêtement étiquetée).
+
+**Ce que cela implique pour la revue Codex :** les rapports C1–C6/D1–D3 portaient sur une version du produit qui refusait de donner un prix sans preuve de recherche stricte (1 seule source, 2 recherches). Cette version n'existe plus : le produit peut désormais estimer sans preuve (`general_estimate`), avec un budget de recherche réduit. Les tests de contrat existants (`tests/audit.test.cjs`, 13/13) couvrent toujours les invariants de base (pas de prix négatif, pas de source sans preuve pour `market_evidence`), mais **aucun test automatisé ne couvre encore le nouveau chemin `general_estimate`** ni son interaction avec le principe 2 (ne jamais présenter une estimation comme une vente confirmée) — point ouvert prioritaire pour la prochaine revue.
+
+**Inventaire technique (inchangé dans ses grandes lignes depuis le dernier rapport Codex, mis à jour sur les points suivants) :**
+
+- Next.js 15, React 19, TypeScript, Zod (v4), SDK Anthropic (`@anthropic-ai/sdk` ^0.126.0), et désormais `image-size` (validation d'image réelle, voir D2) déclarés dans `package.json`.
+- Nouvelles pages/routes depuis le dernier rapport : `app/game/page.tsx`, `components/GameReveal.tsx`, `lib/game/*`, `scripts/generate-game-data.cjs`, `public/game/*.jpg`.
+- `lint` toujours pas utilisable en l'état (configuration ESLint interactive jamais complétée).
+- Playwright n'est pas une dépendance permanente — utilisé ponctuellement comme outil de diagnostic (bug HEIC), retiré ensuite. Toujours aucun script de tests navigateur dans le projet.
+- Dépôt Git initialisé (commit `add2511`) ; historique complet et linéaire jusqu'à `0876431`. `.env.local` toujours exclu, vérifié avant chaque commit.
+- Toujours aucune persistance (pas de Supabase, pas de base de données) — conforme au périmètre actuel, à revoir au Lot 4.
+- La présence d'un fichier ou d'une dépendance ne prouve pas que le comportement fonctionne — voir les sections « Travaux réalisés » et les rapports Codex ci-dessous pour ce qui a été effectivement vérifié, et le résumé ci-dessus pour ce qui ne l'a pas encore été.
 
 ### Travaux réalisés le 17 septembre (session de test avec le porteur)
 
@@ -105,7 +113,7 @@ Statuts autorisés : À faire · En cours · À revoir · Corrections demandées
 | Lot | Objet | Réalisation | Validation | Statut |
 | --- | --- | --- | --- | --- |
 | 0 | Audit du code existant, commandes disponibles, écarts au besoin et risques prioritaires | Codex | Rapport avec preuves et corrections ordonnées | Validé — audit terminé, voir rapport Codex du 17 septembre |
-| 1 | Stabiliser photo/import, identification, schéma, précisions et correction manuelle | Claude Code | Codex : parcours nominal, ambiguïtés, erreurs et mobile | Corrections demandées — revue du commit 22c9cdb ; restes D1–D3, voir dernier rapport |
+| 1 | Stabiliser photo/import, identification, schéma, précisions et correction manuelle | Claude Code | Codex : parcours nominal, ambiguïtés, erreurs et mobile | À revoir — D1–D3 corrigés (commit `c6743f8`) puis 4 changements hors-cycle non encore revus par Codex (commit `0876431`, HEAD actuel) : voir « État actuel — résumé pour Codex » |
 | 2 | Choisir les références de prix et définir les règles de publication | Porteur + Claude Code ; analyse Codex | Provenance, droits, fraîcheur et exemples vérifiables | À revoir — décision de principe prise (continuer tel quel pour le pilote), voir politique des sources de prix ; revue juridique différée sciemment |
 | 3 | Estimations neuf/occasion traçables ou résultat sans prix | Claude Code | Codex : calculs, séparation des types de prix et absence de fabrication | À faire — dépend du lot 2 |
 | 4 | Confidentialité, limites d'usage, coûts et robustesse du parcours complet | Claude Code | Codex : contrôles techniques et limites documentées | À faire |
