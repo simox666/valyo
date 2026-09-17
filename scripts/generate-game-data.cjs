@@ -47,9 +47,23 @@ const PHOTOS = [
   { id: "camera", file: "camera.jpg", credit: "Vintage Yashica FX-2, Joe Haupt, Wikimedia Commons, CC BY-SA" },
   { id: "espresso", file: "espresso.jpg", credit: "Rocket espresso machine, Wikimedia Commons" },
   { id: "skateboard", file: "skateboard.jpg", credit: "Nash vintage wooden shark deck skateboard, Wikimedia Commons" },
-  { id: "chair", file: "chair.jpg", credit: "Eames Lounge Chair, Wikimedia Commons" },
   { id: "handbag", file: "handbag.jpg", credit: "Louis Vuitton bag, Wikimedia Commons" },
   { id: "watch2", file: "watch2.jpg", credit: "Rolex Submariner diving watch, Wikimedia Commons" },
+  // Retried below under the general_estimate fallback (added after these
+  // three were first dropped for having no price at all under the old
+  // strict-evidence-only rule) — expanding the pool per the porteur's
+  // "il n'y a que 5 photos" feedback.
+  { id: "guitar", file: "guitar.jpg", credit: "Cort Acoustic Guitar, photo by wetwebwork, Wikimedia Commons, CC BY-SA" },
+  { id: "drill", file: "drill.jpg", credit: "Black & Decker P80-38 rotary hammer drill, Joe Haupt, Wikimedia Commons, CC BY-SA" },
+  { id: "chair", file: "chair.jpg", credit: "Eames Lounge Chair, Wikimedia Commons" },
+  { id: "radio", file: "radio.jpg", credit: "Vintage radio, Offenburg, Wikimedia Commons" },
+  { id: "trumpet", file: "trumpet.jpg", credit: "Trumpet, Wikimedia Commons" },
+  { id: "vinyl", file: "vinyl.jpg", credit: "Vinyl record player, Wikimedia Commons (Unsplash)" },
+  { id: "sunglasses", file: "sunglasses.jpg", credit: "Vuarnet sunglasses, Wikimedia Commons" },
+  { id: "vase", file: "vase.jpg", credit: "Ceramic vase, Wikimedia Commons" },
+  { id: "toycar", file: "toycar.jpg", credit: "Vintage toy car, Wikimedia Commons" },
+  { id: "mixer", file: "mixer.jpg", credit: "KitchenAid stand mixer KSM150PSWH, Wikimedia Commons" },
+  { id: "scrabble", file: "scrabble.jpg", credit: "Scrabble word game, Wikimedia Commons" },
 ];
 
 function fileToImageInput(filePath) {

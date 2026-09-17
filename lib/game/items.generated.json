@@ -403,5 +403,421 @@
       ],
       "price_basis": "market_evidence"
     }
+  },
+  {
+    "id": "guitar",
+    "file": "guitar.jpg",
+    "credit": "Cort Acoustic Guitar, photo by wetwebwork, Wikimedia Commons, CC BY-SA",
+    "analysis": {
+      "category": "guitare acoustique",
+      "brand": "Cort",
+      "model": null,
+      "variant": null,
+      "identifying_marks": [
+        "Logo Cort en lettres blanches sur le headstock",
+        "Format Orchestra Model (OM) ou Grand Concert",
+        "Table en épicéa massif ou stratifié",
+        "Filets et chevalet en bois foncé (probablement palissandre)",
+        "Manche/touche en bois foncé avec incrustations de points nacrés"
+      ],
+      "identification_confidence": 0.6,
+      "condition": "good",
+      "condition_confidence": 0.5,
+      "missing_information": [
+        "Numéro de modèle exact",
+        "Numéro de série",
+        "Étiquette intérieure",
+        "Série précise (AD, Earth, Standard, Gold, etc.)",
+        "État détaillé des bords et du dos",
+        "État de l'intérieur de la caisse"
+      ],
+      "next_photo_request": {
+        "instruction": "Merci de photographier l'intérieur de la caisse de résonance à travers la rosace (l'étiquette collée à l'intérieur, généralement visible en regardant dans la ouïe) ainsi que le talon du manche ou le dos de la tête, à la recherche d'un numéro de série ou de modèle.",
+        "reason": "Cela permettrait d'identifier le modèle exact de cette Cort (série, année, matériaux) et donc de fournir une estimation basée sur des annonces réelles comparables plutôt qu'une simple estimation générale."
+      },
+      "currency": "EUR",
+      "retail_price_new": null,
+      "estimated_value_low": 60,
+      "estimated_value_high": 180,
+      "price_confidence": 0.45,
+      "price_basis": "general_estimate",
+      "price_sources": [],
+      "reasoning_summary": [
+        "Guitare acoustique Cort d'entrée/milieu de gamme, format OM/Concert, sans numéro de modèle visible",
+        "État visuel bon avec table propre, brillante et sans dégâts majeurs apparents",
+        "Les guitares Cort de ce type se vendent neuves entre environ 150 € et 400 € selon la série",
+        "D'occasion sur Leboncoin, Reverb ou eBay, ce type de guitare se négocie entre 60 € et 180 € selon l'état et la présence d'accessoires",
+        "Estimation générale basée sur la connaissance du marché faute de numéro de modèle précis et de recherche web productive",
+        "Confiance faible à modérée en raison de l'absence de prix vérifié sur annonce spécifique"
+      ]
+    }
+  },
+  {
+    "id": "drill",
+    "file": "drill.jpg",
+    "credit": "Black & Decker P80-38 rotary hammer drill, Joe Haupt, Wikimedia Commons, CC BY-SA",
+    "analysis": {
+      "category": "documentation technique / outillage professionnel",
+      "brand": "Black & Decker",
+      "model": "P80-32",
+      "variant": "Rotary Hammer (marteau perforateur) - gamme professionnelle, modèles P80-32, P80-22, P80-38",
+      "identifying_marks": [
+        "Black & Decker Professional Rotary Hammer Operating and Safety Instructions",
+        "P80-32",
+        "P80-22",
+        "P80-38",
+        "PACKED BY 16",
+        "étiquette manuscrite '30'",
+        "vue éclatée des pièces détachées"
+      ],
+      "identification_confidence": 0.85,
+      "condition": "fair",
+      "condition_confidence": 0.6,
+      "missing_information": [
+        "Confirmation de la présence physique de l'outil complet",
+        "État du verso et des pages intérieures complètes",
+        "Présence et état de tous les accessoires originaux",
+        "État de fonctionnement réel du marteau perforateur"
+      ],
+      "next_photo_request": {
+        "instruction": "Prendre une photo montrant l'intégralité de l'objet vendu, notamment l'outil lui-même (le marteau perforateur) sorti de son coffret, avec sa plaque signalétique visible",
+        "reason": "Cela permettrait de confirmer si le lot comprend uniquement la documentation papier ou l'outil complet, et de vérifier l'état réel de fonctionnement de l'appareil, ce qui change radicalement l'estimation de valeur"
+      },
+      "currency": "EUR",
+      "retail_price_new": null,
+      "estimated_value_low": 2,
+      "estimated_value_high": 60,
+      "price_confidence": 0.4,
+      "price_basis": "general_estimate",
+      "price_sources": [],
+      "reasoning_summary": [
+        "S'il s'agit uniquement de la documentation papier : 2 à 10 € typiquement vendus sur eBay ou brocantes spécialisées en outillage ancien, principalement acheté par des collectionneurs ou réparateurs",
+        "Si l'ensemble comprend l'outil physique complet avec coffret métallique d'origine : 20 à 60 € selon l'état de fonctionnement et la présence des accessoires",
+        "Gamme d'outillage professionnel robuste Black & Decker des années 1980 encore recherchée pour son usage réel",
+        "Document présentant un jaunissement/tachage marqué (traces brunes) indiquant un âge avancé et exposition à l'humidité",
+        "Estimation fortement dépendante de la confirmation de la présence de l'outil physique dans le lot vendu"
+      ]
+    }
+  },
+  {
+    "id": "radio",
+    "file": "radio.jpg",
+    "credit": "Vintage radio, Offenburg, Wikimedia Commons",
+    "analysis": {
+      "category": "radio vintage",
+      "brand": null,
+      "model": null,
+      "variant": null,
+      "identifying_marks": [
+        "cadran à aiguille",
+        "boutons de sélection AM/FM/ondes courtes",
+        "grand bouton de réglage rotatif",
+        "icône clé de fa sur le cadran",
+        "boîtier en bakélite ou plastique dur avec cadre chromé/métallique"
+      ],
+      "identification_confidence": 0.4,
+      "condition": "good",
+      "condition_confidence": 0.5,
+      "missing_information": [
+        "marque du fabricant",
+        "modèle exact",
+        "numéro de série",
+        "état de fonctionnement",
+        "état général de l'arrière et du câblage"
+      ],
+      "next_photo_request": {
+        "instruction": "Merci de prendre une photo plus large et nette de l'ensemble de l'appareil, incluant l'arrière ou le dessous où se trouve généralement la plaque du fabricant (marque, modèle, numéro de série).",
+        "reason": "Sans ces informations, il est impossible d'identifier la marque et le modèle exacts, ce qui empêche une recherche de prix basée sur des données de marché réelles plutôt qu'une estimation générale."
+      },
+      "currency": "EUR",
+      "retail_price_new": null,
+      "estimated_value_low": 15,
+      "estimated_value_high": 50,
+      "price_confidence": 0.3,
+      "price_basis": "general_estimate",
+      "price_sources": [],
+      "reasoning_summary": [
+        "Il s'agit d'un poste de radio vintage de style années 1950-1960, type récepteur de table avec cadran à aiguille",
+        "Aucune marque ou modèle n'est lisible sur la photo, ce qui limite fortement la précision d'identification",
+        "L'état cosmétique semble correct (légères traces d'usure, patine, micro-rayures) mais sans confirmation de fonctionnement",
+        "Les radios vintage non identifiées, en état correct mais sans marque visible, se vendent généralement entre 15 € et 60 € sur le marché de l'occasion",
+        "Les modèles de marques prestigieuses (Grundig, Telefunken, Philips) et fonctionnels peuvent atteindre 80-150 €, mais cette estimation n'en est pas un",
+        "Estimation prudente : 15 € à 50 € basée sur connaissances générales de catégorie uniquement"
+      ]
+    }
+  },
+  {
+    "id": "trumpet",
+    "file": "trumpet.jpg",
+    "credit": "Trumpet, Wikimedia Commons",
+    "analysis": {
+      "category": "wind instrument",
+      "brand": null,
+      "model": null,
+      "variant": null,
+      "identifying_marks": [
+        "Gravure décorative sur le pavillon",
+        "Trompette piccolo à 4 pistons",
+        "Laiton doré (lacque or)",
+        "Deux corps d'embouchure interchangeables (crochets Sib/La)"
+      ],
+      "identification_confidence": 0.5,
+      "condition": "good",
+      "condition_confidence": 0.5,
+      "missing_information": [
+        "Marque du fabricant",
+        "Numéro de modèle",
+        "Numéro de série",
+        "État mécanique interne (étanchéité des pistons, état des coulisses d'accord)"
+      ],
+      "next_photo_request": {
+        "instruction": "Prendre une photo rapprochée et bien éclairée du pavillon (là où figure la gravure/le nom de marque) ainsi que des plaques gravées sur le 3e piston (souvent le numéro de série s'y trouve)",
+        "reason": "Cette information est essentielle car, pour une trompette piccolo, la marque et le modèle influencent très fortement la valeur (facteur de plusieurs centaines à plus de mille euros d'écart), et c'est actuellement le seul élément qui empêche une estimation basée sur de vraies annonces comparables plutôt qu'une fourchette générale."
+      },
+      "currency": "EUR",
+      "retail_price_new": null,
+      "estimated_value_low": 400,
+      "estimated_value_high": 1500,
+      "price_confidence": 0.4,
+      "price_basis": "general_estimate",
+      "price_sources": [],
+      "reasoning_summary": [
+        "Les trompettes piccolo d'occasion de marques d'entrée/moyenne gamme (Getzen, Jupiter, etc.) se vendent typiquement entre 300 € et 800 €",
+        "Les modèles de marques haut de gamme reconnues (Yamaha, Schilke, Bach Stradivarius piccolo) se négocient en occasion plutôt entre 1000 € et 2500 €",
+        "Sans pouvoir confirmer la marque, une fourchette large et prudente basée sur le marché général est de 400 € à 1500 €",
+        "La confiance sur le prix est faible précisément parce que l'identité de la marque reste incertaine — c'est le facteur qui fait le plus varier la valeur pour ce type d'instrument"
+      ]
+    }
+  },
+  {
+    "id": "vinyl",
+    "file": "vinyl.jpg",
+    "credit": "Vinyl record player, Wikimedia Commons (Unsplash)",
+    "analysis": {
+      "category": "platine vinyle",
+      "brand": null,
+      "model": null,
+      "variant": null,
+      "identifying_marks": [],
+      "identification_confidence": 0.4,
+      "condition": "good",
+      "condition_confidence": 0.5,
+      "missing_information": [
+        "marque précise",
+        "numéro de modèle",
+        "état du socle complet",
+        "état des connectiques",
+        "vérification du fonctionnement du mécanisme"
+      ],
+      "next_photo_request": {
+        "instruction": "Prendre une photo nette du socle ou de la face arrière de la platine (là où se trouve généralement une plaque ou une étiquette avec le nom de la marque et le numéro de modèle), ainsi qu'un gros plan sur la cellule (cartouche) sous le bras de lecture",
+        "reason": "Cela permettrait d'identifier précisément le fabricant et le modèle, et donc de fournir une estimation de prix beaucoup plus fiable, basée sur de vraies annonces comparables"
+      },
+      "currency": "EUR",
+      "retail_price_new": null,
+      "estimated_value_low": 80,
+      "estimated_value_high": 250,
+      "price_confidence": 0.3,
+      "price_basis": "general_estimate",
+      "price_sources": [],
+      "reasoning_summary": [
+        "Style audiophile de milieu de gamme avec plateau argenté/gris et bras en aluminium noir mat",
+        "Aucune marque, logo ou plaque signalétique visible sur la photo",
+        "État esthétique apparent bon : pas de rayures profondes, pas de pièces cassées ou manquantes visibles",
+        "Fourchette basée sur prix d'occasion typiques pour platines comparables (Pro-Ject Debut, Rega Planar 1, équivalents)",
+        "Absence d'identification précise limite fortement la confiance de l'estimation"
+      ]
+    }
+  },
+  {
+    "id": "vase",
+    "file": "vase.jpg",
+    "credit": "Ceramic vase, Wikimedia Commons",
+    "analysis": {
+      "category": "poterie artisanale",
+      "brand": null,
+      "model": null,
+      "variant": null,
+      "identifying_marks": [],
+      "identification_confidence": 0.4,
+      "condition": "good",
+      "condition_confidence": 0.5,
+      "missing_information": [
+        "Signature ou tampon du potier",
+        "Marque ou estampille d'atelier",
+        "Vue du dessous des pièces"
+      ],
+      "next_photo_request": {
+        "instruction": "Prendre une photo du dessous de chaque pièce (vase, bol, base du distributeur)",
+        "reason": "Le dessous des poteries artisanales porte souvent une signature, un tampon ou des initiales du potier qui permettraient une identification précise et une estimation basée sur des données de marché réelles"
+      },
+      "currency": "EUR",
+      "retail_price_new": null,
+      "estimated_value_low": 10,
+      "estimated_value_high": 30,
+      "price_confidence": 0.3,
+      "price_basis": "general_estimate",
+      "price_sources": [],
+      "reasoning_summary": [
+        "Poterie artisanale non signée en grès émaillé (bleu-gris, brun tenmoku)",
+        "Ensemble de trois pièces : vase soliflore, distributeur de savon avec pompe, bol/coupelle",
+        "Glaçures intactes, pas de dégâts visibles, pompe fonctionnelle",
+        "Aucune marque, signature ou tampon visible permettant l'attribution à un atelier spécifique",
+        "Estimation basée sur les prix généraux du marché de seconde main (Etsy, vide-greniers, Vinted) pour poterie artisanale non identifiée",
+        "En lot assorti, valeur estimée 10-30 € (plus attractive que des pièces isolées)",
+        "Estimation de faible confiance : une identification du potier changerait significativement la valeur marchande"
+      ]
+    }
+  },
+  {
+    "id": "toycar",
+    "file": "toycar.jpg",
+    "credit": "Vintage toy car, Wikimedia Commons",
+    "analysis": {
+      "category": "jouet vintage",
+      "brand": null,
+      "model": null,
+      "variant": null,
+      "identifying_marks": [
+        "Petite décalcomanie jaune/orangée sur le côté droit, trop indistincte pour être identifiée avec certitude"
+      ],
+      "identification_confidence": 0.45,
+      "condition": "good",
+      "condition_confidence": 0.5,
+      "missing_information": [
+        "Marque du fabricant",
+        "Numéro de moule ou de série",
+        "Pays de fabrication",
+        "Authenticité de la peinture (originale ou repeinte)"
+      ],
+      "next_photo_request": {
+        "instruction": "Prendre une photo rapprochée du dessous de la voiture (le châssis) et un gros plan net de la décalcomanie jaune visible sur le côté droit",
+        "reason": "Le dessous des jouets anciens porte souvent le nom du fabricant, un numéro de moule ou un pays d'origine, et la décalcomanie pourrait contenir un logo permettant d'identifier précisément la marque et le modèle, ce qui permettrait une estimation beaucoup plus précise basée sur de vraies données de marché"
+      },
+      "currency": "EUR",
+      "retail_price_new": null,
+      "estimated_value_low": 10,
+      "estimated_value_high": 40,
+      "price_confidence": 0.4,
+      "price_basis": "general_estimate",
+      "price_sources": [],
+      "reasoning_summary": [
+        "Jouet miniature ancien en métal moulé (fonte ou alliage type pot metal/zamac) de style années 1920-1950",
+        "Aucune marque de fabricant lisible, aucun numéro de moule visible, identification incertaine",
+        "Peinture rouge apparemment en bon état avec légers éclats, mais possiblement repeinte ce qui affecte fortement la valeur",
+        "Les petites voitures anciennes non identifiées en bon état se vendent généralement entre 10 € et 40 € sur les plateformes d'occasion",
+        "Si la peinture est originale et la marque reconnue (Hubley, Arcade, Kenton), la valeur pourrait atteindre 50 € à 150 €",
+        "La repeinture ramène généralement la valeur entre 10 € et 25 €",
+        "Confiance de prix faible en raison de l'incertitude sur la marque, l'authenticité de la peinture et la rareté du modèle"
+      ]
+    }
+  },
+  {
+    "id": "mixer",
+    "file": "mixer.jpg",
+    "credit": "KitchenAid stand mixer KSM150PSWH, Wikimedia Commons",
+    "analysis": {
+      "category": "robot pâtissier",
+      "brand": "KitchenAid",
+      "model": "Artisan",
+      "variant": "5 quarts, finition blanche",
+      "identifying_marks": [
+        "Plaque métallique \"KitchenAid ARTISAN\"",
+        "Bol en inox amovible avec poignée",
+        "Levier d'inclinaison de tête",
+        "Socle plat"
+      ],
+      "identification_confidence": 0.7,
+      "condition": "good",
+      "condition_confidence": 0.5,
+      "missing_information": [
+        "Numéro de modèle exact",
+        "Présence des accessoires (fouet, crochet pétrisseur, batteur plat)",
+        "Vérification du fonctionnement du moteur"
+      ],
+      "next_photo_request": {
+        "instruction": "Merci de photographier l'étiquette signalétique située sous le socle de l'appareil (elle indique le numéro de modèle complet, ex. 5KSM175PS) ainsi que les accessoires fournis (fouet, crochet, batteur plat) s'ils sont disponibles.",
+        "reason": "Cela permettrait d'identifier précisément la variante du modèle (puissance, année, finition) et de vérifier si les accessoires sont inclus, deux éléments qui influencent fortement la valeur de revente réelle sur le marché de l'occasion."
+      },
+      "currency": "EUR",
+      "retail_price_new": null,
+      "estimated_value_low": 80,
+      "estimated_value_high": 180,
+      "price_confidence": 0.5,
+      "price_basis": "general_estimate",
+      "price_sources": [],
+      "reasoning_summary": [
+        "Les robots KitchenAid Artisan sont des appareils haut de gamme très recherchés d'occasion, réputés pour leur durabilité",
+        "Sur le marché du reconditionné/occasion (Le Bon Coin, Vinted, eBay), un modèle Artisan blanc en bon état avec son bol se négocie généralement entre 80 € et 180 €",
+        "La fourchette dépend de l'ancienneté, de la présence des accessoires (fouet, crochet, batteur plat) et de l'état du moteur",
+        "S'il manque des accessoires ou si le moteur montre des signes de faiblesse, la fourchette basse (60-100 €) est plus réaliste",
+        "Un exemplaire complet et peu utilisé peut atteindre 150-200 €",
+        "L'estimation est basée sur une connaissance générale du marché plutôt que sur une annonce concrète observée"
+      ]
+    }
+  },
+  {
+    "id": "scrabble",
+    "file": "scrabble.jpg",
+    "credit": "Scrabble word game, Wikimedia Commons",
+    "analysis": {
+      "category": "Jeu de société vintage",
+      "brand": "Scrabble",
+      "model": "RSVP",
+      "variant": "Three Dimensional Crossword Game",
+      "identifying_marks": [
+        "SCRABBLE BRAND RSVP Three Dimensional Word Game",
+        "Grille bleue verticale à trous",
+        "Cubes-lettres visibles"
+      ],
+      "identification_confidence": 0.9,
+      "condition": "good",
+      "condition_confidence": 0.65,
+      "missing_information": [
+        "Vérification complète de l'intérieur de la boîte",
+        "Liste complète des pièces et des lettres",
+        "État exact de l'emballage d'origine"
+      ],
+      "next_photo_request": {
+        "instruction": "Ouvrir la boîte et photographier l'intérieur pour vérifier la complétude de toutes les lettres et la présence de la notice",
+        "reason": "Confirmer que l'exemplaire est complet et en bon état interne augmenterait significativement la confiance de prix et permettrait de justifier une valeur plus élevée"
+      },
+      "currency": "USD",
+      "retail_price_new": null,
+      "estimated_value_low": 10,
+      "estimated_value_high": 25,
+      "price_confidence": 0.65,
+      "price_basis": "market_evidence",
+      "price_sources": [
+        {
+          "title": "Scrabble Brand RSVP three-dimensional crossword game",
+          "url": "https://www.ebay.com",
+          "price": 23.1,
+          "currency": "USD",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "Scrabble RSVP Three Dimensional Crossword Game - Vintage 1966 - COMPLETE!",
+          "url": "https://www.ebay.com",
+          "price": 13.2,
+          "currency": "USD",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "Scrabble RSVP Vintage",
+          "url": "https://www.ebay.com",
+          "price": 16,
+          "currency": "USD",
+          "price_type": "marketplace_asking"
+        }
+      ],
+      "reasoning_summary": [
+        "Jeu vintage des années 1960, variant en trois dimensions du Scrabble classique, identifiable sans ambiguïté sur la boîte",
+        "État général correct avec plateau en plastique bleu complet et sans dommages visibles majeurs",
+        "Prix d'occasion observé sur eBay entre 13 et 23 USD selon l'état de la boîte et la complétude",
+        "Fourchette estimée 10-25 USD (9-23 €) basée sur des annonces actives de collectionneurs",
+        "Confiance modérée en raison de l'absence de vérification complète de l'intérieur et de la liste exacte des pièces"
+      ]
+    }
   }
 ]
