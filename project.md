@@ -1,6 +1,6 @@
 # PriceMe — organisation du projet
 
-Dernière mise à jour : 17 septembre 2026 (corrections R1-R8 par Claude Code suite à la revue Codex du même jour).
+Dernière mise à jour : 17 septembre 2026 (retrait du périmètre catégoriel, correctif de bug de production, Lot 6 mode solo — Claude Code).
 
 ## Mode de collaboration
 
@@ -110,7 +110,7 @@ Statuts autorisés : À faire · En cours · À revoir · Corrections demandées
 | 3 | Estimations neuf/occasion traçables ou résultat sans prix | Claude Code | Codex : calculs, séparation des types de prix et absence de fabrication | À faire — dépend du lot 2 |
 | 4 | Confidentialité, limites d'usage, coûts et robustesse du parcours complet | Claude Code | Codex : contrôles techniques et limites documentées | À faire |
 | 5 | Pilote 100 utilisateurs et analyse des résultats | Porteur + Claude Code | Codex : qualité des mesures et bilan des anomalies | À faire — dépend des lots 1 à 4 |
-| 6 | Jeu avec références documentées, puis défis par lien | Claude Code | Codex : scoring, cohérence et équité des manches | À faire — après validation du socle |
+| 6 | Jeu avec références documentées, puis défis par lien | Claude Code | Codex : scoring, cohérence et équité des manches | À revoir — mode solo livré (5 objets réels via notre propre pipeline), défis par lien non fait (report explicite du porteur) |
 | 7 | Scan de pièce, sélection d'objets et estimation progressive | Claude Code | Codex : détection, omissions, doublons et total partiel | À faire — évolution ultérieure |
 
 Le lot 2 peut avancer pendant le lot 1. Les protections essentielles de confidentialité et de coût commencent dès le lot 1 ; le lot 4 vérifie leur fonctionnement complet. Un blocage sur les prix ne doit pas bloquer les tests d'identification, mais interdit de déclarer l'estimation validée.
@@ -282,3 +282,19 @@ Fait suite à [Revue C1–C6 du commit 22c9cdb](docs/reviews/2026-09-17-lot-1-c1
 Journal — 2026-09-17, Claude Code : D1-D3 corrigés (prix source négatif rejeté, validation d'image par décodage structurel réel via `image-size`, correction manuelle persistée à travers retry/photo suivante) ; 13/13 tests, typecheck et build OK, non-régression confirmée par appel réel. Commit `c6743f8`. Prochaine action : nouvelle revue Codex.
 
 Journal — 2026-09-17, Codex : revue de 22c9cdb terminée, rapport et deux tests ajoutés ; prochain intervenant Claude Code pour D1–D3.
+
+## Retrait du périmètre catégoriel + bug de production corrigé + Lot 6 (mode solo), 17 septembre 2026
+
+Fait suite à des tests réels du porteur sur mobile après le commit `c6743f8`, en dehors du cycle de revue Codex formel — deux découvertes distinctes remontées directement par le porteur, corrigées le jour même.
+
+**1. Retrait de la restriction par catégorie (décision produit du porteur).** `lib/prompts.ts` disait explicitement aux catégories hors LEGO/électronique/sneakers de "rester superficiel" et de répondre "catégorie non prise en charge" — constaté en conditions réelles sur un bijou sans poinçon visible, où la réponse écartait la recherche avant même d'essayer. Le porteur a explicitement demandé que plus aucun objet ne soit refusé pour sa catégorie ; seule l'absence de preuve visible sur la photo reste un motif légitime de non-estimation. Instruction retirée pour toutes les catégories, budget de recherche inchangé (2 appels). Délais resynchronisés en conséquence : `lib/vision.ts` 170s, `app/api/analyze/route.ts` `maxDuration` 180s, `app/scan/page.tsx` délai client 200s. Copie d'accueil/scan qui annonçait "LEGO, électronique et sneakers" retirée.
+
+**2. Bug de production confirmé et corrigé : échec silencieux sur URL de source invalide.** Les logs serveur montraient des échecs répétés (`category: 'provider_error'`) sur des scans réels du porteur, en plus de résultats systématiquement à `price_confidence: 0`. Cause : `anthropic.messages.parse()` peut lever une exception (au lieu de renvoyer `parsed_output: null`) quand la sortie du modèle échoue à la validation du schéma — par exemple une URL de source non conforme à `isHttpUrl`. Ce cas n'était pas géré : tout le scan échouait (502), perdant la phase de recherche déjà payée. Même bug que celui découvert indépendamment dans `scripts/generate-game-data.cjs` pendant la génération du contenu du jeu. Corrigé : une seule relance de l'extraction avec le message d'erreur de validation renvoyé au modèle, avant d'abandonner proprement si la relance échoue aussi. Nouvelle catégorie de diagnostic `schema_validation_failed` dans `lib/errors.ts` pour distinguer ce cas d'une panne fournisseur générique.
+
+**3. Lot 6 (jeu « Devine le prix »), mode solo livré.** `app/game/page.tsx`, `lib/game/scoring.ts`, `lib/game/items.ts`. Contenu généré via `scripts/generate-game-data.cjs`, qui fait passer de vraies photos (Wikimedia Commons, CC/domaine public) par le vrai `analyzeObject` — pas de prix inventés ni de jeu de données à part. 8 photos essayées, 5 retenues (caméra Yashica, machine à espresso Rocket, skateboard Nash, sac Louis Vuitton, montre Rolex Submariner) ; 3 écartées automatiquement faute de prix exploitable (guitare, perceuse, chaise Eames) ou remplacées après coup (photo de comparaison de 4 montres donnant une fourchette inexploitable 45–15 000 $, remplacée par une photo d'une seule montre). Score : proximité à la fourchette estimée par notre propre pipeline, pas un « vrai prix » externe — dégradation progressive hors fourchette, pas de seuil binaire. Défis par lien (deuxième partie du Lot 6) explicitement reportés, pas oubliés.
+
+**Ce qui n'a pas été fait dans cette passe :** pas de nouvelle revue Codex avant ces changements (découvertes du porteur en dehors du cycle formel) ; pas de test automatisé pour le nouveau chemin de relance de `lib/vision.ts` (`runExtraction` avec correctif) ; le jeu n'a pas été testé manche par manche dans un vrai navigateur, seulement vérifié par build + chargement des routes/assets.
+
+**Commits :** `bbf3f62` (retrait du périmètre + correctif du bug), `c26a754` (Lot 6 mode solo).
+
+Journal — 2026-09-17, Claude Code : voir détail ci-dessus. Prochaine action recommandée : Codex reprend la revue à partir d'ici (le cycle C1–C6/D1–D3 était déjà clos avant ces changements hors-cycle) ; porteur teste le jeu et reconfirme le comportement sur mobile après le correctif de bug.
