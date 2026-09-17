@@ -1,0 +1,402 @@
+[
+  {
+    "id": "camera",
+    "file": "camera.jpg",
+    "credit": "Vintage Yashica FX-2, Joe Haupt, Wikimedia Commons, CC BY-SA",
+    "analysis": {
+      "category": "electronics",
+      "brand": "Yashica",
+      "model": "FX-2",
+      "variant": "avec objectif Yashica Lens DSB 50mm 1:1.9",
+      "identifying_marks": [
+        "« FX-2 » gravé sur le capot avant gauche",
+        "« YASHICA » sur le prisme",
+        "« YASHICA LENS DSB 50mm 1:1.9 — MADE IN JAPAN » sur l'objectif",
+        "Monture Contax/Yashica (C/Y)",
+        "Finition chrome/argent avec habillage cuirette noire",
+        "Deux anneaux de courroie présents"
+      ],
+      "identification_confidence": 0.9,
+      "condition": "good",
+      "condition_confidence": 0.5,
+      "missing_information": [
+        "Numéro de série du boîtier",
+        "Numéro de série de l'objectif",
+        "Fonctionnement de l'obturateur et des vitesses lentes",
+        "Exactitude et vitalité de la cellule",
+        "État du joint de dos",
+        "Présence de moisissure ou de champignon à l'intérieur de l'objectif",
+        "État du miroir et du verre de visée",
+        "État du dos et de la semelle"
+      ],
+      "next_photo_request": {
+        "instruction": "Testez et documentez le fonctionnement de l'obturateur (vitesses lentes notamment), de la cellule (si présente), et examinez le dos, la semelle et l'intérieur de l'objectif à la lumière",
+        "reason": "Le fonctionnement mécanique et l'état interne sont les facteurs décisifs de valeur. L'écart de prix observé (55–120 €) dépend entièrement de ces éléments non vérifiables actuellement sur la photo unique."
+      },
+      "currency": "EUR",
+      "retail_price_new": null,
+      "estimated_value_low": 55,
+      "estimated_value_high": 120,
+      "price_confidence": 0.6,
+      "price_sources": [
+        {
+          "title": "Yashica fx d'occasion - Photo, audio & vidéo - leboncoin",
+          "url": "https://www.leboncoin.fr/ck/photo_audio_video/yashica-fx",
+          "price": 70,
+          "currency": "EUR",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "Yashica FX-2 + Yashica 50mm 1:1.9 - eBay.de",
+          "url": "https://www.ebay.de/itm/146698578889",
+          "price": 140.98,
+          "currency": "EUR",
+          "price_type": "confirmed_sold"
+        },
+        {
+          "title": "Yashica 50mm d'occasion - leboncoin",
+          "url": "https://www.leboncoin.fr/ck/photo_audio_video/yashica-50mm",
+          "price": 45,
+          "currency": "EUR",
+          "price_type": "marketplace_asking"
+        }
+      ],
+      "reasoning_summary": [
+        "Boîtier Yashica FX-2 mécanique de fin années 1970, bien identifié (marque et modèle lisibles)",
+        "Objectif DSB 50mm f/1.9 d'origine sur monture C/Y, optique claire sans défaut visible",
+        "Aspect cosmétique bon à très bon : chrome propre, cuirette intacte, pas de bosse",
+        "Valeur fortement dépendante du fonctionnement réel (obturateur, cellule, joints) non vérifiable sur photo",
+        "Ensemble complet (boîtier + objectif) cotéré entre 70 € (particulier, non testé) et 141 € (vendeur pro avec garantie)",
+        "Fourchette seconde main France estimée 55–120 € selon l'état du fonctionnement"
+      ]
+    }
+  },
+  {
+    "id": "espresso",
+    "file": "espresso.jpg",
+    "credit": "Rocket espresso machine, Wikimedia Commons",
+    "analysis": {
+      "category": "other",
+      "brand": "Rocket Espresso Milano",
+      "model": "Appartamento",
+      "variant": "inox / panneaux inox",
+      "identifying_marks": [
+        "Plaque/badge en façade « ROCKET ESPRESSO MILANO » avec mention « APPARTAMENTO »",
+        "Carrosserie inox",
+        "Panneaux latéraux ajourés de cercles",
+        "Groupe E61 avec levier",
+        "Deux volants noirs (vapeur et eau chaude)",
+        "Manomètre unique en façade",
+        "Pieds cylindriques chromés"
+      ],
+      "identification_confidence": 0.75,
+      "condition": "good",
+      "condition_confidence": 0.5,
+      "missing_information": [
+        "Génération exacte du modèle (Appartamento d'origine, TCA, ou version récente)",
+        "Numéro de série",
+        "Fonctionnement vérifié",
+        "État de la chaudière et présence de calcaire",
+        "État de l'étanchéité du joint de groupe",
+        "Accessoires et emballage d'origine",
+        "Âge réel de la machine"
+      ],
+      "next_photo_request": {
+        "instruction": "Photographier la base et le dessous de la machine pour localiser la plaque d'identification, le numéro de série et tout marquage de génération (TCA ou autre)",
+        "reason": "Permettrait de déterminer la génération exacte du modèle, ce qui influence significativement la valeur, et de confirmer l'âge de la machine"
+      },
+      "currency": "USD",
+      "retail_price_new": 1850,
+      "estimated_value_low": 800,
+      "estimated_value_high": 1300,
+      "price_confidence": 0.4,
+      "price_sources": [
+        {
+          "title": "Rocket Appartamento Espresso Machine | Comiso Coffee",
+          "url": "https://comisocoffee.com/products/rocket-appartamento-espresso-machine",
+          "price": 1850,
+          "currency": "USD",
+          "price_type": "retail_new"
+        },
+        {
+          "title": "Rocket Home Espresso Machines – Pro Coffee Gear",
+          "url": "https://procoffeegear.com/collections/rocket-home-espresso-machines",
+          "price": 2100,
+          "currency": "USD",
+          "price_type": "retail_new"
+        }
+      ],
+      "reasoning_summary": [
+        "Identification sûre du modèle Rocket Appartamento inox basée sur le badge visible et la silhouette caractéristique",
+        "État cosmétique bon d'occasion avec marques d'usage visibles sur le plateau inox (rayures, zones ternies)",
+        "Confiance tarifaire faible : aucun prix d'occasion réellement observé disponible ; fourchette estimée déduite uniquement des prix neufs (1 850–2 100 USD)",
+        "Génération du modèle non déterminée à partir de cette angle de prise de vue ; l'écart de valeur entre générations est significatif",
+        "Fonctionnement non vérifié et état interne (chaudière, joints) non évaluable ; ces facteurs pèsent fortement sur la valeur réelle pour une machine à échangeur thermique",
+        "Valeur estimée ancrée sur la décote habituelle d'une machine E61 domestique en bon état cosmétique mais non testée"
+      ]
+    }
+  },
+  {
+    "id": "skateboard",
+    "file": "skateboard.jpg",
+    "credit": "Nash vintage wooden shark deck skateboard, Wikimedia Commons",
+    "analysis": {
+      "category": "other",
+      "brand": "Nash",
+      "model": "Shark",
+      "variant": "vert",
+      "identifying_marks": [
+        "mot « Shark » sérigraphié en vert en bas de la planche",
+        "logo triangulaire « Sidewalk NASH Surfboards »",
+        "graphisme du requin vert pleine longueur",
+        "forme de planche courte en bois plein à nez pointu type « surf de trottoir »",
+        "trucks et roues métalliques d'origine",
+        "petit « 1 » cerclé près du logo, numéro de modèle « No. 1 »"
+      ],
+      "identification_confidence": 0.85,
+      "condition": "fair",
+      "condition_confidence": 0.55,
+      "missing_information": [
+        "date exacte de fabrication",
+        "longueur réelle de la planche",
+        "type précis des roues (métal ou argile)",
+        "état du dessous de la planche",
+        "état des roulements/roues en rotation",
+        "présence de rouille sévère ou de jeu dans les trucks"
+      ],
+      "next_photo_request": {
+        "instruction": "Photographier le dessous de la planche en entier, ainsi qu'un gros plan des trucks, roulements et roues pour évaluer l'usure, l'oxydation et l'état fonctionnel",
+        "reason": "L'état du dessous, la rotation des roues et l'intégrité des roulements sont déterminants pour confirmer si la planche est encore fonctionnelle et ajuster significativement l'estimation de valeur (45 $ ou 130 $+)"
+      },
+      "currency": "USD",
+      "retail_price_new": null,
+      "estimated_value_low": 45,
+      "estimated_value_high": 130,
+      "price_confidence": 0.45,
+      "price_sources": [
+        {
+          "title": "Vintage Nash Shark Skateboard FOR SALE! - PicClick",
+          "url": "https://picclick.com/Popular/vintage-nash-shark-skateboard",
+          "price": 120,
+          "currency": "USD",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "Vintage Nash Shark Skateboard FOR SALE! - PicClick",
+          "url": "https://picclick.com/Popular/vintage-nash-shark-skateboard",
+          "price": 149,
+          "currency": "USD",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "Vintage Skateboard Sidewalk Surfboard by Nash - Etsy",
+          "url": "https://www.etsy.com/listing/757707273/vintage-skateboard-sidewalk-surfboard-by",
+          "price": 111.98,
+          "currency": "USD",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "Vintage Skateboard Sidewalk Surfboard by Nash - Etsy",
+          "url": "https://www.etsy.com/listing/757707273/vintage-skateboard-sidewalk-surfboard-by",
+          "price": 109.99,
+          "currency": "USD",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "JustAnswer - Vintage Nash Sidewalk Surfboard",
+          "url": "https://www.justanswer.com/antiques/enk9e-vintage-nash-sidewalk-surfboard-wanting.html",
+          "price": 45,
+          "currency": "USD",
+          "price_type": "marketplace_asking"
+        }
+      ],
+      "reasoning_summary": [
+        "Skateboard vintage Nash Shark années 1960 en bois plein avec graphisme vert caractéristique, marques d'authenticité fortes (logo, numéro de modèle, sérigraphie)",
+        "Condition usagée mais honnête : bois patiné, sérigraphie bien conservée mais légèrement écaillée, trucks et roues d'origine oxydés, aucune casse majeure",
+        "Prix demandés en ligne (109–149 USD) nettement supérieurs à l'estimation d'expert (40–50 USD), reflétant une écart entre attentes vendeurs et valeurs réelles",
+        "Marché principalement américain ; revente probable en France/Europe dans la fourchette basse (40–60 EUR)",
+        "Confiance modérée : aucune vente conclue documentée, variations importantes selon état et couleur ; évaluation du dessous et des roulements nécessaire pour affiner"
+      ]
+    }
+  },
+  {
+    "id": "handbag",
+    "file": "handbag.jpg",
+    "credit": "Louis Vuitton bag, Wikimedia Commons",
+    "analysis": {
+      "category": "sacs à main",
+      "brand": "Louis Vuitton",
+      "model": "Speedy en toile Monogram",
+      "variant": "Speedy 25 ou 30 (probablement 30)",
+      "identifying_marks": [
+        "toile enduite brune à motif monogramme LV avec fleurs/quadrilobes",
+        "garnitures et anses en cuir vachetta naturel non teint",
+        "zip et ferrures dorées",
+        "piping cuir clair",
+        "forme « oreiller » caractéristique",
+        "silhouette bombée à base plate",
+        "deux anses roulées courtes",
+        "fermeture zip sur toute la longueur",
+        "tirette latérale"
+      ],
+      "identification_confidence": 0.75,
+      "condition": "good",
+      "condition_confidence": 0.55,
+      "missing_information": [
+        "code de fabrication (date code)",
+        "plaque d'authentification",
+        "numéro de série",
+        "état des coins/angles",
+        "craquelures du vernis des bords",
+        "propreté de l'intérieur",
+        "fonctionnement du zip",
+        "présence/état du cadenas",
+        "taches sur la vachetta",
+        "état de la doublure"
+      ],
+      "next_photo_request": {
+        "instruction": "Prenez une photo rapprochée des coins inférieurs du sac, de la base et des zones d'usure typiques, ainsi que du zip et du cadenas",
+        "reason": "Les coins et la base sont les zones d'usure principales pour les sacs Speedy vintage ; voir le cadenas et tester le zip confirmerait l'authenticité fonctionnelle et l'état réel du sac"
+      },
+      "currency": "USD",
+      "retail_price_new": 1710,
+      "estimated_value_low": 450,
+      "estimated_value_high": 900,
+      "price_confidence": 0.45,
+      "price_sources": [
+        {
+          "title": "Louis Vuitton Monogram Canvas Speedy 30 Bag | Yoogi's Closet",
+          "url": "https://www.yoogiscloset.com/150094-louis-vuitton-monogram-canvas-speedy-30-bag.html",
+          "price": 970,
+          "currency": "USD",
+          "price_type": "retail_new"
+        },
+        {
+          "title": "Used Louis Vuitton Speedy 30 Monogram Canvas - Etsy",
+          "url": "https://www.etsy.com/listing/4319029728/used-louis-vuitton-speedy-30-monogram",
+          "price": 1650,
+          "currency": "USD",
+          "price_type": "retail_new"
+        },
+        {
+          "title": "Louis Vuitton Speedy Bag | The RealReal",
+          "url": "https://www.therealreal.com/sales/louis-vuitton-speedy",
+          "price": 795,
+          "currency": "USD",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "Shop Louis Vuitton Speedy 30 Monogram Canvas Satchels for Women on Mercari",
+          "url": "https://www.mercari.com/us/shop/louis-vuitton-speedy-30-monogram-canvas-satchels-for-women/",
+          "price": 813,
+          "currency": "USD",
+          "price_type": "marketplace_asking"
+        }
+      ],
+      "reasoning_summary": [
+        "Identification basée sur le design visible : toile monogramme LV, cuir vachetta, ferrures dorées, forme caractéristique du Speedy",
+        "Taille incertaine (25 ou 30) à partir de cette seule photo sans référence d'échelle",
+        "Aucun code de fabrication ou plaque visible : authenticité non vérifiable de cette image",
+        "État apparent bon mais évaluation limitée à un seul angle et à distance : patine miel du cuir compatible avec usage modéré",
+        "Fourchette de prix prudente (450–900 USD) car aucune vente conclue documentée dans les sources",
+        "Écart énorme entre annonces actuelles (290–1 500 USD) suggère forte variabilité de condition ou d'authenticité",
+        "Prix retail neuf hautement contradictoire entre sources (970 vs 1 650–1 710 USD) : non fiable",
+        "Un sac non authentifié ou en mauvais état se négocie bien en dessous de cette fourchette"
+      ]
+    }
+  },
+  {
+    "id": "watch2",
+    "file": "watch2.jpg",
+    "credit": "Rolex Submariner diving watch, Wikimedia Commons",
+    "analysis": {
+      "category": "montres",
+      "brand": "Rolex",
+      "model": "Submariner Date",
+      "variant": "16610 (hypothèse)",
+      "identifying_marks": [
+        "ROLEX",
+        "OYSTER PERPETUAL",
+        "SUBMARINER",
+        "1000ft = 300m",
+        "SUPERLATIVE CHRONOMETER OFFICIALLY CERTIFIED",
+        "SWISS MADE",
+        "guichet de date à 3 h avec loupe cyclope",
+        "index luminescents ronds/rectangulaires",
+        "aiguille Mercedes",
+        "lunette tournante noire graduée avec chiffres 10/20/30/40/50 peints sur insert aluminium",
+        "couronne protégée par épaulements",
+        "protège-couronne latéral",
+        "fermoir Oysterlock à couronne estampée"
+      ],
+      "identification_confidence": 0.75,
+      "condition": "excellent",
+      "condition_confidence": 0.5,
+      "missing_information": [
+        "numéro de référence exact",
+        "numéro de série",
+        "gravure de réhaut",
+        "année de production",
+        "sous-variante (trous de bracelet, marque de cadran)",
+        "vérification de l'authenticité",
+        "état de marche et révision",
+        "présence de boîte et papiers",
+        "état du fond de boîte"
+      ],
+      "next_photo_request": {
+        "instruction": "Photographiez nettement le fond de boîte et le numéro de série gravé entre les cornes à 6 h ou sur le réhaut, ainsi que la boîte et les papiers d'accompagnement s'ils sont présents.",
+        "reason": "Cela permettrait de confirmer la référence exacte (16610 vs 16610LV ou autre variante), le millésime, et de vérifier l'authenticité et les conditions de vente (avec ou sans accompagnement), ce qui resserrerait considérablement la fourchette de prix et augmenterait la confiance globale."
+      },
+      "currency": "EUR",
+      "retail_price_new": null,
+      "estimated_value_low": 7500,
+      "estimated_value_high": 10500,
+      "price_confidence": 0.6,
+      "price_sources": [
+        {
+          "title": "ROLEX Submariner Date 16610 - Occasion - Montre Acier | Cresus",
+          "url": "https://www.cresus.fr/rolex-submariner-date-060580",
+          "price": 9600,
+          "currency": "EUR",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "ROLEX Submariner 16610 - Occasion | Cresus",
+          "url": "https://www.cresus.fr/rolex-submariner-date-061217",
+          "price": 9900,
+          "currency": "EUR",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "Rolex 16610 d'occasion | leboncoin",
+          "url": "https://www.leboncoin.fr/ck/montres_bijoux/rolex-16610",
+          "price": null,
+          "currency": "EUR",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "Rolex 16610 (Submariner Date) | Wristler",
+          "url": "https://wristler.eu/watches/rolex/ref-16610",
+          "price": null,
+          "currency": "EUR",
+          "price_type": "marketplace_asking"
+        },
+        {
+          "title": "Cote ROLEX Submariner - 16610 | La Cote des Montres",
+          "url": "https://lacotedesmontres.com/Cote-Rolex-Submariner-16610-49310-ad_4-newCote.htm",
+          "price": 10460,
+          "currency": "EUR",
+          "price_type": "marketplace_asking"
+        }
+      ],
+      "reasoning_summary": [
+        "Rolex Submariner Date acier, génération insert aluminium peint (circa 1988–2010), modèle 16610 déduit visuellement mais non confirmé par numéro de série",
+        "Surfaces très propres et brillantes, verre sans rayure visible, cadran net — apparence très bon à excellent, mais photo sombre et retouchée masque micro-rayures et usure réelle",
+        "Aucun prix neuf de référence (modèle discontinué) ; tous les signaux sont des prix demandés (9 600 € à 10 900 €) convergeant autour de 10 460 € (cote)",
+        "Fourchette estimée 7 500 € à 10 500 € selon présence de boîte/papiers, révision récente, et fonctionnement confirmé",
+        "Trois inconnues majeures réduisent la confiance : authenticité non vérifiable en photo seule, référence exacte non lue, absence d'infos sur millésime et accompagnement (boîte/papiers/révision)",
+        "Les prix affichés par revendeurs (Cresus) incluent garantie et marge ; prix privé sans accompagnement situé en bas de fourchette"
+      ]
+    }
+  }
+]
