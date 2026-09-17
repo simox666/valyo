@@ -6,7 +6,7 @@ const nextConfig = {
   // iPhone). This IP changes with the network (Wi-Fi vs. Personal Hotspot,
   // etc.) — update it to whatever `next dev` prints as "Network:" when it
   // no longer matches. Dev-only; irrelevant in production.
-  allowedDevOrigins: ["172.20.10.4", "10.243.2.17"],
+  allowedDevOrigins: ["192.168.0.105", "172.20.10.4", "10.243.2.17"],
 };
 
 module.exports = nextConfig;
