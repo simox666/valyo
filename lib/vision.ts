@@ -68,8 +68,11 @@ export async function analyzeObject(
         model: RESEARCH_MODEL,
         max_tokens: 4000,
         system: researchSystemPrompt(round, maxRounds, { correctionNote }),
-        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 2 }],
-        output_config: { effort: "medium" },
+        // Each web_search round-trip (server-side, out of our control) is
+        // the dominant cost in wall-clock time, not model generation speed —
+        // trimming the budget matters more than which model runs it.
+        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 1 }],
+        output_config: { effort: "low" },
         messages,
       },
       { signal },

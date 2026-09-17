@@ -298,3 +298,17 @@ Fait suite à des tests réels du porteur sur mobile après le commit `c6743f8`,
 **Commits :** `bbf3f62` (retrait du périmètre + correctif du bug), `c26a754` (Lot 6 mode solo).
 
 Journal — 2026-09-17, Claude Code : voir détail ci-dessus. Prochaine action recommandée : Codex reprend la revue à partir d'ici (le cycle C1–C6/D1–D3 était déjà clos avant ces changements hors-cycle) ; porteur teste le jeu et reconfirme le comportement sur mobile après le correctif de bug.
+
+## Optimisation de latence, 17 septembre 2026
+
+Fait suite à un retour direct du porteur ("les recherches prennent énormément de temps") après le retrait du périmètre catégoriel, qui avait mécaniquement allongé les scans (recherche complète sur tout objet au lieu d'un traitement superficiel hors périmètre).
+
+- **Modèle de recherche** : `lib/anthropic.ts` — `RESEARCH_MODEL` passé de `claude-opus-5` à `claude-sonnet-5`. Testé seul d'abord : aucun gain notable (160s, quasi identique à Opus) — le goulot d'étranglement n'est pas la vitesse de génération du modèle.
+- **Budget de recherche** : `lib/vision.ts` — `max_uses` réduit de 2 à 1 appel `web_search`, `output_config.effort` passé de `medium` à `low`. C'est ce qui a réellement réduit le temps : ~150-165s → ~47-54s sur le même test (photo Nike Air Force 1, déjà utilisée dans plusieurs passages précédents pour comparaison directe). `lib/prompts.ts` mis à jour en conséquence (« vous avez UN appel, faites-le compter » au lieu de « jusqu'à 2 »).
+- **Régression trouvée et corrigée en cours de route** : avec une seule recherche, le modèle a une fois classé une source The RealReal (plateforme de revente de luxe d'occasion) comme `retail_new` à 150 $ — une vraie erreur de classification, pas un cas limite mineur, puisque contraire au principe 2 (ne jamais présenter un prix d'occasion comme neuf officiel). `lib/prompts.ts` — règle 3 explicitée : une plateforme de consignation/revente (The RealReal, Vestiaire Collective, ThredUp, Rebag, Farfetch pre-owned, etc.) n'est JAMAIS `retail_new`, quel que soit le vocabulaire de la page. Retesté après correction : source correctement classée `retail_new` (Nike.com, 115 $, cohérent avec les tests précédents de la session).
+
+**Compromis assumé, à surveiller** : une seule recherche au lieu de deux réduit mécaniquement la richesse des sources citées (souvent 1 source au lieu de 2-5 dans les tests précédents) et peut baisser identification/price_confidence sur des objets ambigus. Pas de mesure formelle de l'impact sur la qualité au-delà de ce test ponctuel — à surveiller par le porteur en usage réel, et par Codex si un test de régression plus large est jugé utile.
+
+**Fichiers modifiés :** `lib/anthropic.ts`, `lib/vision.ts`, `lib/prompts.ts`. Pas de nouveau test automatisé ajouté (le harnais `tests/audit.test.cjs` ne couvre pas la latence). Pas encore commité au moment de la rédaction — à faire juste après.
+
+Journal — 2026-09-17, Claude Code : latence réduite d'environ 3x (recherche unique, effort réduit, modèle Sonnet) suite à un retour direct du porteur ; une régression de classification de source trouvée et corrigée dans la foulée. Prochaine action : porteur reconfirme sur mobile ; Codex peut évaluer si le compromis richesse des sources / vitesse est acceptable pour le pilote.
