@@ -30,7 +30,10 @@ function isHttpUrl(value: string): boolean {
 export const PriceSourceSchema = z.object({
   title: z.string(),
   url: z.string().refine(isHttpUrl, { message: "url must be an absolute http(s) link" }),
-  price: z.number().nullable(),
+  // A negative source price isn't a real observation — reject it here
+  // rather than only at the composite level, so it can never slip through
+  // as "evidence" for a positive valuation (project.md D1).
+  price: z.number().nonnegative().nullable(),
   currency: z.string(),
   price_type: PriceTypeSchema.describe(
     "retail_new = current new/retail price. marketplace_asking = an active listing or marketplace price (use this for almost everything, including StockX/eBay/Vinted/Poshmark current prices). confirmed_sold = only a page that explicitly documents a completed sale — rare, and never the default guess.",

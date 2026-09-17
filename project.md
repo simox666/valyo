@@ -105,7 +105,7 @@ Statuts autorisés : À faire · En cours · À revoir · Corrections demandées
 | Lot | Objet | Réalisation | Validation | Statut |
 | --- | --- | --- | --- | --- |
 | 0 | Audit du code existant, commandes disponibles, écarts au besoin et risques prioritaires | Codex | Rapport avec preuves et corrections ordonnées | Validé — audit terminé, voir rapport Codex du 17 septembre |
-| 1 | Stabiliser photo/import, identification, schéma, précisions et correction manuelle | Claude Code | Codex : parcours nominal, ambiguïtés, erreurs et mobile | À revoir — R1-R8 puis C1-C6 corrigés (11/11 tests), correction manuelle implémentée et testée en réel ; un scan réel sur iPhone effectué, pas les 2-3 par catégorie recommandés |
+| 1 | Stabiliser photo/import, identification, schéma, précisions et correction manuelle | Claude Code | Codex : parcours nominal, ambiguïtés, erreurs et mobile | Corrections demandées — revue du commit 22c9cdb ; restes D1–D3, voir dernier rapport |
 | 2 | Choisir les références de prix et définir les règles de publication | Porteur + Claude Code ; analyse Codex | Provenance, droits, fraîcheur et exemples vérifiables | À revoir — décision de principe prise (continuer tel quel pour le pilote), voir politique des sources de prix ; revue juridique différée sciemment |
 | 3 | Estimations neuf/occasion traçables ou résultat sans prix | Claude Code | Codex : calculs, séparation des types de prix et absence de fabrication | À faire — dépend du lot 2 |
 | 4 | Confidentialité, limites d'usage, coûts et robustesse du parcours complet | Claude Code | Codex : contrôles techniques et limites documentées | À faire |
@@ -258,3 +258,27 @@ Vérifications : 7 tests initiaux réussis ; suite étendue à 11 tests, 8 réus
 Restes prioritaires C1–C6 : preuve chiffrée des prix, quota global consommé par les refus IP, images tronquées acceptées, correction manuelle absente, délai serveur effectif et messages fournisseur dans les logs. Claude Code reprend ces points ; Codex effectuera ensuite une nouvelle revue.
 
 Journal — 2026-09-17, Codex : seconde revue terminée, résultats et limites documentés dans le nouveau rapport ; fonctionnement manuel maintenu.
+
+## État actuel après revue C1–C6 (Codex)
+
+Référence prioritaire : [Revue C1–C6 du commit 22c9cdb](docs/reviews/2026-09-17-lot-1-c1-c6.md). Les sections de revues précédentes décrivent les états historiques.
+
+Lot 1 : corrections demandées pour D1 (prix source négatif), D2 (décodabilité image), D3 (correction perdue au retry/photo suivante). C2 et C6 corrigés ; C5 câblé et vérifié par lecture.
+
+Tests initiaux : 11/11 ; suite étendue : 11/13, deux échecs reproduits. Typage réussi. Aucun appel payant, aucune modification applicative. Budget pilote et revue juridique différée ne bloquent pas les tests locaux.
+
+## Corrections D1 à D3 par Claude Code, 17 septembre 2026
+
+Fait suite à [Revue C1–C6 du commit 22c9cdb](docs/reviews/2026-09-17-lot-1-c1-c6.md).
+
+- **D1 (P2, prix source négatif accepté) :** `lib/schema.ts` — `PriceSourceSchema.price` porte maintenant `.nonnegative()` directement, pas seulement une vérification au niveau composite. Un prix source négatif est rejeté avant même d'être considéré comme preuve, quel que soit le contexte. Portée volontairement limitée à ce défaut syntaxique — la correspondance produit/type/devise et la provenance restent hors de ce correctif, comme demandé.
+- **D2 (P2, contrôle d'image toujours un contrôle de marqueurs) :** remplacement complet de `lib/imageValidation.ts`. Au lieu de vérifier des octets de début/fin, le fichier utilise maintenant `image-size` (paquet pur JS, sans dépendance, sans binaire natif) pour parser réellement la structure JPEG/PNG/WEBP et en extraire les dimensions — un fichier structurellement invalide (ex. buffer de zéros avec juste les marqueurs SOI/EOI) fait échouer le parsing au lieu de passer. Ajout d'un plafond de dimensions (8000px) pour rejeter un en-tête qui prétendrait à une taille improbable. Vérifié : le buffer de test de Codex (zéros + marqueurs) est bien rejeté (`Corrupt JPG, exceeded buffer limits`) et une vraie photo JPEG (960×720) est bien acceptée — testé localement avant d'intégrer, puis revérifié par un appel réel à `/api/analyze` avec une vraie photo (voir résultat ci-dessous). Toujours pas un décodage pixel complet (c'est un parsing d'en-tête, pas un rendu) — `image-size` ne décode que la structure/dimensions, pas les données de pixels ; documenté comme tel, pas présenté comme plus que ça.
+- **D3 (P2, correction perdue au retry/photo suivante) :** `app/scan/page.tsx` — la note de correction est maintenant conservée dans un état du scan (`correctionNote`), pas seulement transmise une fois. `retry()` et `handleFile()` (photo de relance) la réutilisent désormais ; elle n'est vidée qu'au nouveau scan (`reset()`). Le plafond d'une correction par scan (`correctionUsed`) est conservé tel quel — ce n'était pas le défaut signalé, seule la perte de contexte l'était.
+- **Fichiers modifiés :** `lib/schema.ts`, `lib/imageValidation.ts` (réécrit), `app/scan/page.tsx`. Nouvelle dépendance `image-size` (paquet pur JS, pas de dépendances transitives, pas de binaire natif). Pas de nouveau commit à ce stade — à faire après cette revue.
+- **Scénario de vérification et résultat attendu :** suite `tests/audit.test.cjs` → 13/13 (contre 11/13). `npm run typecheck` et `npm run build` (dev arrêté avant build pour éviter le conflit `.next`) → OK. Appel réel à `/api/analyze` avec la photo Nike Air Force 1 déjà utilisée dans les passages précédents, pour confirmer l'absence de régression sur une vraie image après le remplacement de `imageValidation.ts` — 200, 164s (variance normale du fournisseur, sans rapport avec la validation d'image qui est quasi instantanée), identification confirmée (confiance 0.85), prix neuf sourcé (Nike.com, 115$), estimation occasion volontairement absente cette fois faute de source de revente trouvée — comportement honnête conforme aux règles, pas une régression.
+- **Configuration nécessaire, noms des variables uniquement :** `ANTHROPIC_API_KEY` (inchangé).
+- **Limites connues et points à examiner :** `image-size` reste un parsing d'en-tête, pas un décodage pixel complet — un fichier pourrait théoriquement avoir des dimensions valides déclarées mais des données de pixels corrompues au-delà de l'en-tête ; jugé suffisant pour ce niveau de risque (MVP, pas de traitement des pixels côté serveur au-delà de l'envoi au fournisseur), mais à réévaluer si le risque perçu change. Pas de test automatisé ajouté pour D3 (vérifié manuellement, pas de scénario navigateur simulant erreur+retry) — je n'ai pas ajouté ce test moi-même, cette responsabilité restant à Codex par convention du document.
+
+Journal — 2026-09-17, Claude Code : D1-D3 corrigés (prix source négatif rejeté, validation d'image par décodage structurel réel via `image-size`, correction manuelle persistée à travers retry/photo suivante) ; 13/13 tests, typecheck et build OK, non-régression confirmée par appel réel. Pas encore commité — prochaine action : commit puis nouvelle revue Codex.
+
+Journal — 2026-09-17, Codex : revue de 22c9cdb terminée, rapport et deux tests ajoutés ; prochain intervenant Claude Code pour D1–D3.

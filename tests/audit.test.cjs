@@ -104,6 +104,21 @@ test('a truncated JPEG signature is not a usable image', () => {
     Buffer.from([0xff, 0xd8, 0xff]).toString('base64')), false);
 });
 
+test('padding between JPEG markers does not make a decodable image', () => {
+  const bytes = Buffer.alloc(128);
+  bytes.set([0xff, 0xd8, 0xff]);
+  bytes.set([0xff, 0xd9], 126);
+  assert.equal(imageValidation.isValidImagePayload('image/jpeg', bytes.toString('base64')), false);
+});
+
+test('a negative source price cannot support a positive valuation', () => {
+  assert.equal(schema.ObjectAnalysisSchema.safeParse({
+    ...fixture, estimated_value_low: 100, estimated_value_high: 200,
+    price_sources: [{ title: 'Synthetic source', url: 'https://example.com/item',
+      price: -10, currency: 'EUR', price_type: 'marketplace_asking' }],
+  }).success, false);
+});
+
 test('requests denied by the per-IP quota do not exhaust the shared allowance', () => {
   const limiter = load('lib/rateLimit.ts');
   for (let i = 0; i < 10; i++) assert.equal(limiter.checkRateLimit('client-a').ok, true);

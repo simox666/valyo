@@ -52,6 +52,10 @@ export default function ScanPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [correctionUsed, setCorrectionUsed] = useState(false);
+  // Kept at the scan level, not just passed through once — otherwise a
+  // retry after a transient error, or a follow-up photo round, silently
+  // resubmits without it (project.md D3).
+  const [correctionNote, setCorrectionNote] = useState<string | undefined>(undefined);
   const elapsed = useElapsedSeconds(stage === "analyzing");
 
   // Guards against out-of-order responses: if the user fires a second
@@ -152,17 +156,20 @@ export default function ScanPage() {
       round: nextImages.length,
     });
 
-    await runAnalysis(nextImages);
+    // Carry forward a correction the user already gave — a follow-up photo
+    // round shouldn't discard context they already provided (project.md D3).
+    await runAnalysis(nextImages, correctionNote);
   }
 
   function retry() {
     if (busy || images.length === 0) return;
-    void runAnalysis(images);
+    void runAnalysis(images, correctionNote);
   }
 
   function submitCorrection(note: string) {
     if (busy || correctionUsed || images.length === 0) return;
     setCorrectionUsed(true); // one correction per scan — avoids an open-ended back-and-forth
+    setCorrectionNote(note);
     logEvent("correction_submitted");
     void runAnalysis(images, note);
   }
@@ -193,6 +200,7 @@ export default function ScanPage() {
     setErrorMsg("");
     setBusy(false);
     setCorrectionUsed(false);
+    setCorrectionNote(undefined);
   }
 
   return (
