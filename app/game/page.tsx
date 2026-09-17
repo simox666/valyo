@@ -88,12 +88,14 @@ export default function GamePage() {
           <p className="text-xs text-neutral-400">
             Manche {roundIndex + 1} / {rounds.length}
           </p>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`/game/${currentItem.file}`}
-            alt="Objet à estimer"
-            className="w-full h-64 object-cover rounded-2xl"
-          />
+          <div className="w-full h-64 bg-neutral-100 rounded-2xl flex items-center justify-center overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`/game/${currentItem.file}`}
+              alt="Objet à estimer"
+              className="max-w-full max-h-full object-contain"
+            />
+          </div>
           <p className="text-lg font-medium text-ink">
             {[currentItem.analysis.brand, currentItem.analysis.model].filter(Boolean).join(" ") ||
               currentItem.analysis.category}
@@ -126,8 +128,10 @@ export default function GamePage() {
           <p className="text-xs text-neutral-400">
             Manche {roundIndex + 1} / {rounds.length}
           </p>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/game/${currentItem.file}`} alt="Objet" className="w-full h-56 object-cover rounded-2xl" />
+          <div className="w-full h-56 bg-neutral-100 rounded-2xl flex items-center justify-center overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`/game/${currentItem.file}`} alt="Objet" className="max-w-full max-h-full object-contain" />
+          </div>
           <p className="text-3xl font-semibold text-ink">{lastResult.points} pts</p>
           <p className="text-sm text-neutral-600">
             {lastResult.withinRange ? "Dans le mille !" : "Pas tout à fait, mais on note l'effort."}
