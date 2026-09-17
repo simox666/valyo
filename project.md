@@ -36,8 +36,8 @@ Hors périmètre : publication d'annonces, marketplace, prix de vente rapide, in
 
 1. Ne pas inventer de marque, modèle, source ou comparable.
 2. Ne pas présenter un prix demandé comme un prix de transaction.
-3. Ne pas utiliser les connaissances générales du modèle comme preuve d'un prix actuel.
-4. Sans référence exploitable, indiquer que le prix est indisponible. Une fourchette large ne remplace pas des preuves.
+3. **Modifié le 17 septembre 2026, décision explicite du porteur.** Version initiale : « Ne pas utiliser les connaissances générales du modèle comme preuve d'un prix actuel. » Le porteur a jugé qu'un refus systématique sans marque/modèle identifié était moins utile qu'une estimation honnête et clairement étiquetée (exemple donné : un bracelet sans marque — on peut estimer sa valeur sans connaître le fabricant). Nouvelle règle : toute estimation de prix porte une base explicite — `market_evidence` (chiffre réellement observé via recherche, avec source) ou `general_estimate` (raisonnement à partir de connaissances générales sur des objets similaires, sans recherche ni source inventée). Les deux sont légitimes ; ils ne doivent jamais être présentés comme équivalents dans l'interface.
+4. Sans aucun repère exploitable (photo illisible, objet non identifiable même approximativement), l'estimation générale elle-même devient impossible — dans ce cas seulement, indiquer que le prix est indisponible. Une estimation générale reste préférable à un refus, mais jamais présentée comme une preuve de recherche.
 5. Ne pas présenter des pourcentages de confiance comme calibrés sans validation.
 6. Distinguer état visible, fonctionnement déclaré et authenticité non vérifiée.
 7. Réserver les données fictives aux tests et démonstrations explicitement identifiées.
@@ -312,3 +312,20 @@ Fait suite à un retour direct du porteur ("les recherches prennent énormément
 **Fichiers modifiés :** `lib/anthropic.ts`, `lib/vision.ts`, `lib/prompts.ts`. Pas de nouveau test automatisé ajouté (le harnais `tests/audit.test.cjs` ne couvre pas la latence). Pas encore commité au moment de la rédaction — à faire juste après.
 
 Journal — 2026-09-17, Claude Code : latence réduite d'environ 3x (recherche unique, effort réduit, modèle Sonnet) suite à un retour direct du porteur ; une régression de classification de source trouvée et corrigée dans la foulée. Prochaine action : porteur reconfirme sur mobile ; Codex peut évaluer si le compromis richesse des sources / vitesse est acceptable pour le pilote.
+
+## Changement de principe : estimation générale autorisée sans preuve de recherche, 17 septembre 2026
+
+Décision explicite du porteur, en rupture avec un principe établi et documenté depuis le début de la collaboration (voir principe 3 révisé ci-dessus). Le porteur a signalé que l'application ne donnait quasiment jamais de prix en pratique — chaque photo sans marque/modèle identifiable aboutissait à « prix indisponible », y compris pour des objets simples (ex. un bracelet sans marque) où une estimation approximative reste possible et utile.
+
+- **`lib/schema.ts`** : nouveau champ obligatoire `price_basis` (`market_evidence` / `general_estimate` / `unavailable`). L'invariant qui exigeait une source chiffrée pour tout prix (R1/C1) ne s'applique plus qu'au cas `market_evidence` ; le cas `general_estimate` exige à la place un `reasoning_summary` non vide expliquant la base du raisonnement — jamais un prix nu sans justification.
+- **`lib/prompts.ts`** : le fournisseur doit désormais choisir explicitement une base (MARKET_EVIDENCE / GENERAL_ESTIMATE / UNAVAILABLE) pour chaque estimation, avec UNAVAILABLE réservé aux cas où même une estimation grossière serait dénuée de sens — plus la règle par défaut.
+- **`components/ResultCard.tsx`** : badge visuel « Estimation générale » + note explicite quand `price_basis === "general_estimate"`, pour ne jamais laisser croire qu'une estimation générale est une donnée de marché vérifiée.
+- **Nettoyage effectué en parallèle (demande explicite du porteur)** : champs morts `recommended_listing_price`/`quick_sale_price` retirés du fixture de test (résidus d'un ancien schéma, sans effet fonctionnel mais jamais nettoyés) ; vérification qu'aucune autre référence à `unrestrictedScope` ou à l'ancien texte de périmètre catégoriel ne traînait dans le code ; aucun fichier de travail temporaire resté dans le dépôt.
+
+**Test réel de validation** : photo d'un bracelet manchette générique sans marque ni poinçon (Wikimedia Commons). Résultat : 22s, `price_basis: "general_estimate"`, fourchette 5-30 €, raisonnement explicite (« bracelets manchette non signés se vendent 5-25 € sur Vinted/Leboncoin, jusqu'à 30-80 € si argent massif confirmé »), aucune source inventée, `price_sources: []`. Comportement exactement conforme à la demande du porteur.
+
+**Tension documentée, pas résolue** : ce changement assouplit délibérément le principe fondateur « jamais de prix sans preuve ». Le compromis retenu — toujours distinguer explicitement `market_evidence` de `general_estimate` dans le schéma et l'interface — préserve une partie de l'honnêteté du produit (on ne prétend jamais qu'une estimation générale est vérifiée), mais une estimation générale reste, par construction, une extrapolation du modèle plutôt qu'une donnée de marché réelle. À garder en tête pour le Lot 2 (politique des sources) et pour toute communication publique sur la fiabilité des prix affichés.
+
+**Fichiers modifiés :** `lib/schema.ts`, `lib/prompts.ts`, `components/ResultCard.tsx`, `tests/audit.test.cjs` (fixture mise à jour mécaniquement pour le nouveau champ obligatoire, plus nettoyage des champs morts). `npm run typecheck`, `node --test tests/audit.test.cjs` (13/13) et `npm run build` tous vérifiés. Test réel décrit ci-dessus.
+
+Journal — 2026-09-17, Claude Code : principe 3 révisé sur demande explicite et documentée du porteur ; `price_basis` ajouté au schéma et à l'interface ; validé par un test réel (bracelet sans marque, 22s, estimation générale honnête). Nettoyage des résidus effectué. Prochaine action : Codex évalue si la distinction market_evidence/general_estimate reste suffisamment honnête pour le principe 2 (ne jamais présenter une estimation comme une vente) ; porteur teste sur mobile.

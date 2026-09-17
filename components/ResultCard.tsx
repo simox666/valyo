@@ -98,13 +98,26 @@ export default function ResultCard({
               </div>
             )}
             <div>
-              <p className="text-xs text-neutral-500">Estimation occasion</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-neutral-500">Estimation occasion</p>
+                {analysis.price_basis === "general_estimate" && (
+                  <span className="text-[10px] uppercase tracking-wide text-amber-600 bg-amber-50 rounded px-1.5 py-0.5">
+                    Estimation générale
+                  </span>
+                )}
+              </div>
               {hasEstimate ? (
                 <p className="text-3xl font-semibold text-ink">
                   {formatEstimateRange(analysis.estimated_value_low, analysis.estimated_value_high, analysis.currency)}
                 </p>
               ) : (
                 <p className="text-sm text-neutral-500">Non estimée pour cet objet.</p>
+              )}
+              {analysis.price_basis === "general_estimate" && (
+                <p className="text-xs text-neutral-400 mt-1">
+                  Basée sur des objets similaires, pas sur une recherche pour ce modèle précis — à prendre
+                  avec prudence.
+                </p>
               )}
             </div>
           </>

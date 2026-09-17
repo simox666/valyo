@@ -29,8 +29,7 @@ const fixture = {
   missing_information: [], next_photo_request: null,
   currency: 'EUR', retail_price_new: null,
   estimated_value_low: null, estimated_value_high: null,
-  recommended_listing_price: null, quick_sale_price: null,
-  price_confidence: 0, price_sources: [], reasoning_summary: [],
+  price_confidence: 0, price_basis: 'unavailable', price_sources: [], reasoning_summary: [],
 };
 test('allows an honest result without a price', () => {
   assert.equal(schema.ObjectAnalysisSchema.safeParse(fixture).success, true);

@@ -40,6 +40,15 @@ export const PriceSourceSchema = z.object({
   ),
 });
 
+// market_evidence = at least one number came from an actual search result.
+// general_estimate = no specific-enough hypothesis to search, or the search
+// found nothing usable — the price instead reflects general knowledge of
+// what similar items (category/material/style) typically go for. Explicit,
+// porteur-requested tradeoff (2026-09-17): PriceMe should still offer a
+// rough number in this case rather than refuse outright, as long as it's
+// never presented as if it were the market_evidence case.
+export const PriceBasisSchema = z.enum(["market_evidence", "general_estimate", "unavailable"]);
+
 const BaseObjectAnalysisSchema = z.object({
   category: z.string().describe("A short free-text category for the item, e.g. lego, electronics, sneakers, jewelry, furniture — not limited to a fixed list"),
   brand: z.string().nullable(),
@@ -60,6 +69,7 @@ const BaseObjectAnalysisSchema = z.object({
   estimated_value_low: z.number().nullable().describe("Low end of the second-hand value estimate"),
   estimated_value_high: z.number().nullable().describe("High end of the second-hand value estimate"),
   price_confidence: z.number().min(0).max(1),
+  price_basis: PriceBasisSchema,
   price_sources: z.array(PriceSourceSchema),
 
   reasoning_summary: z.array(z.string()).describe("Short bullet points explaining the valuation, for the 'Why this price?' UI section"),
@@ -67,10 +77,10 @@ const BaseObjectAnalysisSchema = z.object({
 
 const NUMERIC_PRICE_FIELDS = ["retail_price_new", "estimated_value_low", "estimated_value_high"] as const;
 
-// A published price is a claim that needs evidence. These invariants exist
-// because nothing upstream (prompting alone) reliably stops a priced result
-// with no supporting source, or a reversed/negative range, from reaching the
-// UI — see project.md R1.
+// A published price is a claim that needs *some* honest basis. These
+// invariants exist because nothing upstream (prompting alone) reliably
+// stops a priced result with no supporting basis, or a reversed/negative
+// range, from reaching the UI — see project.md R1.
 export const ObjectAnalysisSchema = BaseObjectAnalysisSchema.superRefine((data, ctx) => {
   for (const field of NUMERIC_PRICE_FIELDS) {
     const value = data[field];
@@ -92,15 +102,35 @@ export const ObjectAnalysisSchema = BaseObjectAnalysisSchema.superRefine((data, 
   }
 
   const hasAnyPrice = NUMERIC_PRICE_FIELDS.some((field) => data[field] !== null);
-  // A source with url+title but price: null is a citation, not an
-  // observation — it cannot be the evidence behind a published number
-  // (project.md C1, following R1).
-  const hasObservedPrice = data.price_sources.some((source) => source.price !== null);
-  if (hasAnyPrice && !hasObservedPrice) {
+
+  if (data.price_basis === "market_evidence") {
+    // A source with url+title but price: null is a citation, not an
+    // observation — it cannot be the evidence behind a published number
+    // (project.md C1, following R1).
+    const hasObservedPrice = data.price_sources.some((source) => source.price !== null);
+    if (hasAnyPrice && !hasObservedPrice) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["price_sources"],
+        message: "a market_evidence result must cite at least one source with an observed numeric price",
+      });
+    }
+  } else if (data.price_basis === "general_estimate") {
+    // No search-backed source required, but the model must actually explain
+    // itself — a bare number with no stated reasoning is exactly the
+    // fabrication risk this whole schema exists to prevent.
+    if (hasAnyPrice && data.reasoning_summary.length === 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["reasoning_summary"],
+        message: "a general_estimate price must explain what general knowledge it's based on",
+      });
+    }
+  } else if (hasAnyPrice) {
     ctx.addIssue({
       code: "custom",
-      path: ["price_sources"],
-      message: "a priced result must cite at least one source with an observed numeric price",
+      path: ["price_basis"],
+      message: "price_basis must be market_evidence or general_estimate when a price is given",
     });
   }
 });
