@@ -44,7 +44,7 @@ export const PriceSourceSchema = z.object({
 // general_estimate = no specific-enough hypothesis to search, or the search
 // found nothing usable — the price instead reflects general knowledge of
 // what similar items (category/material/style) typically go for. Explicit,
-// porteur-requested tradeoff (2026-09-17): PriceMe should still offer a
+// porteur-requested tradeoff (2026-09-17): Valyo should still offer a
 // rough number in this case rather than refuse outright, as long as it's
 // never presented as if it were the market_evidence case.
 export const PriceBasisSchema = z.enum(["market_evidence", "general_estimate", "unavailable"]);

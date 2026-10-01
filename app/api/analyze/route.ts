@@ -7,7 +7,7 @@ import { classifyProviderError, newDiagnosticId } from "@/lib/errors";
 import type { ImageInput } from "@/lib/types";
 
 export const runtime = "nodejs";
-// Measured scans run 30-170s — PriceMe researches any object thoroughly
+// Measured scans run 30-170s — Valyo researches any object thoroughly
 // now, not just LEGO/electronics/sneakers, so this stays in sync with
 // lib/vision.ts's own internal deadline (170s) plus margin. On Vercel
 // Hobby, serverless functions are capped at 60s regardless of this value;

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PriceMe — Combien ça vaut ?",
+  title: "Valyo — Combien ça vaut ?",
   description: "Prenez une photo, obtenez une estimation de la valeur de vos objets.",
 };
 

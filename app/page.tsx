@@ -7,7 +7,7 @@ export default function Home() {
         <div className="space-y-3">
           <h1 className="text-4xl font-semibold text-ink">Combien ça vaut ?</h1>
           <p className="text-neutral-600">
-            Prenez une photo. PriceMe identifie l&apos;objet et estime ce qu&apos;il pourrait
+            Prenez une photo. Valyo identifie l&apos;objet et estime ce qu&apos;il pourrait
             valoir en seconde main.
           </p>
         </div>
@@ -30,7 +30,7 @@ export default function Home() {
         </p>
 
         <p className="text-xs text-neutral-400">
-          Pas d&apos;invention. PriceMe indique toujours d&apos;où viennent ses estimations et sa
+          Pas d&apos;invention. Valyo indique toujours d&apos;où viennent ses estimations et sa
           confiance dans le résultat.
         </p>
 

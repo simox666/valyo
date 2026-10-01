@@ -1,6 +1,8 @@
-# PriceMe — organisation du projet
+# Valyo — organisation du projet
 
-Dernière mise à jour : 17 septembre 2026, HEAD `0876431` (résumé consolidé pour Codex — voir « État actuel — résumé pour Codex »).
+**Renommage, 1er octobre 2026 :** le produit s'appelait « PriceMe » jusqu'ici. Nom abandonné après découverte d'une entreprise de comparaison de prix déjà active sous ce nom dans plusieurs pays (Nouvelle-Zélande, Philippines, Singapour, Malaisie, Australie, Indonésie, Thaïlande, Hong Kong — priceme.com, priceme.co.nz, etc.), même secteur d'activité. Risque de marque jugé trop élevé en MVP pour être conservé. Nouveau nom choisi par le porteur : **Valyo** (domaine `valyo.si` acheté). Toutes les mentions du produit dans le code et ce document ont été mises à jour ; les entrées de journal datées avant le 1er octobre reflètent l'ancien nom tel qu'il était utilisé à l'époque et n'ont pas été réécrites a posteriori.
+
+Dernière mise à jour : 1er octobre 2026 (renommage PriceMe → Valyo).
 
 ## Mode de collaboration
 
@@ -18,7 +20,7 @@ Ne pas modifier simultanément les mêmes fichiers. Avant une revue, Claude Code
 
 ## Besoin produit retenu
 
-PriceMe est un site mobile permettant de photographier un objet, de l'identifier et d'obtenir, lorsque les références disponibles le permettent, une estimation de son prix neuf et de sa valeur d'occasion.
+Valyo est un site mobile permettant de photographier un objet, de l'identifier et d'obtenir, lorsque les références disponibles le permettent, une estimation de son prix neuf et de sa valeur d'occasion.
 
 - Premier parcours sans création de compte.
 - Identification progressive, avec une question ou une photo supplémentaire utile à chaque étape.
