@@ -128,6 +128,21 @@ export const ObjectAnalysisSchema = BaseObjectAnalysisSchema.superRefine((data, 
         message: "a general_estimate price must explain what general knowledge it's based on",
       });
     }
+    // Choosing GENERAL_ESTIMATE is itself a claim that a rough number is
+    // possible — reasoning that concludes "worth little/nothing" without
+    // ever stating that as a number (e.g. a near-zero range) is the same
+    // refusal UNAVAILABLE exists for, just dressed up as an estimate. This
+    // was observed in practice: a used, nearly-empty water bottle got full
+    // "no resale value" reasoning but null price fields, rendering as "no
+    // price available" in the UI as if nothing could be said at all.
+    if (!hasAnyPrice) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["estimated_value_low"],
+        message:
+          "a general_estimate must give an actual number, even a near-zero one (e.g. 0-1) — if the object is genuinely worth almost nothing, say so as a number, don't leave the price fields empty",
+      });
+    }
     // price_basis is a single field covering the whole result, and the UI
     // only surfaces a "general estimate" caveat next to the second-hand
     // range — a general_estimate retail_price_new would render as if it
