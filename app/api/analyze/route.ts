@@ -4,7 +4,10 @@ import { MAX_PHOTO_ROUNDS } from "@/lib/schema";
 import { isValidImagePayload } from "@/lib/imageValidation";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { classifyProviderError, newDiagnosticId } from "@/lib/errors";
+import type { SupportedLocale } from "@/lib/prompts";
 import type { ImageInput } from "@/lib/types";
+
+const SUPPORTED_LOCALES: readonly SupportedLocale[] = ["fr", "en", "nl", "es"];
 
 export const runtime = "nodejs";
 // Measured scans run 30-170s — Valyo researches any object thoroughly
@@ -18,6 +21,7 @@ export const maxDuration = 180;
 interface AnalyzeRequestBody {
   images: ImageInput[];
   correction?: string;
+  locale?: SupportedLocale;
 }
 
 const ALLOWED_MEDIA_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -54,7 +58,7 @@ export async function POST(req: NextRequest) {
   if (body === null || typeof body !== "object" || !("images" in body)) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
-  const { images, correction } = body as { images: unknown; correction?: unknown };
+  const { images, correction, locale } = body as { images: unknown; correction?: unknown; locale?: unknown };
 
   let correctionNote: string | undefined;
   if (correction !== undefined) {
@@ -64,6 +68,15 @@ export async function POST(req: NextRequest) {
     const trimmed = correction.trim().slice(0, MAX_CORRECTION_LENGTH);
     correctionNote = trimmed.length > 0 ? trimmed : undefined;
   }
+
+  // A client-chosen locale only ever picks which language the analysis is
+  // written in — it's never trusted beyond this closed set, so an unknown
+  // or spoofed value just falls back to the default rather than reaching
+  // the prompt builder (same reasoning as every other client input here).
+  const requestedLocale = typeof locale === "string" ? locale : undefined;
+  const safeLocale: SupportedLocale = SUPPORTED_LOCALES.includes(requestedLocale as SupportedLocale)
+    ? (requestedLocale as SupportedLocale)
+    : "fr";
 
   if (!Array.isArray(images) || images.length === 0) {
     return NextResponse.json({ error: "At least one image is required" }, { status: 400 });
@@ -98,7 +111,7 @@ export async function POST(req: NextRequest) {
   const round = validatedImages.length;
 
   try {
-    const result = await analyzeObject(validatedImages, round, MAX_PHOTO_ROUNDS, correctionNote, req.signal);
+    const result = await analyzeObject(validatedImages, round, MAX_PHOTO_ROUNDS, correctionNote, req.signal, safeLocale);
     return NextResponse.json(result);
   } catch (err) {
     // Closed category + opaque id only — never the raw provider error

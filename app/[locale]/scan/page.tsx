@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { fileToResizedImage } from "@/lib/image";
 import { logEvent } from "@/lib/analytics";
 import type { ImageInput } from "@/lib/types";
@@ -14,15 +15,6 @@ const MAX_ROUNDS = 2;
 // legitimately slow scan isn't aborted client-side before the server even
 // has a chance to answer or time out itself.
 const FETCH_TIMEOUT_MS = 200_000;
-
-function analyzingMessage(seconds: number): string {
-  if (seconds < 8) return "Analyse de la photo…";
-  if (seconds < 20) return "Identification en cours…";
-  if (seconds < 45) return "Recherche de prix en ligne…";
-  // Honest, not a promise of imminent completion — some objects genuinely
-  // take a while to research properly (project.md R7).
-  return "Toujours en cours — certains objets prennent jusqu'à trois minutes.";
-}
 
 function useElapsedSeconds(active: boolean): number {
   const [seconds, setSeconds] = useState(0);
@@ -44,6 +36,8 @@ function useElapsedSeconds(active: boolean): number {
 }
 
 export default function ScanPage() {
+  const t = useTranslations("scan");
+  const locale = useLocale();
   const [stage, setStage] = useState<Stage>("idle");
   const [images, setImages] = useState<ImageInput[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -57,6 +51,15 @@ export default function ScanPage() {
   // resubmits without it (project.md D3).
   const [correctionNote, setCorrectionNote] = useState<string | undefined>(undefined);
   const elapsed = useElapsedSeconds(stage === "analyzing");
+
+  function analyzingMessage(seconds: number): string {
+    if (seconds < 8) return t("analyzing0");
+    if (seconds < 20) return t("analyzing1");
+    if (seconds < 45) return t("analyzing2");
+    // Honest, not a promise of imminent completion — some objects genuinely
+    // take a while to research properly (project.md R7).
+    return t("analyzing3");
+  }
 
   // Guards against out-of-order responses: if the user fires a second
   // request (retry, or a fast double-tap before inputs were disabled), only
@@ -95,13 +98,15 @@ export default function ScanPage() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(correction ? { images: nextImages, correction } : { images: nextImages }),
+        body: JSON.stringify(
+          correction ? { images: nextImages, correction, locale } : { images: nextImages, locale },
+        ),
         signal: controller.signal,
       });
       if (requestIdRef.current !== myRequestId) return; // a newer request superseded this one
 
       if (res.status === 429) {
-        setErrorMsg("Trop de scans récents. Patientez un peu avant de réessayer.");
+        setErrorMsg(t("rateLimited"));
         setStage("error");
         return;
       }
@@ -126,7 +131,7 @@ export default function ScanPage() {
     } catch {
       if (requestIdRef.current !== myRequestId) return;
       logEvent("analysis_error");
-      setErrorMsg("L'analyse a échoué ou a pris trop de temps. Réessayez.");
+      setErrorMsg(t("analysisFailed"));
       setStage("error");
     } finally {
       clearTimeout(timeout);
@@ -144,7 +149,7 @@ export default function ScanPage() {
       resized = await fileToResizedImage(file);
     } catch (err) {
       setBusy(false);
-      setErrorMsg(err instanceof Error ? err.message : "Impossible de lire cette photo. Réessayez.");
+      setErrorMsg(err instanceof Error ? err.message : t("analysisFailed"));
       setStage("error");
       return;
     }
@@ -207,13 +212,11 @@ export default function ScanPage() {
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16 bg-paper">
       {stage === "idle" && (
         <div className="w-full max-w-md space-y-4 text-center">
-          <h1 className="text-2xl font-semibold text-ink">Photographiez votre objet</h1>
-          <p className="text-neutral-600 text-sm">
-            N&apos;importe quel objet — cadrez-le en entier, bien éclairé.
-          </p>
+          <h1 className="text-2xl font-semibold text-ink">{t("title")}</h1>
+          <p className="text-neutral-600 text-sm">{t("subtitle")}</p>
           <div className="space-y-3 pt-4">
-            <PhotoInput label="Prendre une photo" capture disabled={busy} onSelect={handleFile} />
-            <PhotoInput label="Importer une photo" variant="secondary" disabled={busy} onSelect={handleFile} />
+            <PhotoInput label={t("takePhoto")} capture disabled={busy} onSelect={handleFile} />
+            <PhotoInput label={t("importPhoto")} variant="secondary" disabled={busy} onSelect={handleFile} />
           </div>
         </div>
       )}
@@ -224,7 +227,7 @@ export default function ScanPage() {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={previews[previews.length - 1]}
-              alt="Photo en cours d'analyse"
+              alt={t("photoAlt")}
               className="w-48 h-48 object-cover rounded-2xl mx-auto"
             />
           )}
@@ -235,14 +238,14 @@ export default function ScanPage() {
 
       {stage === "need_more" && analysis?.next_photo_request && (
         <div className="w-full max-w-md space-y-4 text-center">
-          <h1 className="text-xl font-semibold text-ink">Une photo de plus</h1>
+          <h1 className="text-xl font-semibold text-ink">{t("needMoreTitle")}</h1>
           <p className="text-ink font-medium">{analysis.next_photo_request.instruction}</p>
           <p className="text-neutral-500 text-sm">{analysis.next_photo_request.reason}</p>
           <div className="space-y-3 pt-4">
-            <PhotoInput label="Prendre cette photo" capture disabled={busy} onSelect={handleFile} />
-            <PhotoInput label="Importer une photo" variant="secondary" disabled={busy} onSelect={handleFile} />
+            <PhotoInput label={t("takeThisPhoto")} capture disabled={busy} onSelect={handleFile} />
+            <PhotoInput label={t("importPhoto")} variant="secondary" disabled={busy} onSelect={handleFile} />
             <button onClick={skipFollowUp} disabled={busy} className="text-sm text-neutral-500 underline disabled:opacity-50">
-              Passer — voir le résultat avec la confiance actuelle
+              {t("skipFollowUp")}
             </button>
           </div>
         </div>
@@ -267,11 +270,11 @@ export default function ScanPage() {
                 disabled={busy}
                 className="rounded-full bg-ink text-white py-3 px-6 font-medium disabled:opacity-50"
               >
-                Réessayer
+                {t("retry")}
               </button>
             )}
             <button onClick={reset} className="text-sm text-neutral-500 underline">
-              Recommencer avec une nouvelle photo
+              {t("restart")}
             </button>
           </div>
         </div>

@@ -1,51 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import type { ObjectAnalysis } from "@/lib/schema";
 
-const PRICE_TYPE_LABELS: Record<string, string> = {
-  retail_new: "neuf",
-  marketplace_asking: "annonce",
-  confirmed_sold: "vendu",
-};
-
-const CONDITION_LABELS: Record<string, string> = {
-  new_sealed: "Neuf / scellé",
-  like_new: "Comme neuf",
-  excellent: "Excellent état",
-  good: "Bon état",
-  fair: "État correct",
-  poor: "Mauvais état",
-  for_parts: "Pour pièces",
-  unknown: "État indéterminé",
+// Intl.NumberFormat needs a BCP-47 tag, not the app's short locale code.
+const NUMBER_LOCALE: Record<string, string> = {
+  fr: "fr-FR",
+  en: "en-US",
+  nl: "nl-NL",
+  es: "es-ES",
 };
 
 // Percentages imply a calibration we don't have (see project.md, principe 5)
 // — a qualitative bucket is honest about what a single scan's confidence
 // score actually means.
-function confidenceLabel(n: number): string {
-  if (n >= 0.75) return "Élevée";
-  if (n >= 0.4) return "Moyenne";
-  return "Faible";
-}
-
-function money(n: number | null, currency: string): string {
-  if (n === null) return "—";
-  try {
-    return new Intl.NumberFormat("fr-FR", { style: "currency", currency }).format(n);
-  } catch {
-    return `${n} ${currency}`;
-  }
-}
-
-// A single-sided estimate ("we found a floor but no ceiling", or vice
-// versa) is a real, honest state — rendering it as "45 € – —" reads as
-// broken rather than intentional (project.md, note mineure sur R2).
-function formatEstimateRange(low: number | null, high: number | null, currency: string): string {
-  if (low !== null && high !== null) return `${money(low, currency)} – ${money(high, currency)}`;
-  if (low !== null) return `à partir de ${money(low, currency)}`;
-  if (high !== null) return `jusqu'à ${money(high, currency)}`;
-  return "";
+function confidenceKey(n: number): "high" | "medium" | "low" {
+  if (n >= 0.75) return "high";
+  if (n >= 0.4) return "medium";
+  return "low";
 }
 
 export default function ResultCard({
@@ -59,8 +32,32 @@ export default function ResultCard({
   onCorrect?: (note: string) => void;
   correctionDisabled?: boolean;
 }) {
+  const t = useTranslations("result");
+  const locale = useLocale();
   const [showCorrection, setShowCorrection] = useState(false);
   const [correctionText, setCorrectionText] = useState("");
+
+  function money(n: number | null, currency: string): string {
+    if (n === null) return "—";
+    try {
+      return new Intl.NumberFormat(NUMBER_LOCALE[locale] ?? "en-US", {
+        style: "currency",
+        currency,
+      }).format(n);
+    } catch {
+      return `${n} ${currency}`;
+    }
+  }
+
+  // A single-sided estimate ("we found a floor but no ceiling", or vice
+  // versa) is a real, honest state — rendering it as "45 € – —" reads as
+  // broken rather than intentional (project.md, note mineure sur R2).
+  function formatEstimateRange(low: number | null, high: number | null, currency: string): string {
+    if (low !== null && high !== null) return `${money(low, currency)} – ${money(high, currency)}`;
+    if (low !== null) return t("estimateFrom", { amount: money(low, currency) });
+    if (high !== null) return t("estimateUpTo", { amount: money(high, currency) });
+    return "";
+  }
 
   const title = [analysis.brand, analysis.model, analysis.variant].filter(Boolean).join(" ") || analysis.category;
   const hasAnyPrice =
@@ -91,7 +88,7 @@ export default function ResultCard({
           <>
             {analysis.retail_price_new !== null && (
               <div>
-                <p className="text-xs text-neutral-500">Prix neuf</p>
+                <p className="text-xs text-neutral-500">{t("retailPrice")}</p>
                 <p className="text-lg font-medium text-ink">
                   {money(analysis.retail_price_new, analysis.currency)}
                 </p>
@@ -99,10 +96,10 @@ export default function ResultCard({
             )}
             <div>
               <div className="flex items-center gap-2">
-                <p className="text-xs text-neutral-500">Estimation occasion</p>
+                <p className="text-xs text-neutral-500">{t("estimateLabel")}</p>
                 {analysis.price_basis === "general_estimate" && (
                   <span className="text-[10px] uppercase tracking-wide text-amber-600 bg-amber-50 rounded px-1.5 py-0.5">
-                    Estimation générale
+                    {t("generalEstimateBadge")}
                   </span>
                 )}
               </div>
@@ -111,46 +108,44 @@ export default function ResultCard({
                   {formatEstimateRange(analysis.estimated_value_low, analysis.estimated_value_high, analysis.currency)}
                 </p>
               ) : (
-                <p className="text-sm text-neutral-500">Non estimée pour cet objet.</p>
+                <p className="text-sm text-neutral-500">{t("notEstimated")}</p>
               )}
               {analysis.price_basis === "general_estimate" && (
-                <p className="text-xs text-neutral-400 mt-1">
-                  Basée sur des objets similaires, pas sur une recherche pour ce modèle précis — à prendre
-                  avec prudence.
-                </p>
+                <p className="text-xs text-neutral-400 mt-1">{t("generalEstimateCaveat")}</p>
               )}
             </div>
           </>
         ) : (
           <div>
-            <p className="text-xs text-neutral-500">Prix</p>
-            <p className="text-sm text-neutral-600">
-              Aucun prix disponible pour cet objet — les références trouvées n&apos;étaient pas
-              suffisantes pour donner une estimation honnête.
-            </p>
+            <p className="text-xs text-neutral-500">{t("noPriceLabel")}</p>
+            <p className="text-sm text-neutral-600">{t("noPriceText")}</p>
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-4 text-sm border-t border-neutral-100 pt-4">
           <div>
-            <p className="text-neutral-500">Confiance identification</p>
-            <p className="font-medium">{confidenceLabel(analysis.identification_confidence)}</p>
+            <p className="text-neutral-500">{t("idConfidence")}</p>
+            <p className="font-medium">{t(`confidence.${confidenceKey(analysis.identification_confidence)}`)}</p>
           </div>
           <div>
-            <p className="text-neutral-500">Confiance du prix</p>
-            <p className="font-medium">{hasAnyPrice ? confidenceLabel(analysis.price_confidence) : "—"}</p>
+            <p className="text-neutral-500">{t("priceConfidence")}</p>
+            <p className="font-medium">
+              {hasAnyPrice ? t(`confidence.${confidenceKey(analysis.price_confidence)}`) : "—"}
+            </p>
           </div>
         </div>
 
         <p className="text-xs text-neutral-400">
-          État estimé : {CONDITION_LABELS[analysis.condition] ?? analysis.condition} (confiance{" "}
-          {confidenceLabel(analysis.condition_confidence).toLowerCase()})
+          {t("conditionLabel", {
+            condition: t(`condition.${analysis.condition}`),
+            confidence: t(`confidence.${confidenceKey(analysis.condition_confidence)}`).toLowerCase(),
+          })}
         </p>
       </div>
 
       {analysis.reasoning_summary.length > 0 && (
         <div>
-          <h2 className="text-sm font-medium text-ink mb-2">Pourquoi ce résultat ?</h2>
+          <h2 className="text-sm font-medium text-ink mb-2">{t("why")}</h2>
           <ul className="text-sm text-neutral-600 space-y-1 list-disc list-inside">
             {analysis.reasoning_summary.map((line, i) => (
               <li key={i}>{line}</li>
@@ -162,13 +157,9 @@ export default function ResultCard({
       {analysis.price_sources.length > 0 && (
         <div>
           <h2 className="text-sm font-medium text-ink mb-2">
-            Sources de prix ({analysis.price_sources.length})
+            {t("sources", { count: analysis.price_sources.length })}
           </h2>
-          <p className="text-xs text-neutral-400 mb-2">
-            Prix demandés (annonces) sauf mention contraire — jamais présentés comme des ventes
-            confirmées sans preuve explicite. Date non garantie : ces prix viennent d&apos;une
-            recherche web et peuvent ne pas refléter le marché du jour.
-          </p>
+          <p className="text-xs text-neutral-400 mb-2">{t("sourcesCaveat")}</p>
           <ul className="text-sm space-y-1">
             {analysis.price_sources.map((s, i) => (
               <li key={i} className="flex justify-between gap-2">
@@ -178,7 +169,7 @@ export default function ResultCard({
                 <span className="text-neutral-500 shrink-0 flex items-center gap-1">
                   {s.price !== null ? money(s.price, s.currency) : "—"}
                   <span className="text-[10px] uppercase text-neutral-400">
-                    {PRICE_TYPE_LABELS[s.price_type] ?? s.price_type}
+                    {t(`priceType.${s.price_type}`)}
                   </span>
                 </span>
               </li>
@@ -195,12 +186,12 @@ export default function ResultCard({
               disabled={correctionDisabled}
               className="text-sm text-neutral-500 underline disabled:opacity-50"
             >
-              Ce n&apos;est pas le bon objet, ou une précision à ajouter ?
+              {t("wrongObject")}
             </button>
           ) : (
             <div className="space-y-2">
               <label htmlFor="correction" className="text-sm text-neutral-600 block">
-                Dites-nous ce qui ne va pas (ex : « c&apos;est une Adidas, pas une Nike »)
+                {t("correctionLabel")}
               </label>
               <textarea
                 id="correction"
@@ -217,14 +208,14 @@ export default function ResultCard({
                   disabled={correctionDisabled || correctionText.trim().length === 0}
                   className="rounded-full bg-ink text-white text-sm py-2 px-4 font-medium disabled:opacity-50"
                 >
-                  Renvoyer avec cette précision
+                  {t("resend")}
                 </button>
                 <button
                   onClick={() => setShowCorrection(false)}
                   disabled={correctionDisabled}
                   className="text-sm text-neutral-500 underline disabled:opacity-50"
                 >
-                  Annuler
+                  {t("cancel")}
                 </button>
               </div>
             </div>
@@ -233,7 +224,7 @@ export default function ResultCard({
       )}
 
       <button onClick={onScanAnother} className="w-full rounded-full bg-ink text-white py-3 font-medium">
-        Scanner un autre objet
+        {t("scanAnother")}
       </button>
     </div>
   );

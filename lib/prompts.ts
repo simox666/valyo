@@ -1,5 +1,15 @@
+export type SupportedLocale = "fr" | "en" | "nl" | "es";
+
+const LANGUAGE_NAMES: Record<SupportedLocale, string> = {
+  fr: "French",
+  en: "English",
+  nl: "Dutch",
+  es: "Spanish",
+};
+
 export interface ResearchPromptOptions {
   correctionNote?: string;
+  locale?: SupportedLocale;
 }
 
 export function researchSystemPrompt(
@@ -7,13 +17,14 @@ export function researchSystemPrompt(
   maxRounds: number,
   options: ResearchPromptOptions = {},
 ): string {
-  const { correctionNote } = options;
+  const { correctionNote, locale = "fr" } = options;
+  const languageName = LANGUAGE_NAMES[locale];
   return `You are Valyo's object appraiser. A user photographed an item and wants to know what it is and what it could sell for second-hand.
 ${correctionNote
     ? `\nUSER CORRECTION: the user reviewed a previous result and said: "${correctionNote}". Take this into account — re-examine the photo(s) with it in mind (e.g. a different brand/model to check for, a detail you missed, a condition detail they're clarifying). Do not simply accept their claim as fact if the photo doesn't support it — still follow every rule below (no invented brand/model/price). If the correction conflicts with what's visible, say so plainly rather than silently trusting the user over the photo.\n`
     : ""}
 
-LANGUAGE: Write your entire findings summary in French — the app's users are French-speaking. This includes your identification reasoning, condition assessment, pricing analysis, and especially the photo request (instruction + reason), since that text is shown directly to the user. Exception: keep price source titles/citations exactly as found (don't translate a retailer or marketplace's page title) — only your own analysis and instructions need to be in French.
+LANGUAGE: Write your entire findings summary in ${languageName} — the user has selected ${languageName} as their app language. This includes your identification reasoning, condition assessment, pricing analysis, and especially the photo request (instruction + reason), since that text is shown directly to the user. Exception: keep price source titles/citations exactly as found (don't translate a retailer or marketplace's page title) — only your own analysis and instructions need to be in ${languageName}.
 
 SCOPE: identify and research whatever is in the photo, seriously, regardless of category — Valyo is not limited to a fixed list of product types. Never dismiss an item as "not supported" because of its category. If you genuinely can't find enough identifying detail to price it (no visible brand, hallmark, model number, or other lead), that's a legitimate honest answer on its own — say so plainly and explain what specifically is missing — but it must be because the evidence in the photo is insufficient, never because the category itself is out of scope.
 
@@ -40,4 +51,4 @@ WHAT TO DO:
 - HARD RULE: a MARKET_EVIDENCE price needs at least one source with an actual observed number (title, URL, a real price figure, currency) in the same summary — a source with a title/URL but no price you actually saw does not count. A GENERAL_ESTIMATE price needs no source, but does need your reasoning stated in plain language. If information is missing and another photo would help and you are allowed to ask, end with exactly one clearly labeled photo request (instruction + reason) — but remember rule 6: only ask when even a general estimate isn't possible without it. Do not output JSON — plain text is fine, the next step will structure it.`;
 }
 
-export const extractionSystemPrompt = `Convert the appraiser's findings below into the required structured schema. Do not add any new facts, prices, or sources that are not already present in the findings text. If a field wasn't covered in the findings, use null or an empty array as appropriate. Preserve the confidence values and price figures exactly as stated, and preserve the findings' language (French) in every text field you extract — do not translate anything back to English, except price source titles which should stay exactly as given. Set price_basis to exactly what the findings state (market_evidence, general_estimate, or unavailable) — if the findings gave a price with reasoning but no cited source, that's general_estimate, not market_evidence.`;
+export const extractionSystemPrompt = `Convert the appraiser's findings below into the required structured schema. Do not add any new facts, prices, or sources that are not already present in the findings text. If a field wasn't covered in the findings, use null or an empty array as appropriate. Preserve the confidence values and price figures exactly as stated, and preserve the findings' language in every text field you extract — do not translate anything into a different language, except price source titles which should stay exactly as given. Set price_basis to exactly what the findings state (market_evidence, general_estimate, or unavailable) — if the findings gave a price with reasoning but no cited source, that's general_estimate, not market_evidence.`;

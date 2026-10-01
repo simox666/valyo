@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { pickRounds, targetRange, type GameItem } from "@/lib/game/items";
 import { scoreGuess, type ScoreResult } from "@/lib/game/scoring";
 import { logEvent } from "@/lib/analytics";
@@ -21,6 +22,7 @@ function currencyLabel(currency: string): string {
 }
 
 export default function GamePage() {
+  const t = useTranslations("game");
   const [stage, setStage] = useState<Stage>("intro");
   const [rounds, setRounds] = useState<GameItem[]>([]);
   const [roundIndex, setRoundIndex] = useState(0);
@@ -69,16 +71,13 @@ export default function GamePage() {
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16 bg-paper">
       {stage === "intro" && (
         <div className="w-full max-w-md text-center space-y-6">
-          <h1 className="text-3xl font-semibold text-ink">Devine le prix</h1>
-          <p className="text-neutral-600">
-            {ROUND_COUNT} objets réels, n&apos;importe quel type d&apos;objet. Devinez leur valeur — on vous
-            dit à quel point vous êtes proche de notre estimation.
-          </p>
+          <h1 className="text-3xl font-semibold text-ink">{t("title")}</h1>
+          <p className="text-neutral-600">{t("intro", { count: ROUND_COUNT })}</p>
           <button onClick={start} className="w-full rounded-full bg-ink text-white py-4 font-medium">
-            Jouer
+            {t("play")}
           </button>
           <Link href="/" className="block text-sm text-neutral-500 underline">
-            Retour à l&apos;accueil
+            {t("backHome")}
           </Link>
         </div>
       )}
@@ -86,13 +85,13 @@ export default function GamePage() {
       {stage === "round" && currentItem && (
         <div className="w-full max-w-md text-center space-y-6">
           <p className="text-xs text-neutral-400">
-            Manche {roundIndex + 1} / {rounds.length}
+            {t("round", { current: roundIndex + 1, total: rounds.length })}
           </p>
           <div className="w-full h-64 bg-neutral-100 rounded-2xl flex items-center justify-center overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`/game/${currentItem.file}`}
-              alt="Objet à estimer"
+              alt=""
               className="max-w-full max-h-full object-contain"
             />
           </div>
@@ -101,8 +100,9 @@ export default function GamePage() {
               currentItem.analysis.category}
           </p>
           <p className="text-sm text-neutral-600">
-            Combien vaut cet objet {targetRange(currentItem).basis === "retail" ? "à l'état neuf" : "d'occasion"}{" "}
-            aujourd&apos;hui, en {currencyLabel(currentItem.analysis.currency)} ?
+            {t(targetRange(currentItem).basis === "retail" ? "guessPromptNew" : "guessPromptUsed", {
+              currency: currencyLabel(currentItem.analysis.currency),
+            })}
           </p>
           <input
             type="number"
@@ -110,7 +110,7 @@ export default function GamePage() {
             min={0}
             value={guess}
             onChange={(e) => setGuess(e.target.value)}
-            placeholder={`Votre estimation en ${currencyLabel(currentItem.analysis.currency)}`}
+            placeholder={t("guessPlaceholder", { currency: currencyLabel(currentItem.analysis.currency) })}
             className="w-full rounded-lg border border-neutral-300 p-3 text-center text-lg"
           />
           <button
@@ -118,7 +118,7 @@ export default function GamePage() {
             disabled={guess.trim().length === 0}
             className="w-full rounded-full bg-ink text-white py-3 font-medium disabled:opacity-50"
           >
-            Valider
+            {t("submit")}
           </button>
         </div>
       )}
@@ -126,34 +126,34 @@ export default function GamePage() {
       {stage === "reveal" && currentItem && lastResult && (
         <div className="w-full max-w-md text-center space-y-4">
           <p className="text-xs text-neutral-400">
-            Manche {roundIndex + 1} / {rounds.length}
+            {t("round", { current: roundIndex + 1, total: rounds.length })}
           </p>
           <div className="w-full h-56 bg-neutral-100 rounded-2xl flex items-center justify-center overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/game/${currentItem.file}`} alt="Objet" className="max-w-full max-h-full object-contain" />
+            <img src={`/game/${currentItem.file}`} alt="" className="max-w-full max-h-full object-contain" />
           </div>
-          <p className="text-3xl font-semibold text-ink">{lastResult.points} pts</p>
+          <p className="text-3xl font-semibold text-ink">{t("points", { points: lastResult.points })}</p>
           <p className="text-sm text-neutral-600">
-            {lastResult.withinRange ? "Dans le mille !" : "Pas tout à fait, mais on note l'effort."}
+            {lastResult.withinRange ? t("withinRange") : t("notWithinRange")}
           </p>
           <GameReveal item={currentItem} />
           <button onClick={nextRound} className="w-full rounded-full bg-ink text-white py-3 font-medium">
-            {roundIndex + 1 >= rounds.length ? "Voir le score final" : "Manche suivante"}
+            {roundIndex + 1 >= rounds.length ? t("seeScore") : t("nextRound")}
           </button>
         </div>
       )}
 
       {stage === "final" && (
         <div className="w-full max-w-md text-center space-y-6">
-          <h1 className="text-2xl font-semibold text-ink">Score final</h1>
+          <h1 className="text-2xl font-semibold text-ink">{t("finalTitle")}</h1>
           <p className="text-4xl font-semibold text-ink">
             {totalScore} / {rounds.length * 100}
           </p>
           <button onClick={start} className="w-full rounded-full bg-ink text-white py-4 font-medium">
-            Rejouer
+            {t("playAgain")}
           </button>
           <Link href="/" className="block text-sm text-neutral-500 underline">
-            Retour à l&apos;accueil
+            {t("backHome")}
           </Link>
         </div>
       )}

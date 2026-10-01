@@ -2,7 +2,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { anthropic, RESEARCH_MODEL, EXTRACTION_MODEL } from "./anthropic";
 import { ObjectAnalysisSchema, type ObjectAnalysis } from "./schema";
-import { researchSystemPrompt, extractionSystemPrompt } from "./prompts";
+import { researchSystemPrompt, extractionSystemPrompt, type SupportedLocale } from "./prompts";
 import type { ImageInput } from "./types";
 
 export interface AnalyzeResult {
@@ -33,6 +33,7 @@ export async function analyzeObject(
   maxRounds: number,
   correctionNote?: string,
   externalSignal?: AbortSignal,
+  locale?: SupportedLocale,
 ): Promise<AnalyzeResult> {
   const signal = requestSignal(externalSignal);
 
@@ -67,7 +68,7 @@ export async function analyzeObject(
       {
         model: RESEARCH_MODEL,
         max_tokens: 4000,
-        system: researchSystemPrompt(round, maxRounds, { correctionNote }),
+        system: researchSystemPrompt(round, maxRounds, { correctionNote, locale }),
         // Each web_search round-trip (server-side, out of our control) is
         // the dominant cost in wall-clock time, not model generation speed —
         // trimming the budget matters more than which model runs it.
