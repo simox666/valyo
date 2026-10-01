@@ -34,8 +34,11 @@ export default function Home() {
           confiance dans le résultat.
         </p>
 
-        <Link href="/game" className="block text-sm text-neutral-500 underline">
-          Ou testez-vous : jouez à &laquo; Devine le prix &raquo;
+        <Link
+          href="/game"
+          className="block w-full rounded-full bg-neutral-100 text-ink py-4 font-medium"
+        >
+          Jouer à &laquo; Devine le prix &raquo;
         </Link>
       </div>
     </main>
