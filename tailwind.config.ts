@@ -11,6 +11,7 @@ const config: Config = {
         ink: "#16161A",
         paper: "#FAF9F6",
         accent: "#1C4F3C",
+        "accent-soft": "#E9F1EB",
         line: "#E4E2DC",
         chip: "#F0EEE8",
       },

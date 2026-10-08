@@ -4,14 +4,12 @@
     "description": "Haz una foto y obtén una estimación del valor de tus objetos."
   },
   "home": {
-    "title": "¿Cuánto vale?",
-    "subtitle": "Haz una foto. Valyo identifica el objeto y estima su valor — nuevo y de segunda mano, cuando es posible.",
-    "takePhoto": "Hacer una foto",
-    "importPhoto": "Subir una foto",
-    "anyObject": "Cualquier objeto — si no hay suficientes pistas para estimarlo honestamente, te lo decimos.",
-    "noInvention": "Una estimación indicativa, con sus fuentes y sus límites.",
-    "playGame": "Jugar a «Adivina el precio»",
-    "scanRoom": "Escanear una habitación completa",
+    "eyebrow": "OTRA MIRADA SOBRE TUS OBJETOS",
+    "title": "¿Y si por fin supieras cuánto vale de verdad?",
+    "subtitle": "Fotografía un objeto. Descubre qué es y obtén una estimación de su precio nuevo o de segunda mano.",
+    "ctaPrimary": "Estimar mi objeto",
+    "ctaSecondary": "Subir una foto",
+    "mention": "Sin necesidad de cuenta para estimar un objeto. Una estimación indicativa, con sus fuentes y sus límites.",
     "privacyLink": "Privacidad y contacto",
     "example": {
       "label": "Ejemplo ilustrativo",
@@ -19,6 +17,31 @@
       "price": "55 € – 120 €",
       "basis": "Basado en 3 anuncios y ventas reales encontrados en línea",
       "limit": "El rango depende del estado real de la cámara, que no se puede verificar a partir de una sola foto."
+    },
+    "steps": {
+      "eyebrow": "Una foto. Algunas pistas. Una estimación.",
+      "1": { "title": "Fotografía", "body": "Encuadra tu objeto." },
+      "2": { "title": "Precisa", "body": "Añade un detalle si es necesario." },
+      "3": { "title": "Descubre", "body": "Consulta la estimación y su explicación." }
+    },
+    "roomCard": {
+      "title": "¿Qué se esconde en tu garaje?",
+      "body": "Detecta los objetos visibles y explora su valor, uno por uno.",
+      "cta": "Explorar una habitación →"
+    },
+    "gameCard": {
+      "title": "¿Sabes cuánto valen realmente tus objetos?",
+      "body": "Fotografía uno de los tuyos, indica su precio real, y desafía a un amigo a adivinarlo.",
+      "cta": "Aceptar el desafío →"
+    },
+    "trust": {
+      "title": "Una estimación explicada.",
+      "body": "Valyo distingue los precios respaldados por referencias reales de las estimaciones generales. Cuando falta información, el resultado te lo indica.",
+      "link": "¿Cómo se usan mis fotos?"
+    },
+    "footer": {
+      "tagline": "Descubre el valor de lo que te rodea.",
+      "privacy": "Privacidad y contacto"
     }
   },
   "room": {

@@ -4,14 +4,12 @@
     "description": "Prenez une photo, obtenez une estimation de la valeur de vos objets."
   },
   "home": {
-    "title": "Combien ça vaut ?",
-    "subtitle": "Prenez une photo. Valyo identifie l'objet et estime sa valeur — neuve et d'occasion, quand c'est possible.",
-    "takePhoto": "Prendre une photo",
-    "importPhoto": "Importer une photo",
-    "anyObject": "N'importe quel objet — si on ne trouve pas assez d'indices pour l'estimer honnêtement, on vous le dit.",
-    "noInvention": "Une estimation indicative, avec ses sources et ses limites.",
-    "playGame": "Jouer à « Devine le prix »",
-    "scanRoom": "Scanner une pièce entière",
+    "eyebrow": "UN AUTRE REGARD SUR VOS OBJETS",
+    "title": "Et si vous saviez enfin ce que ça vaut vraiment ?",
+    "subtitle": "Photographiez un objet. Découvrez ce que c'est et obtenez une estimation de son prix neuf ou d'occasion.",
+    "ctaPrimary": "Estimer mon objet",
+    "ctaSecondary": "Importer une photo",
+    "mention": "Aucun compte requis pour estimer un objet. Une estimation indicative, avec ses sources et ses limites.",
     "privacyLink": "Confidentialité & contact",
     "example": {
       "label": "Exemple illustratif",
@@ -19,6 +17,31 @@
       "price": "55 € – 120 €",
       "basis": "Basé sur 3 annonces et ventes réelles trouvées en ligne",
       "limit": "La fourchette dépend de l'état réel de l'appareil, non vérifiable sur une seule photo."
+    },
+    "steps": {
+      "eyebrow": "Une photo. Quelques indices. Une estimation.",
+      "1": { "title": "Photographiez", "body": "Cadrez votre objet." },
+      "2": { "title": "Précisez", "body": "Ajoutez un détail si nécessaire." },
+      "3": { "title": "Découvrez", "body": "Consultez l'estimation et son explication." }
+    },
+    "roomCard": {
+      "title": "Qu'est-ce qui se cache dans votre garage ?",
+      "body": "Repérez les objets visibles et explorez leur valeur, un par un.",
+      "cta": "Explorer une pièce →"
+    },
+    "gameCard": {
+      "title": "Vous connaissez la vraie valeur de vos objets ?",
+      "body": "Photographiez l'un des vôtres, indiquez son prix réel, et mettez un ami au défi de le deviner.",
+      "cta": "Relever le défi →"
+    },
+    "trust": {
+      "title": "Une estimation expliquée.",
+      "body": "Valyo distingue les prix appuyés par des références des estimations générales. Quand les informations manquent, le résultat vous le précise.",
+      "link": "Comment mes photos sont-elles utilisées ?"
+    },
+    "footer": {
+      "tagline": "Découvrez la valeur de ce qui vous entoure.",
+      "privacy": "Confidentialité & contact"
     }
   },
   "room": {

@@ -4,14 +4,12 @@
     "description": "Take a photo, get an estimate of what your items are worth."
   },
   "home": {
-    "title": "What's it worth?",
-    "subtitle": "Take a photo. Valyo identifies the item and estimates its value — new and second-hand, when possible.",
-    "takePhoto": "Take a photo",
-    "importPhoto": "Upload a photo",
-    "anyObject": "Any object — if there isn't enough evidence to estimate it honestly, we'll tell you.",
-    "noInvention": "An indicative estimate, with its sources and its limits.",
-    "playGame": "Play “Guess the Price”",
-    "scanRoom": "Scan a whole room",
+    "eyebrow": "A NEW WAY TO LOOK AT YOUR THINGS",
+    "title": "What if you finally knew what it's really worth?",
+    "subtitle": "Photograph an item. Find out what it is and get an estimate of its new or second-hand price.",
+    "ctaPrimary": "Estimate my item",
+    "ctaSecondary": "Upload a photo",
+    "mention": "No account needed to estimate an item. An indicative estimate, with its sources and its limits.",
     "privacyLink": "Privacy & contact",
     "example": {
       "label": "Illustrative example",
@@ -19,6 +17,31 @@
       "price": "€55 – €120",
       "basis": "Based on 3 real listings and sales found online",
       "limit": "The range depends on the camera's actual condition, which can't be verified from a single photo."
+    },
+    "steps": {
+      "eyebrow": "A photo. A few clues. An estimate.",
+      "1": { "title": "Photograph", "body": "Frame your item." },
+      "2": { "title": "Clarify", "body": "Add a detail if needed." },
+      "3": { "title": "Discover", "body": "See the estimate and its explanation." }
+    },
+    "roomCard": {
+      "title": "What's hiding in your garage?",
+      "body": "Spot the visible items and explore their value, one by one.",
+      "cta": "Explore a room →"
+    },
+    "gameCard": {
+      "title": "Do you know what your things are really worth?",
+      "body": "Photograph one of your own items, enter its real price, and challenge a friend to guess it.",
+      "cta": "Take the challenge →"
+    },
+    "trust": {
+      "title": "An estimate, explained.",
+      "body": "Valyo distinguishes prices backed by real references from general estimates. When information is missing, the result says so.",
+      "link": "How are my photos used?"
+    },
+    "footer": {
+      "tagline": "Discover the value of what's around you.",
+      "privacy": "Privacy & contact"
     }
   },
   "room": {

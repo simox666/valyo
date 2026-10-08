@@ -4,14 +4,12 @@
     "description": "Maak een foto en krijg een schatting van de waarde van je spullen."
   },
   "home": {
-    "title": "Hoeveel is het waard?",
-    "subtitle": "Maak een foto. Valyo herkent het voorwerp en schat de waarde — nieuw en tweedehands, indien mogelijk.",
-    "takePhoto": "Foto maken",
-    "importPhoto": "Foto uploaden",
-    "anyObject": "Welk voorwerp dan ook — als er niet genoeg aanwijzingen zijn om het eerlijk te schatten, zeggen we dat gewoon.",
-    "noInvention": "Een indicatieve schatting, met haar bronnen en haar beperkingen.",
-    "playGame": "Speel “Raad de prijs”",
-    "scanRoom": "Scan een hele ruimte",
+    "eyebrow": "EEN ANDERE KIJK OP JE SPULLEN",
+    "title": "Wist je eindelijk wat het écht waard is?",
+    "subtitle": "Fotografeer een voorwerp. Ontdek wat het is en krijg een schatting van de nieuw- of tweedehandsprijs.",
+    "ctaPrimary": "Schat mijn voorwerp",
+    "ctaSecondary": "Foto uploaden",
+    "mention": "Geen account nodig om een voorwerp te schatten. Een indicatieve schatting, met haar bronnen en haar beperkingen.",
     "privacyLink": "Privacy & contact",
     "example": {
       "label": "Illustratief voorbeeld",
@@ -19,6 +17,31 @@
       "price": "€55 – €120",
       "basis": "Gebaseerd op 3 echte advertenties en verkopen gevonden online",
       "limit": "De marge hangt af van de werkelijke staat van het toestel, die niet te verifiëren is op basis van één foto."
+    },
+    "steps": {
+      "eyebrow": "Een foto. Een paar aanwijzingen. Een schatting.",
+      "1": { "title": "Fotografeer", "body": "Kadreer je voorwerp." },
+      "2": { "title": "Verduidelijk", "body": "Voeg indien nodig een detail toe." },
+      "3": { "title": "Ontdek", "body": "Bekijk de schatting en de uitleg erbij." }
+    },
+    "roomCard": {
+      "title": "Wat verstopt zich in je garage?",
+      "body": "Spoor de zichtbare voorwerpen op en verken hun waarde, één voor één.",
+      "cta": "Verken een ruimte →"
+    },
+    "gameCard": {
+      "title": "Weet je wat je spullen echt waard zijn?",
+      "body": "Fotografeer een van je eigen voorwerpen, geef de echte prijs op, en daag een vriend uit om die te raden.",
+      "cta": "Ga de uitdaging aan →"
+    },
+    "trust": {
+      "title": "Een onderbouwde schatting.",
+      "body": "Valyo maakt onderscheid tussen prijzen die op echte referenties berusten en algemene schattingen. Ontbreekt er informatie, dan laat het resultaat dat weten.",
+      "link": "Hoe worden mijn foto's gebruikt?"
+    },
+    "footer": {
+      "tagline": "Ontdek de waarde van wat je omringt.",
+      "privacy": "Privacy & contact"
     }
   },
   "room": {
