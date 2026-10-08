@@ -7,7 +7,7 @@ import { fileToResizedImage } from "@/lib/image";
 import { logEvent } from "@/lib/analytics";
 import { formatMoney } from "@/lib/money";
 import type { ImageInput } from "@/lib/types";
-import type { RoomItem, ObjectAnalysis } from "@/lib/schema";
+import { MAX_ROOM_ITEMS, type RoomItem, type ObjectAnalysis } from "@/lib/schema";
 import PhotoInput from "@/components/PhotoInput";
 import ResultCard from "@/components/ResultCard";
 
@@ -181,6 +181,11 @@ export default function RoomScanPage() {
           <h1 className="text-xl font-semibold text-ink text-center">
             {t("resultsTitle", { count: items.length })}
           </h1>
+          {items.length >= MAX_ROOM_ITEMS && (
+            <p className="text-xs text-amber-600 bg-amber-50 rounded-lg px-3 py-2 text-center">
+              {t("possiblyMore", { max: MAX_ROOM_ITEMS })}
+            </p>
+          )}
           {items.length === 0 ? (
             <p className="text-sm text-neutral-500 text-center">{t("noItems")}</p>
           ) : (

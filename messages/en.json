@@ -22,6 +22,7 @@
     "backHome": "Back to home",
     "analyzing": "Spotting objects in the room…",
     "resultsTitle": "{count, plural, =0 {No objects found} =1 {1 object found} other {# objects found}}",
+    "possiblyMore": "Only the {max} most identifiable items are shown — if the room has more, scan a photo of another area to spot those too.",
     "noItems": "No identifiable item of value in this photo.",
     "itemUnavailable": "Estimate not available",
     "getDetail": "Get a precise estimate",

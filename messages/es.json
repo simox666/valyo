@@ -22,6 +22,7 @@
     "backHome": "Volver al inicio",
     "analyzing": "Detectando objetos en la habitación…",
     "resultsTitle": "{count, plural, =0 {Ningún objeto detectado} =1 {1 objeto detectado} other {# objetos detectados}}",
+    "possiblyMore": "Solo se muestran los {max} objetos más identificables — si la habitación tiene más, escanea una foto de otra zona para detectarlos también.",
     "noItems": "No se ha identificado ningún objeto de valor en esta foto.",
     "itemUnavailable": "Estimación no disponible",
     "getDetail": "Obtener una estimación precisa",

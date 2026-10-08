@@ -22,6 +22,7 @@
     "backHome": "Retour à l'accueil",
     "analyzing": "Repérage des objets dans la pièce…",
     "resultsTitle": "{count, plural, =0 {Aucun objet repéré} =1 {1 objet repéré} other {# objets repérés}}",
+    "possiblyMore": "Seuls les {max} objets les plus identifiables sont affichés — si la pièce en contient plus, photographiez une autre zone pour les repérer aussi.",
     "noItems": "Aucun objet de valeur identifiable sur cette photo.",
     "itemUnavailable": "Estimation non disponible",
     "getDetail": "Obtenir une estimation précise",
