@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { fileToResizedImage } from "@/lib/image";
 import { logEvent } from "@/lib/analytics";
@@ -36,9 +37,17 @@ function useElapsedSeconds(active: boolean): number {
   return seconds;
 }
 
-export default function ScanPage() {
+function ScanContent() {
   const t = useTranslations("scan");
   const locale = useLocale();
+  const searchParams = useSearchParams();
+  // Carries the intent from the homepage's two distinct buttons through to
+  // this page — without it, "Prendre une photo" and "Importer une photo"
+  // both just landed on the same pair of equally-weighted buttons here,
+  // silently discarding whatever the visitor had actually chosen (Codex
+  // review, lot C). A direct visit to /scan with no mode keeps the original
+  // even-weighted choice.
+  const mode = searchParams.get("mode") === "import" ? "import" : searchParams.get("mode") === "capture" ? "capture" : null;
   const [stage, setStage] = useState<Stage>("idle");
   const [images, setImages] = useState<ImageInput[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -216,8 +225,22 @@ export default function ScanPage() {
           <h1 className="text-2xl font-semibold text-ink">{t("title")}</h1>
           <p className="text-neutral-600 text-sm">{t("subtitle")}</p>
           <div className="space-y-3 pt-4">
-            <PhotoInput label={t("takePhoto")} capture disabled={busy} onSelect={handleFile} />
-            <PhotoInput label={t("importPhoto")} variant="secondary" disabled={busy} onSelect={handleFile} />
+            {mode === "import" ? (
+              <>
+                <PhotoInput label={t("importPhoto")} disabled={busy} onSelect={handleFile} />
+                <PhotoInput label={t("takePhoto")} capture variant="text" disabled={busy} onSelect={handleFile} />
+              </>
+            ) : mode === "capture" ? (
+              <>
+                <PhotoInput label={t("takePhoto")} capture disabled={busy} onSelect={handleFile} />
+                <PhotoInput label={t("importPhoto")} variant="text" disabled={busy} onSelect={handleFile} />
+              </>
+            ) : (
+              <>
+                <PhotoInput label={t("takePhoto")} capture disabled={busy} onSelect={handleFile} />
+                <PhotoInput label={t("importPhoto")} variant="secondary" disabled={busy} onSelect={handleFile} />
+              </>
+            )}
           </div>
           <p className="text-xs text-neutral-400 pt-2">
             {t("photoNotice")}{" "}
@@ -225,6 +248,9 @@ export default function ScanPage() {
               {t("learnMore")}
             </Link>
           </p>
+          <Link href="/" className="block text-sm text-neutral-500 underline pt-2">
+            {t("backHome")}
+          </Link>
         </div>
       )}
 
@@ -283,9 +309,20 @@ export default function ScanPage() {
             <button onClick={reset} className="text-sm text-neutral-500 underline">
               {t("restart")}
             </button>
+            <Link href="/" className="text-sm text-neutral-500 underline">
+              {t("backHome")}
+            </Link>
           </div>
         </div>
       )}
     </main>
+  );
+}
+
+export default function ScanPage() {
+  return (
+    <Suspense fallback={null}>
+      <ScanContent />
+    </Suspense>
   );
 }

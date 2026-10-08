@@ -18,11 +18,11 @@ export default function Home() {
         </div>
 
         <div className="space-y-3">
-          <Link href="/scan" className="block w-full rounded-full bg-ink text-white py-4 font-medium">
+          <Link href="/scan?mode=capture" className="block w-full rounded-full bg-ink text-white py-4 font-medium">
             {t("takePhoto")}
           </Link>
           <Link
-            href="/scan"
+            href="/scan?mode=import"
             className="block w-full rounded-full border border-neutral-300 text-ink py-4 font-medium"
           >
             {t("importPhoto")}

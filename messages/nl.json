@@ -56,7 +56,8 @@
     "rateLimited": "Te veel recente scans. Wacht even voor je het opnieuw probeert.",
     "analysisFailed": "De analyse is mislukt of duurde te lang. Probeer het opnieuw.",
     "retry": "Opnieuw proberen",
-    "restart": "Opnieuw beginnen met een nieuwe foto"
+    "restart": "Opnieuw beginnen met een nieuwe foto",
+    "backHome": "Terug naar start"
   },
   "result": {
     "retailPrice": "Nieuwprijs",

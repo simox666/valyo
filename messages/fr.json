@@ -56,7 +56,8 @@
     "rateLimited": "Trop de scans récents. Patientez un peu avant de réessayer.",
     "analysisFailed": "L'analyse a échoué ou a pris trop de temps. Réessayez.",
     "retry": "Réessayer",
-    "restart": "Recommencer avec une nouvelle photo"
+    "restart": "Recommencer avec une nouvelle photo",
+    "backHome": "Retour à l'accueil"
   },
   "result": {
     "retailPrice": "Prix neuf",

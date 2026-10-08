@@ -500,3 +500,13 @@ Codex a proposé un plan en 4 lots : A (promesse/confidentialité), B (identité
 **Vérifié** : `npx tsc --noEmit` propre, `npm run build` réussi, `node tests/audit.test.cjs` 17/17. Rendu réel vérifié en FR et EN via le serveur de dev : wordmark et encart exemple corrects dans les deux langues.
 
 **Limite assumée** : l'exemple reste statique (le même objet pour tous les visiteurs, pas de rotation) — suffisant pour la portée demandée (« exemple compact », pas une fonctionnalité), mais pourrait être enrichi plus tard en piochant aléatoirement parmi les items du pool du jeu si jugé utile.
+
+### Lot C — Navigation photo — **À revoir**
+
+- **`app/[locale]/page.tsx`** : les deux boutons de l'accueil pointent maintenant vers `/scan?mode=capture` et `/scan?mode=import` respectivement, au lieu du même `/scan` sans distinction.
+- **`app/[locale]/scan/page.tsx`** : lecture du paramètre `mode` (composant enveloppé dans `Suspense`, requis par `useSearchParams`). Avec `mode=capture`, « Prendre une photo » reste le bouton principal et « Importer une photo » devient un simple lien texte secondaire (et l'inverse pour `mode=import`) — aucune tentative de déclencher automatiquement le sélecteur de fichiers après navigation (geste utilisateur direct toujours requis, conformément à la mise en garde de Codex sur les restrictions navigateur). Sans paramètre (visite directe sur `/scan`), comportement inchangé : les deux boutons restent à poids égal.
+- **`components/PhotoInput.tsx`** : nouvelle variante `"text"` (lien souligné discret) en plus de `"primary"`/`"secondary"`, pour l'action secondaire désormais désemphasée.
+- **Lien retour à l'accueil** ajouté sur l'étape idle et sur l'étape erreur du scan — absent jusqu'ici de tout le parcours (`app/[locale]/room` et `app/[locale]/game` l'avaient déjà, le scan principal ne l'avait jamais eu).
+- **Comportements préservés, non touchés** : `runAnalysis`, `handleFile`, `retry`, `submitCorrection`, `skipFollowUp`, `reset` — aucune modification, seule la couche JSX de l'étape idle et le branchement sur `mode` ont changé.
+
+**Vérifié** : `npx tsc --noEmit` propre, `npm run build` réussi, `node tests/audit.test.cjs` 17/17. Testé en conditions réelles sur le serveur de dev (pas seulement en théorie) : `/scan?mode=capture`, `/scan?mode=import`, `/scan` sans paramètre et `/scan?mode=bogus` (repli sur le comportement par défaut) — les quatre cas rendent les boutons attendus. Lien retour à l'accueil confirmé présent. Pas de test sur appareil mobile réel (Safari iOS / Chrome Android) pour confirmer que `capture="environment"` ouvre bien l'appareil photo en priorité sur chaque navigateur — à faire par le porteur avant mise en avant publique, comme demandé par le critère d'acceptation de Codex.

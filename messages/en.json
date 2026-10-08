@@ -56,7 +56,8 @@
     "rateLimited": "Too many recent scans. Please wait a moment before trying again.",
     "analysisFailed": "The analysis failed or took too long. Please try again.",
     "retry": "Retry",
-    "restart": "Start over with a new photo"
+    "restart": "Start over with a new photo",
+    "backHome": "Back to home"
   },
   "result": {
     "retailPrice": "New price",

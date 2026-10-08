@@ -56,7 +56,8 @@
     "rateLimited": "Demasiados escaneos recientes. Espera un momento antes de volver a intentarlo.",
     "analysisFailed": "El análisis falló o tardó demasiado. Inténtalo de nuevo.",
     "retry": "Reintentar",
-    "restart": "Empezar de nuevo con una nueva foto"
+    "restart": "Empezar de nuevo con una nueva foto",
+    "backHome": "Volver al inicio"
   },
   "result": {
     "retailPrice": "Precio nuevo",
