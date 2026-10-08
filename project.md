@@ -490,3 +490,13 @@ Codex a proposé un plan en 4 lots : A (promesse/confidentialité), B (identité
 **Vérifié** : `npx tsc --noEmit` propre, `npm run build` réussi (26 routes statiques, 4 locales × accueil/scan/jeu/pièce/confidentialité), `node tests/audit.test.cjs` 17/17 (inchangé). Contenu réel vérifié via le serveur de dev : lien `mailto:info@m2s-consulting.be` correct en FR et EN, texte du sous-titre et de la note near-import rendus correctement, lien « Confidentialité & contact » présent sur l'accueil.
 
 **Limite / décision ouverte** : forme juridique de M2S Consulting non affichée (non communiquée) — à ajouter si le porteur la précise plus tard. Pas de politique de conservation chiffrée en jours/mois pour les logs Vercel (dépend de la politique de Vercel elle-même, non auditée ici) — la page reste volontairement vague sur ce point plutôt que d'inventer un chiffre.
+
+### Lot B — Identité et compréhension de l'accueil — **À revoir**
+
+- **`app/[locale]/page.tsx`** : nom « Valyo » affiché en toutes lettres en haut de l'accueil (identité typographique simple — petit texte en majuscules espacées), absent jusqu'ici de tout rendu visuel de la page (seulement dans `<title>` et en texte courant). Nouvel encart « exemple illustratif » placé juste après les boutons photo (priorité à l'action conservée, Codex : « garder l'action photo prioritaire »).
+- **Contenu de l'exemple, décision volontaire** : plutôt que d'inventer un résultat plausible, réutilisation d'une vraie sortie déjà produite par le pipeline — l'appareil Yashica FX-2 du pool du jeu (`lib/game/items.generated.json`, id `camera`), un résultat `market_evidence` réel avec 3 sources effectivement trouvées lors d'une génération passée. Évite entièrement le risque « source fictive présentée comme réelle » soulevé par Codex, puisque rien n'est fictif ici. Bordure en pointillés (différente du style plein de `ResultCard`) + libellé « Exemple illustratif » en premier élément de l'encart, pour qu'il ne soit jamais confondu avec un résultat en cours.
+- **`messages/*.json` (4 langues)** : nouveau sous-objet `home.example` (label, objet, prix, base, limite).
+
+**Vérifié** : `npx tsc --noEmit` propre, `npm run build` réussi, `node tests/audit.test.cjs` 17/17. Rendu réel vérifié en FR et EN via le serveur de dev : wordmark et encart exemple corrects dans les deux langues.
+
+**Limite assumée** : l'exemple reste statique (le même objet pour tous les visiteurs, pas de rotation) — suffisant pour la portée demandée (« exemple compact », pas une fonctionnalité), mais pourrait être enrichi plus tard en piochant aléatoirement parmi les items du pool du jeu si jugé utile.

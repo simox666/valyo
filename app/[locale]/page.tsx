@@ -12,6 +12,7 @@ export default function Home() {
       </div>
       <div className="w-full max-w-md text-center space-y-8">
         <div className="space-y-3">
+          <p className="text-sm font-bold tracking-[0.2em] uppercase text-ink">Valyo</p>
           <h1 className="text-4xl font-semibold text-ink">{t("title")}</h1>
           <p className="text-neutral-600">{t("subtitle")}</p>
         </div>
@@ -26,6 +27,14 @@ export default function Home() {
           >
             {t("importPhoto")}
           </Link>
+        </div>
+
+        <div className="rounded-2xl border border-dashed border-neutral-300 p-4 text-left space-y-1">
+          <p className="text-[10px] uppercase tracking-wide text-neutral-400">{t("example.label")}</p>
+          <p className="font-medium text-ink text-sm">{t("example.object")}</p>
+          <p className="text-lg font-semibold text-ink">{t("example.price")}</p>
+          <p className="text-xs text-neutral-500">{t("example.basis")}</p>
+          <p className="text-xs text-neutral-400">{t("example.limit")}</p>
         </div>
 
         <p className="text-sm text-neutral-500">{t("anyObject")}</p>

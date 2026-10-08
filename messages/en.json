@@ -12,7 +12,14 @@
     "noInvention": "An indicative estimate, with its sources and its limits.",
     "playGame": "Play “Guess the Price”",
     "scanRoom": "Scan a whole room",
-    "privacyLink": "Privacy & contact"
+    "privacyLink": "Privacy & contact",
+    "example": {
+      "label": "Illustrative example",
+      "object": "Yashica FX-2 — film camera",
+      "price": "€55 – €120",
+      "basis": "Based on 3 real listings and sales found online",
+      "limit": "The range depends on the camera's actual condition, which can't be verified from a single photo."
+    }
   },
   "room": {
     "title": "Scan a room",

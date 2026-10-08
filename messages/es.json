@@ -12,7 +12,14 @@
     "noInvention": "Una estimación indicativa, con sus fuentes y sus límites.",
     "playGame": "Jugar a «Adivina el precio»",
     "scanRoom": "Escanear una habitación completa",
-    "privacyLink": "Privacidad y contacto"
+    "privacyLink": "Privacidad y contacto",
+    "example": {
+      "label": "Ejemplo ilustrativo",
+      "object": "Yashica FX-2 — cámara analógica",
+      "price": "55 € – 120 €",
+      "basis": "Basado en 3 anuncios y ventas reales encontrados en línea",
+      "limit": "El rango depende del estado real de la cámara, que no se puede verificar a partir de una sola foto."
+    }
   },
   "room": {
     "title": "Escanea una habitación",

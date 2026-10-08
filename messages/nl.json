@@ -12,7 +12,14 @@
     "noInvention": "Een indicatieve schatting, met haar bronnen en haar beperkingen.",
     "playGame": "Speel “Raad de prijs”",
     "scanRoom": "Scan een hele ruimte",
-    "privacyLink": "Privacy & contact"
+    "privacyLink": "Privacy & contact",
+    "example": {
+      "label": "Illustratief voorbeeld",
+      "object": "Yashica FX-2 — analoge camera",
+      "price": "€55 – €120",
+      "basis": "Gebaseerd op 3 echte advertenties en verkopen gevonden online",
+      "limit": "De marge hangt af van de werkelijke staat van het toestel, die niet te verifiëren is op basis van één foto."
+    }
   },
   "room": {
     "title": "Scan een ruimte",

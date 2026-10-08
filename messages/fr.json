@@ -12,7 +12,14 @@
     "noInvention": "Une estimation indicative, avec ses sources et ses limites.",
     "playGame": "Jouer à « Devine le prix »",
     "scanRoom": "Scanner une pièce entière",
-    "privacyLink": "Confidentialité & contact"
+    "privacyLink": "Confidentialité & contact",
+    "example": {
+      "label": "Exemple illustratif",
+      "object": "Yashica FX-2 — appareil photo argentique",
+      "price": "55 € – 120 €",
+      "basis": "Basé sur 3 annonces et ventes réelles trouvées en ligne",
+      "limit": "La fourchette dépend de l'état réel de l'appareil, non vérifiable sur une seule photo."
+    }
   },
   "room": {
     "title": "Scannez une pièce",
