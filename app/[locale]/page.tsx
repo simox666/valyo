@@ -33,6 +33,13 @@ export default function Home() {
         <p className="text-xs text-neutral-400">{t("noInvention")}</p>
 
         <Link
+          href="/room"
+          className="block w-full rounded-full border border-neutral-300 text-ink py-4 font-medium"
+        >
+          {t("scanRoom")}
+        </Link>
+
+        <Link
           href="/game"
           className="block w-full rounded-full bg-neutral-100 text-ink py-4 font-medium"
         >

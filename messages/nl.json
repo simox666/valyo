@@ -10,7 +10,24 @@
     "importPhoto": "Foto uploaden",
     "anyObject": "Welk voorwerp dan ook — als er niet genoeg aanwijzingen zijn om het eerlijk te schatten, zeggen we dat gewoon.",
     "noInvention": "Geen verzinsels. Valyo laat altijd zien waar de schattingen vandaan komen en hoe zeker het resultaat is.",
-    "playGame": "Speel “Raad de prijs”"
+    "playGame": "Speel “Raad de prijs”",
+    "scanRoom": "Scan een hele ruimte"
+  },
+  "room": {
+    "title": "Scan een ruimte",
+    "subtitle": "Een garage, slaapkamer, berging — kadreer breed, Valyo spoort waardevolle voorwerpen op.",
+    "takePhoto": "Foto maken",
+    "importPhoto": "Foto uploaden",
+    "photoAlt": "Foto wordt geanalyseerd",
+    "backHome": "Terug naar start",
+    "analyzing": "Voorwerpen in de ruimte opsporen…",
+    "resultsTitle": "{count, plural, =0 {Geen voorwerpen gevonden} =1 {1 voorwerp gevonden} other {# voorwerpen gevonden}}",
+    "noItems": "Geen identificeerbaar waardevol voorwerp op deze foto.",
+    "itemUnavailable": "Schatting niet beschikbaar",
+    "getDetail": "Precieze schatting opvragen",
+    "scanAnother": "Scan een andere ruimte",
+    "backToList": "Terug naar lijst",
+    "detailAnalyzing": "Precieze schatting zoeken voor “{label}”…"
   },
   "scan": {
     "title": "Fotografeer je voorwerp",

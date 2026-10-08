@@ -3,13 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import type { GameItem } from "@/lib/game/items";
 import { targetRange } from "@/lib/game/items";
-
-const NUMBER_LOCALE: Record<string, string> = {
-  fr: "fr-FR",
-  en: "en-US",
-  nl: "nl-NL",
-  es: "es-ES",
-};
+import { formatMoney } from "@/lib/money";
 
 export default function GameReveal({ item }: { item: GameItem }) {
   const t = useTranslations("game");
@@ -18,14 +12,7 @@ export default function GameReveal({ item }: { item: GameItem }) {
   const { analysis } = item;
 
   function money(n: number, currency: string): string {
-    try {
-      return new Intl.NumberFormat(NUMBER_LOCALE[locale] ?? "en-US", {
-        style: "currency",
-        currency,
-      }).format(n);
-    } catch {
-      return `${n} ${currency}`;
-    }
+    return formatMoney(n, currency, locale);
   }
 
   return (

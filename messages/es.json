@@ -10,7 +10,24 @@
     "importPhoto": "Subir una foto",
     "anyObject": "Cualquier objeto — si no hay suficientes pistas para estimarlo honestamente, te lo decimos.",
     "noInvention": "Sin inventos. Valyo siempre indica de dónde vienen sus estimaciones y su nivel de confianza en el resultado.",
-    "playGame": "Jugar a «Adivina el precio»"
+    "playGame": "Jugar a «Adivina el precio»",
+    "scanRoom": "Escanear una habitación completa"
+  },
+  "room": {
+    "title": "Escanea una habitación",
+    "subtitle": "Un garaje, un dormitorio, un trastero — encuadra en ancho, Valyo detectará los objetos de valor.",
+    "takePhoto": "Hacer una foto",
+    "importPhoto": "Subir una foto",
+    "photoAlt": "Foto en análisis",
+    "backHome": "Volver al inicio",
+    "analyzing": "Detectando objetos en la habitación…",
+    "resultsTitle": "{count, plural, =0 {Ningún objeto detectado} =1 {1 objeto detectado} other {# objetos detectados}}",
+    "noItems": "No se ha identificado ningún objeto de valor en esta foto.",
+    "itemUnavailable": "Estimación no disponible",
+    "getDetail": "Obtener una estimación precisa",
+    "scanAnother": "Escanear otra habitación",
+    "backToList": "Volver a la lista",
+    "detailAnalyzing": "Buscando una estimación precisa para «{label}»…"
   },
   "scan": {
     "title": "Fotografía tu objeto",

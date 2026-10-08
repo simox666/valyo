@@ -19,6 +19,10 @@ const ALLOWED_EVENTS = new Set([
   "game_started",
   "game_round_answered",
   "game_finished",
+  "room_scan_started",
+  "room_scan_result_shown",
+  "room_scan_error",
+  "room_item_detail_requested",
 ]);
 
 const ALLOWED_PROP_KEYS = new Set([
@@ -30,6 +34,7 @@ const ALLOWED_PROP_KEYS = new Set([
   "points",
   "within_range",
   "total_score",
+  "item_count",
 ]);
 
 function sanitizeProps(props: unknown): Record<string, number | boolean> {

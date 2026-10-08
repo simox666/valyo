@@ -10,6 +10,12 @@ const LANGUAGE_NAMES: Record<SupportedLocale, string> = {
 export interface ResearchPromptOptions {
   correctionNote?: string;
   locale?: SupportedLocale;
+  // Set when this photo was first seen in a room scan and the user picked
+  // one specific detected item to get a real, search-backed appraisal of —
+  // the photo still shows the whole room, so the model needs to be told
+  // which object to single out rather than appraising whatever's most
+  // prominent (project.md, scan de pièce).
+  focusHint?: string;
 }
 
 export function researchSystemPrompt(
@@ -17,10 +23,12 @@ export function researchSystemPrompt(
   maxRounds: number,
   options: ResearchPromptOptions = {},
 ): string {
-  const { correctionNote, locale = "fr" } = options;
+  const { correctionNote, locale = "fr", focusHint } = options;
   const languageName = LANGUAGE_NAMES[locale];
   return `You are Valyo's object appraiser. A user photographed an item and wants to know what it is and what it could sell for second-hand.
-${correctionNote
+${focusHint
+    ? `\nFOCUS: this photo may show more than one object. The user wants a precise appraisal specifically of: "${focusHint}". Ignore every other object visible in the photo entirely — identify, assess condition, and research pricing only for this one item.\n`
+    : ""}${correctionNote
     ? `\nUSER CORRECTION: the user reviewed a previous result and said: "${correctionNote}". Take this into account — re-examine the photo(s) with it in mind (e.g. a different brand/model to check for, a detail you missed, a condition detail they're clarifying). Do not simply accept their claim as fact if the photo doesn't support it — still follow every rule below (no invented brand/model/price). If the correction conflicts with what's visible, say so plainly rather than silently trusting the user over the photo.\n`
     : ""}
 
@@ -53,3 +61,32 @@ WHAT TO DO:
 }
 
 export const extractionSystemPrompt = `Convert the appraiser's findings below into the required structured schema. Do not add any new facts, prices, or sources that are not already present in the findings text. If a field wasn't covered in the findings, use null or an empty array as appropriate. Preserve the confidence values and price figures exactly as stated, and preserve the findings' language in every text field you extract — do not translate anything into a different language, except price source titles which should stay exactly as given. Set price_basis to exactly what the findings state (market_evidence, general_estimate, or unavailable) — if the findings gave a price with reasoning but no cited source, that's general_estimate, not market_evidence.`;
+
+export interface RoomScanPromptOptions {
+  locale?: SupportedLocale;
+  maxItems: number;
+}
+
+// Deliberately a single structured-output call with no web_search tool —
+// this is a fast, free-to-run first pass over a photo that may contain many
+// objects (project.md, scan de pièce). Pricing here is always a rough
+// GENERAL_ESTIMATE from general knowledge; a real, search-backed appraisal
+// of any one item happens on demand via the existing single-object pipeline
+// (researchSystemPrompt with a focusHint), never automatically for every
+// detected object — that would multiply cost and latency per scan.
+export function roomScanSystemPrompt(options: RoomScanPromptOptions): string {
+  const { locale = "fr", maxItems } = options;
+  const languageName = LANGUAGE_NAMES[locale];
+  return `You are Valyo's room appraiser. A user photographed a room, garage, or storage area that may contain several distinct, individually valuable objects, and wants a quick overview of what's there and roughly what each thing could be worth second-hand.
+
+LANGUAGE: Write every text field (label, category, location_hint, reasoning) in ${languageName} — the user has selected ${languageName} as their app language.
+
+WHAT TO DO:
+- Identify up to ${maxItems} distinct, individually movable and individually valuable objects in the photo — furniture, tools, appliances, sporting goods, decor, electronics, and so on. Ignore the room itself (walls, flooring, windows, built-in fixtures) and ignore trivial/valueless clutter (trash, empty boxes, loose papers) unless it's genuinely the kind of thing someone could sell.
+- If there are more than ${maxItems} plausible objects, pick the ${maxItems} most clearly identifiable and most likely to have real resale value — prioritize quality of identification over exhaustiveness.
+- For each object: a short label, a category, brand/model ONLY if actually legible or unmistakable from the photo (most objects in a wide room shot won't have one — leave null rather than guessing), a plain-language location_hint so the user can find it in the photo (e.g. "au premier plan à gauche", "sur l'étagère du haut"), and a rough second-hand value estimate from general knowledge of this category/style/condition — there is no web search available for this pass, so never claim a specific sourced price.
+- This is the same honesty rule as single-object appraisals: a GENERAL_ESTIMATE close to zero is a normal, expected answer for a low-value item — say so as an actual number (e.g. 0 to 2), never skip the number just because the item isn't worth much. Reserve price_basis UNAVAILABLE strictly for an object you can see but genuinely cannot even categorize well enough to guess at (should be rare) — never for something you can identify but that just isn't worth much.
+- Keep each reasoning to one or two sentences — this is a quick overview, not a full appraisal. The user can ask for a precise, search-backed estimate on any single item afterward.
+- Order the items by descending estimated value (most valuable first) where an estimate exists; items marked UNAVAILABLE go last.
+- If you see no object worth listing at all, return an empty list rather than inventing one to fill it.`;
+}

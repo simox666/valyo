@@ -22,11 +22,16 @@ interface AnalyzeRequestBody {
   images: ImageInput[];
   correction?: string;
   locale?: SupportedLocale;
+  focusHint?: string;
 }
 
 const ALLOWED_MEDIA_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_BASE64_LENGTH = 8_000_000; // ~6MB image after resize/encode overhead
 const MAX_CORRECTION_LENGTH = 500;
+// A room-scan item's label + location_hint, not free user text — still
+// capped defensively like every other client-supplied string reaching the
+// prompt.
+const MAX_FOCUS_HINT_LENGTH = 300;
 
 function clientIp(req: NextRequest): string {
   // req.headers is absent in the offline test harness's mock request —
@@ -58,7 +63,12 @@ export async function POST(req: NextRequest) {
   if (body === null || typeof body !== "object" || !("images" in body)) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
-  const { images, correction, locale } = body as { images: unknown; correction?: unknown; locale?: unknown };
+  const { images, correction, locale, focusHint } = body as {
+    images: unknown;
+    correction?: unknown;
+    locale?: unknown;
+    focusHint?: unknown;
+  };
 
   let correctionNote: string | undefined;
   if (correction !== undefined) {
@@ -67,6 +77,15 @@ export async function POST(req: NextRequest) {
     }
     const trimmed = correction.trim().slice(0, MAX_CORRECTION_LENGTH);
     correctionNote = trimmed.length > 0 ? trimmed : undefined;
+  }
+
+  let safeFocusHint: string | undefined;
+  if (focusHint !== undefined) {
+    if (typeof focusHint !== "string") {
+      return NextResponse.json({ error: "Invalid focusHint" }, { status: 400 });
+    }
+    const trimmed = focusHint.trim().slice(0, MAX_FOCUS_HINT_LENGTH);
+    safeFocusHint = trimmed.length > 0 ? trimmed : undefined;
   }
 
   // A client-chosen locale only ever picks which language the analysis is
@@ -111,7 +130,15 @@ export async function POST(req: NextRequest) {
   const round = validatedImages.length;
 
   try {
-    const result = await analyzeObject(validatedImages, round, MAX_PHOTO_ROUNDS, correctionNote, req.signal, safeLocale);
+    const result = await analyzeObject(
+      validatedImages,
+      round,
+      MAX_PHOTO_ROUNDS,
+      correctionNote,
+      req.signal,
+      safeLocale,
+      safeFocusHint,
+    );
     return NextResponse.json(result);
   } catch (err) {
     // Closed category + opaque id only — never the raw provider error

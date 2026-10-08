@@ -3,14 +3,7 @@
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { ObjectAnalysis } from "@/lib/schema";
-
-// Intl.NumberFormat needs a BCP-47 tag, not the app's short locale code.
-const NUMBER_LOCALE: Record<string, string> = {
-  fr: "fr-FR",
-  en: "en-US",
-  nl: "nl-NL",
-  es: "es-ES",
-};
+import { formatMoney } from "@/lib/money";
 
 // Percentages imply a calibration we don't have (see project.md, principe 5)
 // — a qualitative bucket is honest about what a single scan's confidence
@@ -39,14 +32,7 @@ export default function ResultCard({
 
   function money(n: number | null, currency: string): string {
     if (n === null) return "—";
-    try {
-      return new Intl.NumberFormat(NUMBER_LOCALE[locale] ?? "en-US", {
-        style: "currency",
-        currency,
-      }).format(n);
-    } catch {
-      return `${n} ${currency}`;
-    }
+    return formatMoney(n, currency, locale);
   }
 
   // A single-sided estimate ("we found a floor but no ceiling", or vice

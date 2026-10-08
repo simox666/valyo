@@ -168,3 +168,75 @@ export const ObjectAnalysisSchema = BaseObjectAnalysisSchema.superRefine((data, 
 export type ObjectAnalysis = z.infer<typeof BaseObjectAnalysisSchema>;
 
 export const MAX_PHOTO_ROUNDS = 2;
+
+// Room scan is a cheap, single-call, no-search first pass over a photo that
+// may contain several objects — it only ever ballparks from general
+// knowledge, never a real web search (that happens per-object, on demand,
+// via the existing single-object pipeline with a focusHint). So every item
+// here is implicitly general_estimate or unavailable — market_evidence
+// doesn't apply, there's no price_sources concept at this stage.
+export const RoomItemBasisSchema = z.enum(["general_estimate", "unavailable"]);
+
+export const MAX_ROOM_ITEMS = 8;
+
+const BaseRoomItemSchema = z.object({
+  label: z.string().describe("Short human-readable name for the object, e.g. 'Vélo VTT rouge', 'Chaise en bois'"),
+  category: z.string(),
+  brand: z.string().nullable(),
+  model: z.string().nullable(),
+  location_hint: z.string().describe("Plain-language description of where in the photo this object is, e.g. 'au premier plan à gauche', 'contre le mur du fond, en hauteur'"),
+  currency: z.string().describe("ISO currency code, e.g. EUR"),
+  estimated_value_low: z.number().nullable(),
+  estimated_value_high: z.number().nullable(),
+  price_basis: RoomItemBasisSchema,
+  reasoning: z.string().describe("One or two sentences explaining the rough estimate, or why it's unavailable"),
+});
+
+// Same honesty invariants as ObjectAnalysisSchema's general_estimate branch,
+// scaled down for a per-item context (project.md, correction du 1er octobre
+// sur UNAVAILABLE utilisé par défaut) — a visible, identifiable object that's
+// simply worth little must still get a near-zero number, not a refusal.
+const RoomItemSchema = BaseRoomItemSchema.superRefine((data, ctx) => {
+  for (const field of ["estimated_value_low", "estimated_value_high"] as const) {
+    const value = data[field];
+    if (value !== null && value < 0) {
+      ctx.addIssue({ code: "custom", path: [field], message: `${field} cannot be negative` });
+    }
+  }
+  if (
+    data.estimated_value_low !== null &&
+    data.estimated_value_high !== null &&
+    data.estimated_value_low > data.estimated_value_high
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["estimated_value_low"],
+      message: "estimated_value_low cannot exceed estimated_value_high",
+    });
+  }
+
+  const hasAnyPrice = data.estimated_value_low !== null || data.estimated_value_high !== null;
+  const hasNonBlankReasoning = data.reasoning.trim().length > 0;
+
+  if (data.price_basis === "general_estimate" && !hasAnyPrice) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["estimated_value_low"],
+      message: "a general_estimate item must give an actual number, even a near-zero one — if it's worth almost nothing, say so as a number",
+    });
+  }
+  if (hasAnyPrice && !hasNonBlankReasoning) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["reasoning"],
+      message: "a priced item must explain what general knowledge the estimate is based on",
+    });
+  }
+});
+
+export const RoomScanAnalysisSchema = z.object({
+  items: z.array(RoomItemSchema).max(MAX_ROOM_ITEMS),
+});
+
+export type RoomScanAnalysis = z.infer<typeof RoomScanAnalysisSchema>;
+export type RoomItem = z.infer<typeof BaseRoomItemSchema>;

@@ -1,8 +1,13 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { anthropic, RESEARCH_MODEL, EXTRACTION_MODEL } from "./anthropic";
-import { ObjectAnalysisSchema, type ObjectAnalysis } from "./schema";
-import { researchSystemPrompt, extractionSystemPrompt, type SupportedLocale } from "./prompts";
+import { ObjectAnalysisSchema, RoomScanAnalysisSchema, MAX_ROOM_ITEMS, type ObjectAnalysis, type RoomScanAnalysis } from "./schema";
+import {
+  researchSystemPrompt,
+  extractionSystemPrompt,
+  roomScanSystemPrompt,
+  type SupportedLocale,
+} from "./prompts";
 import type { ImageInput } from "./types";
 
 export interface AnalyzeResult {
@@ -21,9 +26,14 @@ const MAX_TOOL_ITERATIONS = 5;
 // sync with app/api/analyze/route.ts's maxDuration and the client's own
 // fetch timeout in app/scan/page.tsx.
 const SERVER_TIMEOUT_MS = 170_000;
+// Room scan has no web_search round-trip at all (single structured-output
+// call) — it's dominated by ordinary vision generation time, not server-side
+// search latency, so it needs nowhere near SERVER_TIMEOUT_MS. Keep in sync
+// with app/api/room-scan/route.ts's maxDuration.
+const ROOM_SCAN_TIMEOUT_MS = 60_000;
 
-function requestSignal(external?: AbortSignal): AbortSignal {
-  const timeoutSignal = AbortSignal.timeout(SERVER_TIMEOUT_MS);
+function requestSignal(external: AbortSignal | undefined, timeoutMs: number): AbortSignal {
+  const timeoutSignal = AbortSignal.timeout(timeoutMs);
   return external ? AbortSignal.any([external, timeoutSignal]) : timeoutSignal;
 }
 
@@ -34,8 +44,9 @@ export async function analyzeObject(
   correctionNote?: string,
   externalSignal?: AbortSignal,
   locale?: SupportedLocale,
+  focusHint?: string,
 ): Promise<AnalyzeResult> {
-  const signal = requestSignal(externalSignal);
+  const signal = requestSignal(externalSignal, SERVER_TIMEOUT_MS);
 
   const imageBlocks: Anthropic.ImageBlockParam[] = images.map((img) => ({
     type: "image",
@@ -68,7 +79,7 @@ export async function analyzeObject(
       {
         model: RESEARCH_MODEL,
         max_tokens: 4000,
-        system: researchSystemPrompt(round, maxRounds, { correctionNote, locale }),
+        system: researchSystemPrompt(round, maxRounds, { correctionNote, locale, focusHint }),
         // Each web_search round-trip (server-side, out of our control) is
         // the dominant cost in wall-clock time, not model generation speed —
         // trimming the budget matters more than which model runs it.
@@ -142,4 +153,67 @@ export async function analyzeObject(
   }
 
   return { analysis: extraction.parsed_output, researchNotes };
+}
+
+// Unlike analyzeObject, this has no web_search tool at all, so there's no
+// tool/structured-output conflict to work around — a single call with
+// zodOutputFormat does the whole thing, no separate research+extraction
+// split needed (project.md, scan de pièce).
+export async function analyzeRoom(
+  images: ImageInput[],
+  locale: SupportedLocale | undefined,
+  externalSignal?: AbortSignal,
+): Promise<RoomScanAnalysis> {
+  const signal = requestSignal(externalSignal, ROOM_SCAN_TIMEOUT_MS);
+
+  const imageBlocks: Anthropic.ImageBlockParam[] = images.map((img) => ({
+    type: "image",
+    source: { type: "base64", media_type: img.mediaType, data: img.data },
+  }));
+
+  async function runRoomScan(extraSystemNote?: string) {
+    const system = roomScanSystemPrompt({ locale, maxItems: MAX_ROOM_ITEMS });
+    return anthropic.messages.parse(
+      {
+        model: RESEARCH_MODEL,
+        max_tokens: 4096,
+        system: extraSystemNote ? `${system}\n\n${extraSystemNote}` : system,
+        messages: [
+          {
+            role: "user",
+            content: [
+              ...imageBlocks,
+              { type: "text", text: "Here is a photo of a room. Identify the distinct objects of resale value." },
+            ],
+          },
+        ],
+        output_config: { format: zodOutputFormat(RoomScanAnalysisSchema) },
+      },
+      { signal },
+    );
+  }
+
+  // Same corrective-retry reasoning as the single-object pipeline (E3):
+  // only retry on an actual schema validation failure, never on an abort or
+  // an unrelated error.
+  let result;
+  try {
+    result = await runRoomScan();
+  } catch (err) {
+    const isAbort = err instanceof Error && err.name === "AbortError";
+    const isValidationFailure = err instanceof Error && /failed to parse structured output/i.test(err.message);
+    if (!isAbort && isValidationFailure) {
+      result = await runRoomScan(
+        `IMPORTANT: your previous attempt failed schema validation with this error — fix it and resubmit the full list, keeping everything else unchanged:\n${err.message}`,
+      );
+    } else {
+      throw err;
+    }
+  }
+
+  if (!result.parsed_output) {
+    throw new Error("Could not structure the room scan output.");
+  }
+
+  return result.parsed_output;
 }
