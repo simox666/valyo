@@ -8,7 +8,7 @@ export default function PrivacyPage() {
     <main className="min-h-screen flex flex-col items-center px-6 py-16 bg-paper">
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-3">
-          <h1 className="text-2xl font-semibold text-ink">{t("title")}</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink">{t("title")}</h1>
           <p className="text-sm text-neutral-600">{t("intro")}</p>
         </div>
 

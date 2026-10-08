@@ -82,9 +82,9 @@ function NewChallengeForm() {
   if (stage === "created") {
     return (
       <div className="w-full max-w-md text-center space-y-4">
-        <h1 className="text-2xl font-semibold text-ink">{t("createdTitle")}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">{t("createdTitle")}</h1>
         <p className="text-neutral-600 text-sm">{t("createdText")}</p>
-        <button onClick={share} className="w-full rounded-full bg-ink text-white py-4 font-medium">
+        <button onClick={share} className="w-full rounded-2xl bg-accent text-white py-4 font-semibold">
           {shareState === "copied" ? t("linkCopied") : t("share")}
         </button>
         <Link href="/game" className="block text-sm text-neutral-500 underline">
@@ -96,7 +96,7 @@ function NewChallengeForm() {
 
   return (
     <div className="w-full max-w-md space-y-4 text-center">
-      <h1 className="text-2xl font-semibold text-ink">{t("title")}</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight text-ink">{t("title")}</h1>
       <p className="text-neutral-600 text-sm">{t("subtitle")}</p>
 
       {preview ? (
@@ -121,12 +121,12 @@ function NewChallengeForm() {
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder={t("pricePlaceholder")}
-                className="flex-1 rounded-lg border border-neutral-300 p-3 text-lg"
+                className="flex-1 rounded-xl border border-line p-3 text-lg"
               />
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="rounded-lg border border-neutral-300 px-2"
+                className="rounded-xl border border-line px-2"
               >
                 <option value="EUR">EUR</option>
                 <option value="USD">USD</option>
@@ -142,13 +142,13 @@ function NewChallengeForm() {
               onChange={(e) => setLabel(e.target.value)}
               placeholder={t("labelPlaceholder")}
               maxLength={120}
-              className="w-full rounded-lg border border-neutral-300 p-3"
+              className="w-full rounded-xl border border-line p-3"
             />
           </div>
           <button
             onClick={submit}
             disabled={stage === "creating" || price.trim().length === 0}
-            className="w-full rounded-full bg-ink text-white py-3 font-medium disabled:opacity-50"
+            className="w-full rounded-2xl bg-accent text-white py-[15px] font-semibold disabled:opacity-50"
           >
             {stage === "creating" ? t("creating") : t("submit")}
           </button>

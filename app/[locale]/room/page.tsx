@@ -139,7 +139,7 @@ export default function RoomScanPage() {
               <p className="text-neutral-700">{detail.message}</p>
               <button
                 onClick={() => requestDetail(detail.item)}
-                className="rounded-full bg-ink text-white py-3 px-6 font-medium"
+                className="rounded-2xl bg-accent text-white py-3 px-6 font-semibold"
               >
                 {tScan("retry")}
               </button>
@@ -154,7 +154,7 @@ export default function RoomScanPage() {
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16 bg-paper">
       {stage === "idle" && (
         <div className="w-full max-w-md space-y-4 text-center">
-          <h1 className="text-2xl font-semibold text-ink">{t("title")}</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink">{t("title")}</h1>
           <p className="text-neutral-600 text-sm">{t("subtitle")}</p>
           <div className="space-y-3 pt-4">
             <PhotoInput label={t("takePhoto")} capture disabled={busy} onSelect={handleFile} />
@@ -178,7 +178,7 @@ export default function RoomScanPage() {
 
       {stage === "results" && (
         <div className="w-full max-w-md space-y-4">
-          <h1 className="text-xl font-semibold text-ink text-center">
+          <h1 className="text-xl font-extrabold tracking-tight text-ink text-center">
             {t("resultsTitle", { count: items.length })}
           </h1>
           {items.length >= MAX_ROOM_ITEMS && (
@@ -191,7 +191,7 @@ export default function RoomScanPage() {
           ) : (
             <ul className="space-y-3">
               {items.map((item, i) => (
-                <li key={i} className="rounded-2xl border border-neutral-200 p-4 space-y-1">
+                <li key={i} className="rounded-2xl border border-line p-4 space-y-1">
                   <p className="font-medium text-ink">{item.label}</p>
                   <p className="text-xs text-neutral-500">{item.location_hint}</p>
                   {item.price_basis === "general_estimate" &&
@@ -214,7 +214,7 @@ export default function RoomScanPage() {
               ))}
             </ul>
           )}
-          <button onClick={reset} className="w-full rounded-full bg-ink text-white py-3 font-medium">
+          <button onClick={reset} className="w-full rounded-2xl bg-accent text-white py-[15px] font-semibold">
             {t("scanAnother")}
           </button>
         </div>

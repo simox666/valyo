@@ -222,7 +222,7 @@ function ScanContent() {
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16 bg-paper">
       {stage === "idle" && (
         <div className="w-full max-w-md space-y-4 text-center">
-          <h1 className="text-2xl font-semibold text-ink">{t("title")}</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink">{t("title")}</h1>
           <p className="text-neutral-600 text-sm">{t("subtitle")}</p>
           <div className="space-y-3 pt-4">
             {mode === "import" ? (
@@ -271,7 +271,7 @@ function ScanContent() {
 
       {stage === "need_more" && analysis?.next_photo_request && (
         <div className="w-full max-w-md space-y-4 text-center">
-          <h1 className="text-xl font-semibold text-ink">{t("needMoreTitle")}</h1>
+          <h1 className="text-xl font-extrabold tracking-tight text-ink">{t("needMoreTitle")}</h1>
           <p className="text-ink font-medium">{analysis.next_photo_request.instruction}</p>
           <p className="text-neutral-500 text-sm">{analysis.next_photo_request.reason}</p>
           <div className="space-y-3 pt-4">
@@ -301,7 +301,7 @@ function ScanContent() {
               <button
                 onClick={retry}
                 disabled={busy}
-                className="rounded-full bg-ink text-white py-3 px-6 font-medium disabled:opacity-50"
+                className="rounded-2xl bg-accent text-white py-3 px-6 font-semibold disabled:opacity-50"
               >
                 {t("retry")}
               </button>

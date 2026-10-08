@@ -66,10 +66,10 @@ export default function ResultCard({
         {analysis.brand && (
           <p className="text-sm uppercase tracking-wide text-neutral-500">{analysis.brand}</p>
         )}
-        <h1 className="text-2xl font-semibold text-ink">{title}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">{title}</h1>
       </div>
 
-      <div className="rounded-2xl border border-neutral-200 p-5 space-y-4">
+      <div className="rounded-2xl border border-line p-5 space-y-4">
         {hasAnyPrice ? (
           <>
             {analysis.retail_price_new !== null && (
@@ -90,7 +90,7 @@ export default function ResultCard({
                 )}
               </div>
               {hasEstimate ? (
-                <p className="text-3xl font-semibold text-ink">
+                <p className="text-3xl font-extrabold tracking-tight text-ink">
                   {formatEstimateRange(analysis.estimated_value_low, analysis.estimated_value_high, analysis.currency)}
                 </p>
               ) : (
@@ -186,13 +186,13 @@ export default function ResultCard({
                 maxLength={500}
                 rows={2}
                 disabled={correctionDisabled}
-                className="w-full rounded-lg border border-neutral-300 p-2 text-sm disabled:opacity-50"
+                className="w-full rounded-xl border border-line p-2 text-sm disabled:opacity-50"
               />
               <div className="flex gap-2">
                 <button
                   onClick={submitCorrection}
                   disabled={correctionDisabled || correctionText.trim().length === 0}
-                  className="rounded-full bg-ink text-white text-sm py-2 px-4 font-medium disabled:opacity-50"
+                  className="rounded-xl bg-accent text-white text-sm py-2 px-4 font-semibold disabled:opacity-50"
                 >
                   {t("resend")}
                 </button>
@@ -209,7 +209,7 @@ export default function ResultCard({
         </div>
       )}
 
-      <button onClick={onScanAnother} className="w-full rounded-full bg-ink text-white py-3 font-medium">
+      <button onClick={onScanAnother} className="w-full rounded-2xl bg-accent text-white py-[15px] font-semibold">
         {t("scanAnother")}
       </button>
     </div>

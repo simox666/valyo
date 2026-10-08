@@ -76,7 +76,7 @@ function ChallengeContent() {
         <p className="text-sm text-neutral-500">{t("ownChallengeNotice")}</p>
       ) : revealed ? (
         <div className="space-y-2">
-          <p className="text-3xl font-semibold text-ink">{t("resultTitle", { points: revealed.points })}</p>
+          <p className="text-3xl font-extrabold tracking-tight text-ink">{t("resultTitle", { points: revealed.points })}</p>
           <p className="text-sm text-neutral-600">
             {revealed.withinTolerance ? t("withinTolerance") : t("notWithinTolerance")}
           </p>
@@ -99,12 +99,12 @@ function ChallengeContent() {
             value={guess}
             onChange={(e) => setGuess(e.target.value)}
             placeholder={t("guessPlaceholder", { currency: data.currency })}
-            className="w-full rounded-lg border border-neutral-300 p-3 text-center text-lg"
+            className="w-full rounded-xl border border-line p-3 text-center text-lg"
           />
           <button
             onClick={submitGuess}
             disabled={busy || guess.trim().length === 0}
-            className="w-full rounded-full bg-ink text-white py-3 font-medium disabled:opacity-50"
+            className="w-full rounded-2xl bg-accent text-white py-[15px] font-semibold disabled:opacity-50"
           >
             {t("submit")}
           </button>

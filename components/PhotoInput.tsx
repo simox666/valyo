@@ -19,9 +19,9 @@ export default function PhotoInput({
 
   const className =
     variant === "primary"
-      ? "block w-full rounded-full bg-ink text-white py-4 font-medium disabled:opacity-50"
+      ? "block w-full rounded-2xl bg-accent text-white py-4 font-semibold disabled:opacity-50"
       : variant === "secondary"
-        ? "block w-full rounded-full border border-neutral-300 text-ink py-4 font-medium disabled:opacity-50"
+        ? "block w-full rounded-2xl border border-line text-ink py-[15px] font-semibold disabled:opacity-50"
         : "text-sm text-neutral-500 underline disabled:opacity-50";
 
   return (

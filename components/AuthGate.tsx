@@ -96,13 +96,13 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder={t("emailPlaceholder")}
-        className="w-full rounded-lg border border-neutral-300 p-3 text-center"
+        className="w-full rounded-xl border border-line p-3 text-center"
       />
       {error && <p className="text-xs text-red-600">{t("error")}</p>}
       <button
         onClick={submit}
         disabled={busy || email.trim().length === 0}
-        className="w-full rounded-full bg-ink text-white py-3 font-medium disabled:opacity-50"
+        className="w-full rounded-2xl bg-accent text-white py-[15px] font-semibold disabled:opacity-50"
       >
         {t("send")}
       </button>
