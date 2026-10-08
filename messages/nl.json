@@ -5,13 +5,14 @@
   },
   "home": {
     "title": "Hoeveel is het waard?",
-    "subtitle": "Maak een foto. Valyo herkent het voorwerp en schat wat het tweedehands waard zou kunnen zijn.",
+    "subtitle": "Maak een foto. Valyo herkent het voorwerp en schat de waarde — nieuw en tweedehands, indien mogelijk.",
     "takePhoto": "Foto maken",
     "importPhoto": "Foto uploaden",
     "anyObject": "Welk voorwerp dan ook — als er niet genoeg aanwijzingen zijn om het eerlijk te schatten, zeggen we dat gewoon.",
-    "noInvention": "Geen verzinsels. Valyo laat altijd zien waar de schattingen vandaan komen en hoe zeker het resultaat is.",
+    "noInvention": "Een indicatieve schatting, met haar bronnen en haar beperkingen.",
     "playGame": "Speel “Raad de prijs”",
-    "scanRoom": "Scan een hele ruimte"
+    "scanRoom": "Scan een hele ruimte",
+    "privacyLink": "Privacy & contact"
   },
   "room": {
     "title": "Scan een ruimte",
@@ -35,6 +36,8 @@
     "subtitle": "Welk voorwerp dan ook — kadreer het volledig, met goede belichting.",
     "takePhoto": "Foto maken",
     "importPhoto": "Foto uploaden",
+    "photoNotice": "Je foto wordt naar onze AI-partner gestuurd voor de analyse en wordt niet door Valyo bewaard.",
+    "learnMore": "Meer info",
     "photoAlt": "Foto wordt geanalyseerd",
     "analyzing0": "Foto wordt geanalyseerd…",
     "analyzing1": "Identificatie bezig…",
@@ -111,5 +114,20 @@
     "compareLost": "Je vriend verslaat je met {score} punten — revanche?",
     "compareTied": "Perfect gelijkspel met {score} punten!"
   },
-  "languageSwitcher": { "label": "Taal" }
+  "languageSwitcher": { "label": "Taal" },
+  "privacy": {
+    "title": "Privacy & contact",
+    "intro": "Valyo is een project in ontwikkeling. Deze pagina legt gewoon uit wat er met je foto's gebeurt en hoe je ons kunt bereiken.",
+    "dataTitle": "Je foto's",
+    "dataBody": "De foto's die je verstuurt worden doorgestuurd naar onze AI-partner, Anthropic, om de identificatie en schatting uit te voeren. Valyo slaat je foto's niet op eigen servers op: ze worden gebruikt om je aanvraag te beantwoorden en daarna niet bij ons bewaard.",
+    "logsTitle": "Technische logs",
+    "logsBody": "Onze serverlogs bevatten alleen beperkte technische informatie (foutcategorie, diagnose-id, geanonimiseerde gebruiksstatistieken) — nooit de inhoud van je foto's of de details van een analyseresultaat.",
+    "rateLimitTitle": "Misbruikpreventie",
+    "rateLimitBody": "Je IP-adres wordt kort in het geheugen bewaard om misbruik van het scannen te beperken, en daarna vergeten — het wordt nooit op schijf geschreven of gedeeld.",
+    "disclaimerTitle": "Wat we nog niet garanderen",
+    "disclaimerBody": "Valyo is een actief project in ontwikkeling. We claimen op dit moment geen formele AVG/GDPR-conformiteit, en ook geen gegarandeerde verwijderingstermijn buiten wat hier beschreven staat. Deze pagina wordt bijgewerkt als dat verandert.",
+    "contactTitle": "Contact",
+    "contactBody": "Voor vragen kun je ons schrijven op <email>info@m2s-consulting.be</email>. Valyo is een project van M2S Consulting.",
+    "back": "Terug naar start"
+  }
 }

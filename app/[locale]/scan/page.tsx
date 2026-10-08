@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { fileToResizedImage } from "@/lib/image";
 import { logEvent } from "@/lib/analytics";
 import type { ImageInput } from "@/lib/types";
@@ -218,6 +219,12 @@ export default function ScanPage() {
             <PhotoInput label={t("takePhoto")} capture disabled={busy} onSelect={handleFile} />
             <PhotoInput label={t("importPhoto")} variant="secondary" disabled={busy} onSelect={handleFile} />
           </div>
+          <p className="text-xs text-neutral-400 pt-2">
+            {t("photoNotice")}{" "}
+            <Link href="/privacy" className="underline">
+              {t("learnMore")}
+            </Link>
+          </p>
         </div>
       )}
 

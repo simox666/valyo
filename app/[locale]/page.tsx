@@ -45,6 +45,10 @@ export default function Home() {
         >
           {t("playGame")}
         </Link>
+
+        <Link href="/privacy" className="block text-xs text-neutral-400 underline">
+          {t("privacyLink")}
+        </Link>
       </div>
     </main>
   );

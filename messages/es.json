@@ -5,13 +5,14 @@
   },
   "home": {
     "title": "¿Cuánto vale?",
-    "subtitle": "Haz una foto. Valyo identifica el objeto y estima lo que podría valer de segunda mano.",
+    "subtitle": "Haz una foto. Valyo identifica el objeto y estima su valor — nuevo y de segunda mano, cuando es posible.",
     "takePhoto": "Hacer una foto",
     "importPhoto": "Subir una foto",
     "anyObject": "Cualquier objeto — si no hay suficientes pistas para estimarlo honestamente, te lo decimos.",
-    "noInvention": "Sin inventos. Valyo siempre indica de dónde vienen sus estimaciones y su nivel de confianza en el resultado.",
+    "noInvention": "Una estimación indicativa, con sus fuentes y sus límites.",
     "playGame": "Jugar a «Adivina el precio»",
-    "scanRoom": "Escanear una habitación completa"
+    "scanRoom": "Escanear una habitación completa",
+    "privacyLink": "Privacidad y contacto"
   },
   "room": {
     "title": "Escanea una habitación",
@@ -35,6 +36,8 @@
     "subtitle": "Cualquier objeto — encuádralo por completo, con buena luz.",
     "takePhoto": "Hacer una foto",
     "importPhoto": "Subir una foto",
+    "photoNotice": "Tu foto se envía a nuestro proveedor de IA para el análisis y Valyo no la conserva.",
+    "learnMore": "Saber más",
     "photoAlt": "Foto en análisis",
     "analyzing0": "Analizando la foto…",
     "analyzing1": "Identificando…",
@@ -111,5 +114,20 @@
     "compareLost": "Tu amigo te gana con {score} puntos — ¿revancha?",
     "compareTied": "¡Empate perfecto con {score} puntos!"
   },
-  "languageSwitcher": { "label": "Idioma" }
+  "languageSwitcher": { "label": "Idioma" },
+  "privacy": {
+    "title": "Privacidad y contacto",
+    "intro": "Valyo es un proyecto en desarrollo. Esta página explica de forma sencilla qué ocurre con tus fotos y cómo contactarnos.",
+    "dataTitle": "Tus fotos",
+    "dataBody": "Las fotos que envías se transmiten a nuestro proveedor de inteligencia artificial, Anthropic, para realizar la identificación y la estimación. Valyo no almacena tus fotos en sus propios servidores: se usan para responder a tu solicitud y después no se conservan de nuestro lado.",
+    "logsTitle": "Registros técnicos",
+    "logsBody": "Nuestros registros de servidor solo contienen información técnica limitada (categoría de error, id de diagnóstico, estadísticas de uso anonimizadas) — nunca el contenido de tus fotos ni los detalles de un resultado de análisis.",
+    "rateLimitTitle": "Prevención de abusos",
+    "rateLimitBody": "Tu dirección IP se guarda brevemente en memoria para limitar los escaneos abusivos, y después se olvida — nunca se escribe en disco ni se comparte.",
+    "disclaimerTitle": "Lo que aún no garantizamos",
+    "disclaimerBody": "Valyo es un proyecto en desarrollo activo. No afirmamos cumplir formalmente con el RGPD en esta etapa, ni un plazo de eliminación garantizado más allá de lo descrito aquí. Esta página se actualizará si eso cambia.",
+    "contactTitle": "Contacto",
+    "contactBody": "Para cualquier pregunta, escríbenos a <email>info@m2s-consulting.be</email>. Valyo es un proyecto publicado por M2S Consulting.",
+    "back": "Volver al inicio"
+  }
 }

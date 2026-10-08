@@ -5,13 +5,14 @@
   },
   "home": {
     "title": "What's it worth?",
-    "subtitle": "Take a photo. Valyo identifies the item and estimates what it could be worth second-hand.",
+    "subtitle": "Take a photo. Valyo identifies the item and estimates its value — new and second-hand, when possible.",
     "takePhoto": "Take a photo",
     "importPhoto": "Upload a photo",
     "anyObject": "Any object — if there isn't enough evidence to estimate it honestly, we'll tell you.",
-    "noInvention": "No guessing games. Valyo always shows where its estimates come from and how confident it is.",
+    "noInvention": "An indicative estimate, with its sources and its limits.",
     "playGame": "Play “Guess the Price”",
-    "scanRoom": "Scan a whole room"
+    "scanRoom": "Scan a whole room",
+    "privacyLink": "Privacy & contact"
   },
   "room": {
     "title": "Scan a room",
@@ -35,6 +36,8 @@
     "subtitle": "Any object — frame it fully, with good lighting.",
     "takePhoto": "Take a photo",
     "importPhoto": "Upload a photo",
+    "photoNotice": "Your photo is sent to our AI provider for analysis and isn't kept by Valyo.",
+    "learnMore": "Learn more",
     "photoAlt": "Photo being analyzed",
     "analyzing0": "Analyzing the photo…",
     "analyzing1": "Identifying…",
@@ -111,5 +114,20 @@
     "compareLost": "Your friend beat you with {score} points — rematch?",
     "compareTied": "Perfect tie at {score} points!"
   },
-  "languageSwitcher": { "label": "Language" }
+  "languageSwitcher": { "label": "Language" },
+  "privacy": {
+    "title": "Privacy & contact",
+    "intro": "Valyo is a project under development. This page plainly explains what happens with your photos and how to reach us.",
+    "dataTitle": "Your photos",
+    "dataBody": "The photos you send are passed to our AI provider, Anthropic, to perform the identification and estimate. Valyo does not store your photos on its own servers: they're used to answer your request and are not kept on our side afterward.",
+    "logsTitle": "Technical logs",
+    "logsBody": "Our server logs only contain limited technical information (error category, diagnostic id, anonymized usage statistics) — never the content of your photos or the details of an analysis result.",
+    "rateLimitTitle": "Abuse prevention",
+    "rateLimitBody": "Your IP address is briefly held in memory to limit abusive scanning, then forgotten — it's never written to disk or shared.",
+    "disclaimerTitle": "What we don't guarantee yet",
+    "disclaimerBody": "Valyo is an actively developing project. We don't claim formal GDPR compliance at this stage, nor a guaranteed deletion timeline beyond what's described here. This page will be updated if that changes.",
+    "contactTitle": "Contact",
+    "contactBody": "For any question, write to us at <email>info@m2s-consulting.be</email>. Valyo is a project published by M2S Consulting.",
+    "back": "Back to home"
+  }
 }
