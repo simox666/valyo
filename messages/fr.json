@@ -100,7 +100,16 @@
     "finalTitle": "Score final",
     "playAgain": "Rejouer",
     "ourEstimate": "Notre estimation",
-    "notVerified": "Estimation générée par notre outil d'identification — pas un prix officiel vérifié."
+    "notVerified": "Estimation générée par notre outil d'identification — pas un prix officiel vérifié.",
+    "challengeIntro": "Un ami vous défie avec un score de {score} points ! Mêmes objets, à vous de faire mieux.",
+    "acceptChallenge": "Relever le défi",
+    "shareChallenge": "Défier un ami",
+    "linkCopied": "Lien copié !",
+    "shareDialogTitle": "Devine le prix — Valyo",
+    "shareDialogText": "J'ai fait {score} points à « Devine le prix ». À toi de faire mieux !",
+    "compareWon": "Vous battez votre ami ({score} points) !",
+    "compareLost": "Votre ami vous bat avec {score} points — revanche ?",
+    "compareTied": "Égalité parfaite avec {score} points !"
   },
   "languageSwitcher": { "label": "Langue" }
 }

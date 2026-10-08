@@ -23,6 +23,8 @@ const ALLOWED_EVENTS = new Set([
   "room_scan_result_shown",
   "room_scan_error",
   "room_item_detail_requested",
+  "challenge_created",
+  "challenge_started",
 ]);
 
 const ALLOWED_PROP_KEYS = new Set([

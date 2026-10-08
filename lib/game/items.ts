@@ -59,3 +59,20 @@ export function pickRounds(count: number): GameItem[] {
 export function allItems(): GameItem[] {
   return items;
 }
+
+// Rebuilds the exact same round sequence a challenge link points to, in
+// order — returns null rather than a partial list if any id is missing
+// (e.g. the game pool changed since the link was created), so the caller
+// can fall back to a normal random game instead of silently playing a
+// shorter/different challenge than the one that was shared.
+export function pickRoundsByIds(ids: string[]): GameItem[] | null {
+  if (ids.length === 0) return null;
+  const byId = new Map(items.map((item) => [item.id, item]));
+  const picked: GameItem[] = [];
+  for (const id of ids) {
+    const item = byId.get(id);
+    if (!item) return null;
+    picked.push(item);
+  }
+  return picked;
+}

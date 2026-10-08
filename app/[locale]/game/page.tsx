@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { pickRounds, targetRange, type GameItem } from "@/lib/game/items";
+import { pickRounds, pickRoundsByIds, targetRange, type GameItem } from "@/lib/game/items";
 import { scoreGuess, type ScoreResult } from "@/lib/game/scoring";
+import { encodeChallenge, decodeChallenge } from "@/lib/game/challenge";
 import { logEvent } from "@/lib/analytics";
 import GameReveal from "@/components/GameReveal";
 
@@ -21,21 +23,53 @@ function currencyLabel(currency: string): string {
   return currency;
 }
 
-export default function GamePage() {
+interface PendingChallenge {
+  items: GameItem[];
+  score: number;
+}
+
+function GameContent() {
   const t = useTranslations("game");
+  const searchParams = useSearchParams();
+
   const [stage, setStage] = useState<Stage>("intro");
   const [rounds, setRounds] = useState<GameItem[]>([]);
   const [roundIndex, setRoundIndex] = useState(0);
   const [guess, setGuess] = useState("");
   const [scores, setScores] = useState<number[]>([]);
   const [lastResult, setLastResult] = useState<ScoreResult | null>(null);
+  // The score to beat, only set once a game actually started from a
+  // challenge link — null means "no one to compare against" (a normal
+  // random game, or a replay after one).
+  const [challengeScore, setChallengeScore] = useState<number | null>(null);
+  const [shareState, setShareState] = useState<"idle" | "copied">("idle");
 
-  function start() {
-    const picked = pickRounds(ROUND_COUNT);
+  // Decoded once on mount from the URL (?c=...) — not reactive, since a
+  // challenge link is only meaningful for the very next game the player
+  // starts, not for every "Rejouer" afterward. A missing/invalid/stale link
+  // (bad encoding, or an id no longer in the pool) silently falls back to a
+  // normal random game rather than erroring (project.md, scan de pièce
+  // established the same no-database, link-is-the-state approach).
+  const [pendingChallenge] = useState<PendingChallenge | null>(() => {
+    const raw = searchParams.get("c");
+    if (!raw) return null;
+    const decoded = decodeChallenge(raw);
+    if (!decoded) return null;
+    const picked = pickRoundsByIds(decoded.ids);
+    if (!picked) return null;
+    return { items: picked, score: decoded.score };
+  });
+
+  function start(useChallenge: boolean) {
+    const challenge = useChallenge ? pendingChallenge : null;
+    const picked = challenge ? challenge.items : pickRounds(ROUND_COUNT);
     setRounds(picked);
     setRoundIndex(0);
     setScores([]);
     setGuess("");
+    setShareState("idle");
+    setChallengeScore(challenge ? challenge.score : null);
+    if (challenge) logEvent("challenge_started");
     logEvent("game_started", { rounds: picked.length });
     setStage("round");
   }
@@ -64,17 +98,54 @@ export default function GamePage() {
     }
   }
 
+  async function shareChallenge() {
+    const encoded = encodeChallenge({ ids: rounds.map((r) => r.id), score: totalScore });
+    const url = `${window.location.origin}${window.location.pathname}?c=${encoded}`;
+    logEvent("challenge_created");
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: t("shareDialogTitle"), text: t("shareDialogText", { score: totalScore }), url });
+      } catch {
+        // User cancelled the native share sheet — not an error.
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareState("copied");
+      setTimeout(() => setShareState("idle"), 2500);
+    } catch {
+      // Clipboard access blocked — degrade silently, nothing else to fall back to here.
+    }
+  }
+
   const currentItem = rounds[roundIndex];
   const totalScore = scores.reduce((a, b) => a + b, 0);
+  const comparison: "won" | "lost" | "tied" | null =
+    challengeScore === null
+      ? null
+      : totalScore > challengeScore
+        ? "won"
+        : totalScore < challengeScore
+          ? "lost"
+          : "tied";
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16 bg-paper">
       {stage === "intro" && (
         <div className="w-full max-w-md text-center space-y-6">
           <h1 className="text-3xl font-semibold text-ink">{t("title")}</h1>
-          <p className="text-neutral-600">{t("intro", { count: ROUND_COUNT })}</p>
-          <button onClick={start} className="w-full rounded-full bg-ink text-white py-4 font-medium">
-            {t("play")}
+          {pendingChallenge ? (
+            <p className="text-neutral-600">{t("challengeIntro", { score: pendingChallenge.score })}</p>
+          ) : (
+            <p className="text-neutral-600">{t("intro", { count: ROUND_COUNT })}</p>
+          )}
+          <button
+            onClick={() => start(Boolean(pendingChallenge))}
+            className="w-full rounded-full bg-ink text-white py-4 font-medium"
+          >
+            {pendingChallenge ? t("acceptChallenge") : t("play")}
           </button>
           <Link href="/" className="block text-sm text-neutral-500 underline">
             {t("backHome")}
@@ -149,14 +220,37 @@ export default function GamePage() {
           <p className="text-4xl font-semibold text-ink">
             {totalScore} / {rounds.length * 100}
           </p>
-          <button onClick={start} className="w-full rounded-full bg-ink text-white py-4 font-medium">
-            {t("playAgain")}
-          </button>
+
+          {comparison && challengeScore !== null && (
+            <p className="text-sm font-medium text-ink bg-neutral-100 rounded-lg px-3 py-2">
+              {t(`compare${comparison === "won" ? "Won" : comparison === "lost" ? "Lost" : "Tied"}`, {
+                score: challengeScore,
+              })}
+            </p>
+          )}
+
+          <div className="space-y-3">
+            <button onClick={shareChallenge} className="w-full rounded-full border border-neutral-300 text-ink py-3 font-medium">
+              {shareState === "copied" ? t("linkCopied") : t("shareChallenge")}
+            </button>
+            <button onClick={() => start(false)} className="w-full rounded-full bg-ink text-white py-4 font-medium">
+              {t("playAgain")}
+            </button>
+          </div>
+
           <Link href="/" className="block text-sm text-neutral-500 underline">
             {t("backHome")}
           </Link>
         </div>
       )}
     </main>
+  );
+}
+
+export default function GamePage() {
+  return (
+    <Suspense fallback={null}>
+      <GameContent />
+    </Suspense>
   );
 }

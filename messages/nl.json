@@ -100,7 +100,16 @@
     "finalTitle": "Eindscore",
     "playAgain": "Opnieuw spelen",
     "ourEstimate": "Onze schatting",
-    "notVerified": "Schatting gegenereerd door onze identificatietool — geen officieel geverifieerde prijs."
+    "notVerified": "Schatting gegenereerd door onze identificatietool — geen officieel geverifieerde prijs.",
+    "challengeIntro": "Een vriend daagt je uit met een score van {score} punten! Dezelfde voorwerpen, aan jou om het beter te doen.",
+    "acceptChallenge": "Daag aan",
+    "shareChallenge": "Daag een vriend uit",
+    "linkCopied": "Link gekopieerd!",
+    "shareDialogTitle": "Raad de prijs — Valyo",
+    "shareDialogText": "Ik scoorde {score} punten bij “Raad de prijs”. Aan jou om het beter te doen!",
+    "compareWon": "Je verslaat je vriend ({score} punten)!",
+    "compareLost": "Je vriend verslaat je met {score} punten — revanche?",
+    "compareTied": "Perfect gelijkspel met {score} punten!"
   },
   "languageSwitcher": { "label": "Taal" }
 }

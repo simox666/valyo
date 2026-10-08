@@ -100,7 +100,16 @@
     "finalTitle": "Puntuación final",
     "playAgain": "Jugar de nuevo",
     "ourEstimate": "Nuestra estimación",
-    "notVerified": "Estimación generada por nuestra herramienta de identificación — no es un precio oficial verificado."
+    "notVerified": "Estimación generada por nuestra herramienta de identificación — no es un precio oficial verificado.",
+    "challengeIntro": "¡Un amigo te desafía con una puntuación de {score} puntos! Mismos objetos, a ti te toca superarlo.",
+    "acceptChallenge": "Aceptar el desafío",
+    "shareChallenge": "Desafiar a un amigo",
+    "linkCopied": "¡Enlace copiado!",
+    "shareDialogTitle": "Adivina el precio — Valyo",
+    "shareDialogText": "Conseguí {score} puntos en «Adivina el precio». ¡A ti te toca superarlo!",
+    "compareWon": "¡Le ganas a tu amigo ({score} puntos)!",
+    "compareLost": "Tu amigo te gana con {score} puntos — ¿revancha?",
+    "compareTied": "¡Empate perfecto con {score} puntos!"
   },
   "languageSwitcher": { "label": "Idioma" }
 }
