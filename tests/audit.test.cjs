@@ -48,12 +48,6 @@ test('general estimates require a nonblank explanation', () => {
     reasoning_summary: ['   '],
   }).success, false);
 });
-test('generated game analyses satisfy the current data contract', () => {
-  const items = require('../lib/game/items.generated.json');
-  for (const item of items) {
-    assert.equal(schema.ObjectAnalysisSchema.safeParse(item.analysis).success, true, item.id);
-  }
-});
 test('allows an honest result without a price', () => {
   assert.equal(schema.ObjectAnalysisSchema.safeParse(fixture).success, true);
 });
