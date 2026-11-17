@@ -1,8 +1,9 @@
 node_modules
 .next
 out
-.env
-.env.local
+.env*
+!.env.local.example
 .DS_Store
 *.log
 *.tsbuildinfo
+.data

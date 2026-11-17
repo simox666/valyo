@@ -7,13 +7,21 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // Direction « Carnet de labo » (maquette G) : papier millimétré, encre bleu nuit, accent orange.
       colors: {
-        ink: "#16161A",
-        paper: "#FAF9F6",
-        accent: "#1C4F3C",
-        "accent-soft": "#E9F1EB",
-        line: "#E4E2DC",
-        chip: "#F0EEE8",
+        ink: "#1B2430",
+        paper: "#F7F7F3",
+        accent: "#C2410C",
+        "accent-soft": "#FBEEE6",
+        line: "#DEDED6",
+        chip: "#EEEEE8",
+        muted: "#5F6873",
+        soft: "#46505C",
+      },
+      fontFamily: {
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "var(--font-sans)", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
     },
   },

@@ -1,0 +1,23 @@
+[
+  {
+    "label": "salon",
+    "persisted": true
+  },
+  {
+    "label": "message",
+    "persisted": true
+  },
+  {
+    "label": "profil vers message",
+    "ok": true
+  },
+  {
+    "label": "photo publiée",
+    "images": [
+      {
+        "loaded": true,
+        "src": "/media/5ed757ba-905e-43d0-bcab-170641105662"
+      }
+    ]
+  }
+]

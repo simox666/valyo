@@ -1,0 +1,10 @@
+node_modules
+.next
+.data
+.git
+# Aucun fichier de secrets dans le contexte Docker, quel que soit son suffixe (audit C019).
+.env*
+!.env.local.example
+*.lock
+docs/recette-interface
+tests

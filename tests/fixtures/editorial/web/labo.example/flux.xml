@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>Laboratoire Exemple</title><link>https://labo.example/</link>
+<item>
+<title>Un nouveau modèle de langage ouvert publié par le laboratoire</title><link>https://labo.example/articles/modele-ouvert</link>
+<description>Le laboratoire a publié un modèle de langage ouvert de taille moyenne sous licence permissive.</description>
+<pubDate>Sun, 15 Nov 2026 09:00:00 GMT</pubDate>
+</item>
+<item>
+<title>Un capteur souple pour les robots chirurgicaux</title><link>https://labo.example/articles/sans-date</link>
+<description>Une équipe présente un capteur souple destiné aux robots chirurgicaux.</description>
+</item>
+<item>
+<title>Une puce photonique pour accélérer l’inférence</title><link>https://labo.example/articles/injection</link>
+<description>Une start-up annonce une puce photonique pour accélérer l’inférence des réseaux de neurones.</description>
+<pubDate>Sun, 15 Nov 2026 10:00:00 GMT</pubDate>
+</item>
+<item>
+<title>Un record de rendement pour une cellule solaire</title><link>https://labo.example/articles/contradiction</link>
+<description>Un institut revendique un record de rendement pour une cellule solaire tandem.</description>
+<pubDate>Sun, 15 Nov 2026 11:00:00 GMT</pubDate>
+</item>
+<item>
+<title>Un robot agricole autonome testé en Belgique</title><link>https://labo.example/articles/url-inventee</link>
+<description>Un robot agricole autonome a été testé dans plusieurs exploitations belges cette saison.</description>
+<pubDate>Sun, 15 Nov 2026 12:00:00 GMT</pubDate>
+</item>
+<item>
+<title>Une ancienne annonce sur les batteries</title><link>https://labo.example/articles/perime</link>
+<description>Cette annonce sur les batteries date de plusieurs jours et doit être écartée par la règle de fraîcheur.</description>
+<pubDate>Tue, 10 Nov 2026 08:00:00 GMT</pubDate>
+</item>
+<item>
+<title>Une IA qui prédit la structure des protéines membranaires</title><link>https://labo.example/articles/deja-partage</link>
+<description>Un nouveau modèle prédit la structure des protéines membranaires avec une meilleure précision.</description>
+<pubDate>Sun, 15 Nov 2026 13:00:00 GMT</pubDate>
+</item>
+<item>
+<title>Une page qui n’existe plus</title><link>https://labo.example/articles/introuvable</link>
+<description>Une page qui n’existe plus</description>
+<pubDate>Sun, 15 Nov 2026 14:00:00 GMT</pubDate>
+</item>
+<item>
+<title>Un drone de livraison médicale en milieu urbain</title><link>https://labo.example/articles/citation-inventee</link>
+<description>Un service de livraison médicale par drone démarre dans une grande ville européenne.</description>
+<pubDate>Sun, 15 Nov 2026 15:00:00 GMT</pubDate>
+</item>
+<item>
+<title>Une promotion sur des écouteurs</title><link>https://labo.example/articles/hors-sujet</link>
+<description>Une boutique annonce une promotion sur des écouteurs sans fil. [[fixture:ecarter]]</description>
+<pubDate>Sun, 15 Nov 2026 16:00:00 GMT</pubDate>
+</item>
+<item>
+<title>Un robot humanoïde apprend à plier du linge</title><link>https://labo.example/articles/ancien-lien</link>
+<description>Un robot humanoïde apprend à plier du linge</description>
+<pubDate>Sun, 15 Nov 2026 17:00:00 GMT</pubDate>
+</item>
+<item>
+<title>Un prototype de robot pour la recherche</title><link>https://labo.example/articles/resume-trompeur</link>
+<description>Le laboratoire annonce un prototype de robot destiné à la recherche.</description>
+<pubDate>Sun, 15 Nov 2026 18:00:00 GMT</pubDate>
+</item>
+<item><title>Élément sans lien</title><description>Pas d’URL : ignoré à la collecte.</description><pubDate>Sun, 15 Nov 2026 09:00:00 GMT</pubDate></item>
+</channel></rss>

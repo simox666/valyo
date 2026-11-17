@@ -1,45 +1,34 @@
-import { NextRequest, NextResponse } from "next/server";
-import { sql } from "@/lib/db";
-import { createSessionToken, verifyMagicLinkToken, SESSION_COOKIE_NAME, SESSION_COOKIE_MAX_AGE_SECONDS } from "@/lib/auth";
+import { NextResponse } from "next/server";
+import { consumeLoginToken, createSession, SESSION_COOKIE, sessionCookieOptions } from "@/lib/auth";
+import { db, queryOne } from "@/lib/db";
+import { admitByEmail } from "@/lib/social/invitations.ts";
 
-export const runtime = "nodejs";
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const origin = process.env.APP_URL || url.origin;
+  const token = url.searchParams.get("token") || "";
+  const consumed = token ? await consumeLoginToken(token) : null;
+  if (!consumed) return NextResponse.redirect(`${origin}/connexion?erreur=lien`, 303);
 
-function safeRedirectPath(value: string | null): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) return "/";
-  return value;
-}
+  // Bêta sur invitation : un NOUVEAU compte n'est créé qu'avec une invitation encore valide.
+  const user = await admitByEmail(db, consumed.email, consumed.invitationId);
+  if (!user) return NextResponse.redirect(`${origin}/connexion?erreur=invitation`, 303);
+  // Bannissement de plateforme (D5 §4.3) : aucune nouvelle connexion.
+  if (user.status === "banned") return NextResponse.redirect(`${origin}/connexion?erreur=banni`, 303);
+  const session = await createSession(user.id);
+  if (!session) return NextResponse.redirect(`${origin}/connexion?erreur=banni`, 303);
+  const { token: sessionToken, maxAge } = session;
 
-export async function GET(req: NextRequest) {
-  const token = req.nextUrl.searchParams.get("token");
-  const redirectPath = safeRedirectPath(req.nextUrl.searchParams.get("redirect"));
+  const profile = await queryOne<{ handle: string | null; rules_accepted_at: string | null }>(
+    `SELECT handle, rules_accepted_at FROM users WHERE id = $1`,
+    [user.id],
+  );
+  const onboarded = Boolean(profile?.handle && profile.rules_accepted_at);
+  const destination = onboarded
+    ? consumed.nextPath
+    : `/bienvenue?next=${encodeURIComponent(consumed.nextPath)}`;
 
-  if (!token) {
-    return NextResponse.redirect(new URL("/", req.url));
-  }
-  const verified = verifyMagicLinkToken(token);
-  if (!verified) {
-    // Expired or tampered link — back to the start rather than a dead end;
-    // the user can request a fresh one from wherever they were.
-    return NextResponse.redirect(new URL(redirectPath, req.url));
-  }
-
-  // Idempotent upsert: a returning user just gets their existing row back
-  // (the no-op SET lets RETURNING work on conflict without a second query).
-  const { rows } = await sql<{ id: string }>`
-    INSERT INTO users (email) VALUES (${verified.email})
-    ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email
-    RETURNING id
-  `;
-  const userId = rows[0].id;
-
-  const sessionToken = createSessionToken(userId, verified.email);
-  const response = NextResponse.redirect(new URL(redirectPath, req.url));
-  response.cookies.set(SESSION_COOKIE_NAME, sessionToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: SESSION_COOKIE_MAX_AGE_SECONDS,
-    path: "/",
-  });
+  const response = NextResponse.redirect(`${origin}${destination}`, 303);
+  response.cookies.set(SESSION_COOKIE, sessionToken, sessionCookieOptions(maxAge));
   return response;
 }

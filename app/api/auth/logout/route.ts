@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
-import { SESSION_COOKIE_NAME } from "@/lib/auth";
+import { cookies } from "next/headers";
+import { destroySession, SESSION_COOKIE } from "@/lib/auth";
+import { fail, json, sameOrigin } from "@/lib/http";
 
-export const runtime = "nodejs";
-
-export async function POST() {
-  const response = NextResponse.json({ ok: true });
-  response.cookies.set(SESSION_COOKIE_NAME, "", { maxAge: 0, path: "/" });
-  return response;
+export async function POST(request: Request) {
+  if (!sameOrigin(request)) return fail("Requête refusée.", 403);
+  const store = await cookies();
+  await destroySession(store.get(SESSION_COOKIE)?.value);
+  store.delete(SESSION_COOKIE);
+  return json({ ok: true });
 }

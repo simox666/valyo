@@ -1,72 +1,45 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getTranslations } from "next-intl/server";
-import { createMagicLinkToken } from "@/lib/auth";
-import { sendMagicLinkEmail } from "@/lib/email";
-import { checkRateLimit } from "@/lib/rateLimit";
+import { z } from "zod";
+import { createLoginToken, safeNextPath } from "@/lib/auth";
+import { transaction } from "@/lib/db";
+import { sendLoginLink } from "@/lib/email";
+import { fail, json, readJson, sameOrigin } from "@/lib/http";
+import { limitMessage, runLimited } from "@/lib/limits";
+import { signupDecision } from "@/lib/social/invitations.ts";
 
-export const runtime = "nodejs";
+const bodySchema = z.object({
+  email: z.email("Adresse e-mail invalide.").max(254),
+  next: z.string().optional(),
+  /** Bêta sur invitation : jeton d'invitation à la plateforme, porté jusqu'à la création du compte. */
+  invitation: z.string().max(128).optional(),
+});
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const SUPPORTED_LOCALES = ["fr", "en", "nl", "es"] as const;
-type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+export async function POST(request: Request) {
+  if (!sameOrigin(request)) return fail("Requête refusée.", 403);
+  const parsed = bodySchema.safeParse(await readJson(request));
+  if (!parsed.success) return fail("Adresse e-mail invalide.", 400, { fields: { email: "Adresse e-mail invalide." } });
 
-// A path only, never an absolute URL — the verify route redirects here
-// after login, and accepting an attacker-supplied absolute URL there would
-// be an open redirect.
-function safeRedirectPath(value: unknown): string {
-  if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//")) return "/";
-  return value;
-}
-
-export async function POST(req: NextRequest) {
-  // Reuses the scan quota's limiter under a distinct key prefix — not about
-  // sharing the budget, just reusing the same in-memory per-IP/global
-  // mechanism (and its documented single-instance limitation) rather than
-  // building a second one for a much lower-value abuse target (email spam,
-  // not a paid API call).
-  const forwarded = req.headers.get("x-forwarded-for");
-  const ip = forwarded?.split(",")[0]?.trim() || "unknown";
-  const rate = checkRateLimit(`auth:${ip}`);
-  if (!rate.ok) {
-    return NextResponse.json({ error: "Too many requests." }, { status: 429 });
-  }
-
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-  }
-  if (body === null || typeof body !== "object") {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-  }
-  const { email, locale, redirect } = body as { email?: unknown; locale?: unknown; redirect?: unknown };
-
-  if (typeof email !== "string" || !EMAIL_RE.test(email)) {
-    return NextResponse.json({ error: "Invalid email" }, { status: 400 });
-  }
-  const safeLocale: SupportedLocale = SUPPORTED_LOCALES.includes(locale as SupportedLocale)
-    ? (locale as SupportedLocale)
-    : "fr";
-  const redirectPath = safeRedirectPath(redirect);
-
-  const token = createMagicLinkToken(email.trim().toLowerCase());
-  const verifyUrl = new URL("/api/auth/verify", req.nextUrl.origin);
-  verifyUrl.searchParams.set("token", token);
-  verifyUrl.searchParams.set("redirect", redirectPath);
-
-  const t = await getTranslations({ locale: safeLocale, namespace: "auth" });
-
-  try {
-    await sendMagicLinkEmail(
-      email.trim(),
-      t("magicLinkSubject"),
-      t("magicLinkBody", { link: verifyUrl.toString() }),
+  const email = parsed.data.email.trim();
+  const limited = await runLimited(transaction, "loginLink", email, async (q) => {
+    const decision = await signupDecision(q, email, parsed.data.invitation ?? null);
+    if (!decision.allowed) return null;
+    return createLoginToken(email, safeNextPath(parsed.data.next), q, decision.invitationId);
+  });
+  if (!limited.ok) return fail(limitMessage("loginLink", limited.rule), 429);
+  if (limited.value === null) {
+    return fail(
+      "Valyo est pour l’instant sur invitation. Demandez un lien d’invitation à un membre, ou utilisez l’adresse avec laquelle vous avez été invité·e.",
+      403,
+      { invitationRequired: true },
     );
-  } catch (err) {
-    console.error("magic link email failed", err instanceof Error ? err.message : err);
-    return NextResponse.json({ error: "Could not send the email. Please try again." }, { status: 502 });
   }
 
-  return NextResponse.json({ ok: true });
+  const origin = process.env.APP_URL || new URL(request.url).origin;
+  const link = `${origin}/api/auth/verify?token=${encodeURIComponent(limited.value)}`;
+  try {
+    const { devLink } = await sendLoginLink(email, link);
+    return json({ ok: true, devLink });
+  } catch (error) {
+    console.error(error);
+    return fail("L'e-mail n'a pas pu être envoyé. Réessayez dans quelques minutes.", 502);
+  }
 }

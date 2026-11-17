@@ -1,89 +1,150 @@
-import { createHmac, timingSafeEqual } from "crypto";
+import "server-only";
+import { createHash, randomBytes } from "crypto";
+import { cookies } from "next/headers";
+import { query, queryOne, transaction, type QueryFn } from "./db";
+import { recordActivity } from "./data/metrics";
+import { applyEffectiveStatus } from "./social/moderation.ts";
+import { lockCommunity } from "./community-locks.ts";
+import { configuredAdminEmails } from "./admins.ts";
 
-// No JWT library — a signed token is just base64url(payload) +
-// "." + base64url(HMAC-SHA256(payload)), verified by recomputing the
-// signature. Stateless on purpose: nothing to revoke, nothing to store
-// server-side for sessions, consistent with how the game's own challenge
-// links avoided a database entirely (project.md, défi entre amis / scan de
-// pièce) — the only reason a real database exists at all here is to persist
-// points across sessions, not for auth itself.
-const SECRET = process.env.AUTH_SECRET;
+// Connexion par lien magique envoyé par e-mail (vérifie la possession de
+// l'adresse, F01). Sessions stockées en base pour pouvoir les fermer :
+// déconnexion, suppression de compte, suspension.
 
-function requireSecret(): string {
-  if (!SECRET) throw new Error("AUTH_SECRET is not set");
-  return SECRET;
-}
+export const SESSION_COOKIE = "valyo_session";
+const SESSION_DAYS = 60;
+const LOGIN_TOKEN_MINUTES = 15;
 
-function base64url(input: Buffer): string {
-  return input.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-function sign(payload: string): string {
-  return base64url(createHmac("sha256", requireSecret()).update(payload).digest());
-}
-
-function packToken(payload: object): string {
-  const json = Buffer.from(JSON.stringify(payload));
-  const encodedPayload = base64url(json);
-  const signature = sign(encodedPayload);
-  return `${encodedPayload}.${signature}`;
-}
-
-function unpackToken(token: string): object | null {
-  const parts = token.split(".");
-  if (parts.length !== 2) return null;
-  const [encodedPayload, signature] = parts;
-  const expectedSignature = sign(encodedPayload);
-  // Constant-time comparison — a plain === lets an attacker learn the
-  // correct signature one byte at a time via response-time differences.
-  const a = Buffer.from(signature);
-  const b = Buffer.from(expectedSignature);
-  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
-  try {
-    const base64 = encodedPayload.replace(/-/g, "+").replace(/_/g, "/");
-    return JSON.parse(Buffer.from(base64, "base64").toString("utf8"));
-  } catch {
-    return null;
-  }
-}
-
-const MAGIC_LINK_TTL_MS = 15 * 60 * 1000; // 15 minutes — just long enough to open an email
-const SESSION_TTL_MS = 90 * 24 * 60 * 60 * 1000; // 90 days
-
-export interface MagicLinkPayload {
+export interface CurrentUser {
+  id: string;
   email: string;
-  exp: number;
+  handle: string | null;
+  displayName: string | null;
+  avatarId: string | null;
+  role: "member" | "admin" | "agent";
+  status: "active" | "suspended" | "banned" | "deleted";
+  onboarded: boolean;
+  isAdmin: boolean;
 }
 
-export function createMagicLinkToken(email: string): string {
-  return packToken({ email, exp: Date.now() + MAGIC_LINK_TTL_MS });
+/** Administrateurs désignés par configuration (ADMIN_EMAILS, adresses séparées par des virgules) ou par rôle en base. */
+function isAdminEmail(email: string | null): boolean {
+  if (!email) return false;
+  const list = configuredAdminEmails();
+  return list.includes(email.toLowerCase());
 }
 
-export function verifyMagicLinkToken(token: string): { email: string } | null {
-  const payload = unpackToken(token) as MagicLinkPayload | null;
-  if (!payload || typeof payload.email !== "string" || typeof payload.exp !== "number") return null;
-  if (Date.now() > payload.exp) return null;
-  return { email: payload.email };
+function newToken(): string {
+  return randomBytes(32).toString("base64url");
 }
 
-export interface SessionPayload {
-  userId: string;
-  email: string;
-  exp: number;
+export function hashToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
 }
 
-export function createSessionToken(userId: string, email: string): string {
-  return packToken({ userId, email, exp: Date.now() + SESSION_TTL_MS });
+/** N'accepte qu'un chemin interne, pour que le retour au contexte ne puisse pas rediriger hors du site. */
+export function safeNextPath(next: unknown): string {
+  if (typeof next !== "string" || !next.startsWith("/") || next.startsWith("//") || next.includes("\\")) return "/";
+  return next.slice(0, 500);
 }
 
-export function verifySessionToken(token: string): { userId: string; email: string } | null {
-  const payload = unpackToken(token) as SessionPayload | null;
-  if (!payload || typeof payload.userId !== "string" || typeof payload.email !== "string" || typeof payload.exp !== "number") {
-    return null;
+/** `q` permet d'écrire dans la transaction de la limite de fréquence (lib/limits.ts). */
+export async function createLoginToken(email: string, nextPath: string, q: QueryFn = query, invitationId: string | null = null): Promise<string> {
+  const token = newToken();
+  await q(
+    `INSERT INTO login_tokens (token_hash, email, next_path, expires_at, invitation_id)
+     VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5)`,
+    [hashToken(token), email, safeNextPath(nextPath), LOGIN_TOKEN_MINUTES, invitationId],
+  );
+  return token;
+}
+
+/** Usage unique : la mise à jour conditionnelle empêche deux utilisations concurrentes du même lien. */
+export async function consumeLoginToken(token: string): Promise<{ email: string; nextPath: string; invitationId: string | null } | null> {
+  const row = await queryOne<{ email: string; next_path: string; invitation_id: string | null }>(
+    `UPDATE login_tokens SET used_at = now()
+     WHERE token_hash = $1 AND used_at IS NULL AND expires_at > now()
+     RETURNING email, next_path, invitation_id`,
+    [hashToken(token)],
+  );
+  return row ? { email: row.email, nextPath: row.next_path, invitationId: row.invitation_id ?? null } : null;
+}
+
+export async function createSession(userId: string): Promise<{ token: string; maxAge: number } | null> {
+  const token = newToken();
+  return transaction(async (q) => {
+    await lockCommunity(q);
+    const [user] = await q(`SELECT status FROM users WHERE id = $1 FOR NO KEY UPDATE`, [userId]);
+    if (!user || user.status === "banned" || user.status === "deleted") return null;
+    await q(`INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + make_interval(days => $3))`, [hashToken(token), userId, SESSION_DAYS]);
+    return { token, maxAge: SESSION_DAYS * 24 * 60 * 60 };
+  });
+}
+
+export async function destroySession(token: string | undefined) {
+  if (token) await transaction(async (q) => {
+    await lockCommunity(q, true);
+    await q(`DELETE FROM sessions WHERE token_hash = $1`, [hashToken(token)]);
+  });
+}
+
+export async function destroyAllSessions(userId: string) {
+  await transaction(async (q) => {
+    await lockCommunity(q, true);
+    await q(`DELETE FROM sessions WHERE user_id = $1`, [userId]);
+  });
+}
+
+export async function getCurrentUser(): Promise<CurrentUser | null> {
+  const store = await cookies();
+  const token = store.get(SESSION_COOKIE)?.value;
+  if (!token) return null;
+  const row = await queryOne<{
+    id: string;
+    email: string;
+    handle: string | null;
+    display_name: string | null;
+    avatar_image_id: string | null;
+    role: CurrentUser["role"];
+    status: CurrentUser["status"];
+    rules_accepted_at: string | null;
+  }>(
+    `SELECT u.id, u.email, u.handle, u.display_name, u.avatar_image_id, u.role, u.status, u.rules_accepted_at
+     FROM sessions s JOIN users u ON u.id = s.user_id
+     WHERE s.token_hash = $1 AND s.expires_at > now() AND u.status <> 'deleted'`,
+    [hashToken(token)],
+  );
+  if (!row || row.status === "banned") return null;
+  // Une suspension datée expire d'elle-même (D33) ; un bannissement, jamais. Le statut
+  // est RECALCULÉ depuis les sanctions encore applicables (ACC02) : l'expiration d'une
+  // suspension ne masque jamais une sanction plus récente.
+  if (row.status === "suspended") {
+    const [u] = await query<{ suspended_until: string | null }>(`SELECT suspended_until FROM users WHERE id = $1`, [row.id]);
+    if (u?.suspended_until && new Date(u.suspended_until) <= new Date()) {
+      row.status = (await transaction((q) => applyEffectiveStatus(q, row.id))) as CurrentUser["status"];
+    }
   }
-  if (Date.now() > payload.exp) return null;
-  return { userId: payload.userId, email: payload.email };
+  const onboarded = Boolean(row.handle && row.rules_accepted_at);
+  if (onboarded) await recordActivity(row.id);
+  return {
+    id: row.id,
+    email: row.email,
+    handle: row.handle,
+    displayName: row.display_name,
+    avatarId: row.avatar_image_id ?? null,
+    role: row.role,
+    status: row.status,
+    onboarded,
+    isAdmin: onboarded && row.status === "active" && (row.role === "admin" || isAdminEmail(row.email)),
+  };
 }
 
-export const SESSION_COOKIE_NAME = "valyo_session";
-export const SESSION_COOKIE_MAX_AGE_SECONDS = SESSION_TTL_MS / 1000;
+export function sessionCookieOptions(maxAge: number) {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge,
+  };
+}
