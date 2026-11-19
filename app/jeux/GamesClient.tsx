@@ -34,11 +34,14 @@ function shuffle<T>(items: T[]): T[] {
   return copy;
 }
 
-function buildRound(mode: Mode, themeNames: Map<string, string>): PlayableQuestion[] {
+// `randomize: false` pour la toute première manche rendue côté serveur : le même
+// ordre des deux côtés évite un écart d'hydratation React. Les relances mélangent.
+function buildRound(mode: Mode, themeNames: Map<string, string>, randomize: boolean): PlayableQuestion[] {
   if (!mode) return [];
+  const mix = randomize ? shuffle : <T,>(items: T[]) => items;
   const nameOf = (slug: string) => themeNames.get(slug) ?? slug;
   if (mode.kind === "vf") {
-    return shuffle(TRUE_FALSE_STATEMENTS).slice(0, VF_ROUND).map((s) => ({
+    return mix(TRUE_FALSE_STATEMENTS).slice(0, VF_ROUND).map((s) => ({
       prompt: s.statement,
       choices: ["Vrai", "Faux"],
       answer: s.isTrue ? 0 : 1,
@@ -47,7 +50,7 @@ function buildRound(mode: Mode, themeNames: Map<string, string>): PlayableQuesti
     }));
   }
   const mcq = QUIZ_QUESTIONS.filter((q) => q.theme === mode.theme).map((q) => {
-    const order = shuffle(q.choices.map((_, i) => i));
+    const order = mix(q.choices.map((_, i) => i));
     return {
       prompt: q.question,
       choices: order.map((i) => q.choices[i]),
@@ -63,7 +66,7 @@ function buildRound(mode: Mode, themeNames: Map<string, string>): PlayableQuesti
     explain: s.explain,
     themeName: nameOf(s.theme),
   }));
-  return shuffle([...mcq, ...vf]);
+  return mix([...mcq, ...vf]);
 }
 
 function scoreMessage(score: number, total: number): string {
@@ -77,14 +80,14 @@ function scoreMessage(score: number, total: number): string {
 export function GamesClient({ themes, initialTheme }: { themes: ThemeOption[]; initialTheme: string | null }) {
   const themeNames = useMemo(() => new Map(themes.map((t) => [t.slug, t.name])), [themes]);
   const [mode, setMode] = useState<Mode>(initialTheme ? { kind: "quiz", theme: initialTheme } : null);
-  const [round, setRound] = useState<PlayableQuestion[]>(() => buildRound(initialTheme ? { kind: "quiz", theme: initialTheme } : null, themeNames));
+  const [round, setRound] = useState<PlayableQuestion[]>(() => buildRound(initialTheme ? { kind: "quiz", theme: initialTheme } : null, themeNames, false));
   const [step, setStep] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
   const [score, setScore] = useState(0);
 
   const start = (next: Mode) => {
     setMode(next);
-    setRound(buildRound(next, themeNames));
+    setRound(buildRound(next, themeNames, true));
     setStep(0);
     setPicked(null);
     setScore(0);
