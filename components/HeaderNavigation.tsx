@@ -67,6 +67,7 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
     { href: "/messages", label: "Messages", icon: ICONS.messages, badge: messages, show: Boolean(user?.onboarded) },
     { href: followHref, label: "Abonnés", icon: ICONS.people, show: Boolean(user?.onboarded) },
     { href: "/a-creuser", label: "À creuser", icon: ICONS.dig, show: Boolean(user?.onboarded) },
+    { href: "/jeux", label: "Jeux", icon: ICONS.game, show: true },
     { href: "/notifications", label: "Notifications", icon: ICONS.bell, badge: unread, show: Boolean(user?.onboarded) },
     { href: profileHref, label: "Profil", icon: ICONS.user, show: Boolean(user?.onboarded) },
   ];
@@ -172,6 +173,7 @@ const ICONS = {
   people: <><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0" /><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.2a6.5 6.5 0 0 1 3.5 5.8" /></>,
   search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>,
   dig: <><path d="M6 3h12v18l-6-4-6 4z" /><circle cx="11.5" cy="9.5" r="2.5" /><path d="m13.5 11.5 1.5 1.5" /></>,
+  game: <><rect x="2.5" y="7" width="19" height="11" rx="4" /><path d="M7.5 10.5v4M5.5 12.5h4" /><path d="M15.5 11h.01M18 13.5h.01" /></>,
 };
 
 function TabLink({ href, label, active, badge = 0, children }: { href: string; label: string; active: boolean; badge?: number; children: React.ReactNode }) {

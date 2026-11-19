@@ -9,6 +9,7 @@ import { followedThemeIds, getThemeBySlug } from "@/lib/data/themes";
 import { linkedRooms } from "@/lib/rooms/discovery.ts";
 import { reactionSummaries } from "@/lib/social/reactions.ts";
 import { themeOverview } from "@/lib/social/theme-page.ts";
+import { themesWithGames } from "@/lib/jeux/questions";
 import { Avatar } from "@/components/Avatar";
 import { FollowButton } from "@/components/FollowButton";
 import { PostCard } from "@/components/PostCard";
@@ -121,6 +122,13 @@ export default async function ThemePage({ params, searchParams }: { params: Para
               <p className="mt-2 text-sm text-neutral-600">Personne n’a encore contribué ce mois-ci.</p>
             )}
           </section>
+          {themesWithGames().has(theme.slug) && (
+            <section className="card p-5" aria-labelledby="theme-quiz">
+              <h2 id="theme-quiz" className="font-extrabold">Quiz du thème</h2>
+              <p className="mt-1 text-sm text-neutral-600">Cinq questions pour tester vos connaissances, avec une explication à chaque réponse.</p>
+              <Link href={`/jeux?theme=${theme.slug}`} className="btn-link mt-2 inline-block">Jouer au quiz {theme.name} →</Link>
+            </section>
+          )}
         </aside>
       </div>
     </div>
