@@ -13,23 +13,11 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
   initialMessages: number;
 }) {
   const pathname = usePathname();
-  const account = useRef<HTMLDetailsElement>(null);
-  const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(initialUnread);
   const [messages, setMessages] = useState(initialMessages);
   const progress = useProgress(Boolean(user?.onboarded), pathname);
   useEffect(() => { setUnread(initialUnread); }, [initialUnread]);
   useEffect(() => { setMessages(initialMessages); }, [initialMessages]);
-  useEffect(() => {
-    if (account.current) account.current.open = false;
-  }, [pathname]);
-  useEffect(() => {
-    const close = (event: PointerEvent) => {
-      if (account.current && !account.current.contains(event.target as Node)) account.current.open = false;
-    };
-    document.addEventListener("pointerdown", close);
-    return () => document.removeEventListener("pointerdown", close);
-  }, []);
   useEffect(() => {
     if (!user?.onboarded) return;
     const controller = new AbortController();
@@ -79,31 +67,8 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
   );
   const Badge = ({ n }: { n?: number }) => n ? <span aria-label={`${n} non lu${n > 1 ? "s" : ""}`} className="ml-auto min-w-5 rounded-full bg-accent px-1.5 text-center text-[11px] font-semibold leading-5 text-white">{n}</span> : null;
 
-  const accountMenu = user?.onboarded ? (
-    <details ref={account} className="relative" onToggle={e => setOpen(e.currentTarget.open)} onKeyDown={e => {
-      if (e.key === "Escape") { e.preventDefault(); e.currentTarget.open = false; e.currentTarget.querySelector("summary")?.focus(); }
-    }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node)) e.currentTarget.open = false; }}>
-      <summary aria-expanded={open} className="flex h-10 cursor-pointer list-none items-center gap-2 rounded-lg px-2 text-sm font-medium text-soft hover:bg-white hover:text-ink lg:w-full [&::-webkit-details-marker]:hidden">
-        <Avatar name={user.displayName || user.handle || "?"} seed={user.handle} size="xs" imageId={user.avatarId} />
-        <span className="hidden truncate lg:inline">@{user.handle}</span>
-        <span aria-hidden className="ml-auto text-xs">▾</span>
-      </summary>
-      <nav aria-label="Mon compte" className="absolute right-0 top-full z-30 mt-2 w-60 max-w-[calc(100vw-2rem)] rounded-[10px] bg-white p-1.5 shadow-lg ring-1 ring-line lg:bottom-full lg:left-0 lg:right-auto lg:top-auto lg:mb-2" onClick={e => {
-        if ((e.target as HTMLElement).closest("a")) { if (account.current) account.current.open = false; }
-      }}>
-        <Link href={`/m/${user.handle}`} className="account-link">Mon profil</Link>
-        <Link href={`/m/${user.handle}/abonnes`} className="account-link">Mes abonnés</Link>
-        <Link href={`/m/${user.handle}/abonnements`} className="account-link">Mes abonnements</Link>
-        <Link href="/a-creuser" className="account-link">Ma liste « À creuser »</Link>
-        <Link href="/inviter" className="account-link">Inviter des proches</Link>
-        <Link href="/parametres" className="account-link">Paramètres</Link>
-        <Link href="/avis" className="account-link">Votre avis sur la bêta</Link>
-        <Link href="/sanctions" className="account-link">Sanctions et contestations</Link>
-        {user.isAdmin && <><Link href="/admin/editorial" className="account-link">Administration</Link><Link href="/admin/moderation" className="account-link">Modération</Link><Link href="/admin/avis" className="account-link">Avis des testeurs</Link></>}
-        <div className="mt-1 border-t border-line px-3 py-3"><LogoutButton /></div>
-      </nav>
-    </details>
-  ) : user ? <Link href={`/bienvenue?next=${next}`} className="btn-primary px-3 py-2">Terminer l’inscription</Link>
+  const accountMenu = user?.onboarded ? <AccountMenu user={user} pathname={pathname} />
+    : user ? <Link href={`/bienvenue?next=${next}`} className="btn-primary px-3 py-2">Terminer l’inscription</Link>
     : <Link href={`/connexion?next=${next}`} className="btn-primary px-3 py-2">Se connecter</Link>;
 
   return <>
@@ -132,7 +97,7 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
   <ProgressToast data={progress} />
 
   {/* Mobile : barre du haut */}
-  <header className="sticky top-0 z-20 border-b border-line bg-paper/95 backdrop-blur lg:hidden">
+  <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur lg:hidden">
     <div className="flex h-14 items-center gap-1.5 px-4">
       <div className="flex-1"><Logo /></div>
       <Link href="/recherche" aria-label="Rechercher" className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
@@ -161,6 +126,52 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
     <TabLink href={profileHref} label={user?.onboarded ? "Profil" : "Connexion"} active={Boolean(user?.handle) && pathname.startsWith(`/m/${user?.handle}`)}>{ICONS.user}</TabLink>
   </nav>
   </>;
+}
+
+// Un composant par emplacement (colonne ordinateur, barre mobile) : chacun a sa propre référence.
+function AccountMenu({ user, pathname }: { user: { handle: string | null; displayName: string; avatarId: string | null; isAdmin: boolean }; pathname: string }) {
+  const account = useRef<HTMLDetailsElement>(null);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (account.current) account.current.open = false;
+  }, [pathname]);
+  useEffect(() => {
+    const close = (event: PointerEvent) => {
+      if (account.current && !account.current.contains(event.target as Node)) account.current.open = false;
+    };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, []);
+  return (
+    <details ref={account} className="relative" onToggle={e => setOpen(e.currentTarget.open)} onKeyDown={e => {
+      if (e.key === "Escape") { e.preventDefault(); e.currentTarget.open = false; e.currentTarget.querySelector("summary")?.focus(); }
+    }} onBlur={e => {
+      // Safari (iOS surtout) ne donne pas le focus au lien touché : relatedTarget vaut null et fermer ici
+      // ferait disparaître le lien avant son clic. Le toucher hors du menu est géré par pointerdown.
+      const next = e.relatedTarget as Node | null;
+      if (next && !e.currentTarget.contains(next)) e.currentTarget.open = false;
+    }}>
+      <summary aria-expanded={open} className="flex h-10 cursor-pointer list-none items-center gap-2 rounded-lg px-2 text-sm font-medium text-soft hover:bg-white hover:text-ink lg:w-full [&::-webkit-details-marker]:hidden">
+        <Avatar name={user.displayName || user.handle || "?"} seed={user.handle} size="xs" imageId={user.avatarId} />
+        <span className="hidden truncate lg:inline">@{user.handle}</span>
+        <span aria-hidden className="ml-auto text-xs">▾</span>
+      </summary>
+      <nav aria-label="Mon compte" className="absolute right-0 top-full z-30 mt-2 max-h-[calc(100dvh-5rem)] w-60 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-[10px] bg-white p-1.5 shadow-lg ring-1 ring-line lg:bottom-full lg:left-0 lg:right-auto lg:top-auto lg:mb-2" onClick={e => {
+        if ((e.target as HTMLElement).closest("a")) { if (account.current) account.current.open = false; }
+      }}>
+        <Link href={`/m/${user.handle}`} className="account-link">Mon profil</Link>
+        <Link href={`/m/${user.handle}/abonnes`} className="account-link">Mes abonnés</Link>
+        <Link href={`/m/${user.handle}/abonnements`} className="account-link">Mes abonnements</Link>
+        <Link href="/a-creuser" className="account-link">Ma liste « À creuser »</Link>
+        <Link href="/inviter" className="account-link">Inviter des proches</Link>
+        <Link href="/parametres" className="account-link">Paramètres</Link>
+        <Link href="/avis" className="account-link">Votre avis sur la bêta</Link>
+        <Link href="/sanctions" className="account-link">Sanctions et contestations</Link>
+        {user.isAdmin && <><Link href="/admin/editorial" className="account-link">Administration</Link><Link href="/admin/moderation" className="account-link">Modération</Link><Link href="/admin/avis" className="account-link">Avis des testeurs</Link></>}
+        <div className="mt-1 border-t border-line px-3 py-3"><LogoutButton /></div>
+      </nav>
+    </details>
+  );
 }
 
 const ICONS = {
