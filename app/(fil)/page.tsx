@@ -87,14 +87,14 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
     <div className="wide-page">
       <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_17.5rem]">
       <div className="mx-auto w-full min-w-0 max-w-[760px] space-y-[18px] 2xl:max-w-[840px]">
-      <h1 className="sr-only">Fil d’actualité Valyo</h1>
+      <h1 className="sr-only">Valyo — l’actualité tech et sciences, et la communauté des Valyors</h1>
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "WebSite",
         name: "Valyo",
         url: SITE_URL,
         inLanguage: "fr",
-        description: "Les nouvelles en IA, technologie et sciences, et la communauté qui en discute.",
+        description: "Valyo est un réseau social consacré à l’IA, à l’espace, aux sciences et à la technologie. Ses membres, les Valyors, y suivent l’actualité sourcée et en discutent.",
         publisher: PUBLISHER,
       }} />
 
@@ -115,7 +115,10 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
         <section className="rounded-[10px] bg-ink p-5 text-white sm:p-6">
           <p className="label-mono text-[#B9C1CB]">Le réseau des curieux</p>
           <h2 className="mt-1.5 text-xl font-semibold sm:text-2xl">Les nouvelles tech et sciences, et ceux qui en parlent.</h2>
-          <p className="mt-2 text-sm text-[#C9CED6]">Suivez l’actu, réagissez, écrivez aux membres, discutez en salon.</p>
+          <p className="mt-2 text-sm text-[#C9CED6]">
+            Valyo est un réseau social consacré à l’IA, à l’espace, aux sciences et à la technologie : on y suit l’actualité sourcée, on la
+            commente et on en discute en salon. Ses membres s’appellent les <strong className="font-semibold text-white">Valyors</strong>.
+          </p>
           <Link href="/connexion" className="mt-4 inline-flex h-10 items-center rounded-md bg-accent px-4 text-sm font-semibold text-white hover:bg-[#9A3412]">Rejoindre Valyo</Link>
         </section>
       )}

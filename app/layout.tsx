@@ -12,7 +12,7 @@ const interTight = localFont({ src: "./fonts/InterTight-Variable.woff2", weight:
 const martian = localFont({ src: "./fonts/MartianMono-Variable.woff2", weight: "100 800", style: "normal", display: "swap", variable: "--font-mono" });
 
 const SITE_DESCRIPTION =
-  "Découvrez les avancées en IA, technologie et sciences, comprenez ce qu’elles changent et discutez-en avec d’autres passionnés.";
+  "Valyo est le réseau social des passionnés d’IA, d’espace, de sciences et de technologie : suivez l’actualité sourcée et discutez-en avec les Valyors.";
 
 export const metadata: Metadata = {
   // Adresse publique (ex. https://valyo.si) : aperçus de liens partagés corrects.
@@ -48,6 +48,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               {children}
             </main>
             <footer className="px-4 pb-24 pt-4 text-xs text-muted lg:px-0 lg:pb-10">
+              {/* La définition du site, discrète et présente partout : pour les visiteurs comme pour les moteurs. */}
+              <p className="mb-2 max-w-xl">
+                <strong className="font-semibold text-soft">Valyo</strong> est le réseau social des passionnés d’IA, d’espace, de sciences et de
+                technologie. Ses membres, les <strong className="font-semibold text-soft">Valyors</strong>, y suivent l’actualité et en discutent.
+              </p>
               <nav aria-label="Liens de bas de page" className="flex flex-wrap gap-x-4 gap-y-1">
                 <Link href="/regles" className="hover:underline">Règles de la communauté</Link>
                 <Link href="/avis" className="hover:underline">Votre avis (bêta)</Link>
