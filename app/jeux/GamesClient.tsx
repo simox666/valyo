@@ -2,15 +2,17 @@
 
 // Les jeux liés aux thèmes : le défi du jour (le même pour tous, une fois par jour),
 // « Quiz du thème », « Vrai ou faux express », « Plus ou moins » et « La frise ».
-// Tout se joue côté client, sans compte : seul le résultat du défi du jour est gardé,
-// dans le navigateur du joueur, pour ne pas le rejouer et compter sa série de jours.
+// Tout se joue sans compte : le résultat du défi du jour est alors gardé dans le navigateur.
+// Un membre connecté envoie en fin de partie ses réponses et la graine de la manche à
+// /api/jeux : le serveur rejoue, note et attribue les points du classement.
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { RankedItem } from "@/lib/jeux/classements.ts";
 import {
-  dailyChallenge, duelRound, friseRound, friseScore, previousDay, themeRound, trueFalseRound,
-  DAILY_SIZE, FRISE_EVENTS, type Frise, type PlayableQuestion,
+  friseGame, friseScore, previousDay, questionRound,
+  DAILY_SIZE, DUEL_ROUND, FRISE_EVENTS, FRISE_ROUND, VF_ROUND, type Frise, type Game, type PlayableQuestion,
 } from "@/lib/jeux/tirage.ts";
 
 interface ThemeOption {
@@ -26,10 +28,34 @@ interface DailyResult {
   streak: number;
 }
 
-const VF_ROUND = 8;
-const DUEL_ROUND = 8;
-const FRISE_ROUND = 3;
 const DAILY_KEY = "valyo:defi";
+
+const newSeed = () => Math.random().toString(36).slice(2, 12);
+
+/** Ce que le serveur a fait de la partie : points gagnés, ou partie déjà comptée aujourd'hui. */
+type Outcome = { state: "sending" } | { state: "done"; counted: boolean; points: number } | { state: "error" } | null;
+
+async function sendScore(body: { game: Game; seed: string; theme?: string; day?: string; picks: number[] | number[][] }): Promise<Outcome> {
+  try {
+    const response = await fetch("/api/jeux", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (!response.ok) return { state: "error" };
+    const data = await response.json();
+    return { state: "done", counted: Boolean(data.counted), points: Number(data.points) || 0 };
+  } catch {
+    return { state: "error" };
+  }
+}
+
+function PointsNote({ outcome, isMember }: { outcome: Outcome; isMember: boolean }) {
+  if (!isMember) {
+    return <p className="mt-3 text-sm text-soft"><Link href="/connexion?next=/jeux" className="btn-link">Connectez-vous</Link> pour marquer des points et entrer au classement.</p>;
+  }
+  if (!outcome || outcome.state === "sending") return <p className="mt-3 text-sm text-muted">Calcul des points…</p>;
+  if (outcome.state === "error") return <p className="mt-3 text-sm text-muted">Les points n’ont pas pu être enregistrés cette fois.</p>;
+  return outcome.counted
+    ? <p className="mt-3 text-sm font-semibold text-accent">+{outcome.points} points au classement</p>
+    : <p className="mt-3 text-sm text-muted">Partie déjà comptée aujourd’hui pour ce jeu : revenez demain pour marquer à nouveau.</p>;
+}
 
 function readDaily(): DailyResult | null {
   try {
@@ -53,44 +79,58 @@ function scoreMessage(score: number, total: number): string {
   return "L'occasion d'apprendre ! Suivez les thèmes sur Valyo pour creuser le sujet.";
 }
 
-function buildRound(mode: Mode, day: string, randomize: boolean): PlayableQuestion[] {
-  if (!mode) return [];
-  if (mode.kind === "quiz") return themeRound(mode.theme, randomize ? Math.random : null);
-  if (mode.kind === "vf") return trueFalseRound(VF_ROUND, Math.random);
-  if (mode.kind === "duel") return duelRound(DUEL_ROUND, Math.random);
-  if (mode.kind === "defi") return dailyChallenge(day);
-  return [];
+function buildRound(mode: Mode, day: string, seed: string): PlayableQuestion[] {
+  if (!mode || mode.kind === "frise") return [];
+  return questionRound(mode.kind, { seed, theme: mode.kind === "quiz" ? mode.theme : undefined, day });
 }
 
-export function GamesClient({ themes, initialTheme, day, dayLabel }: {
+export function GamesClient({ themes, initialTheme, day, dayLabel, isMember, serverDaily }: {
   themes: ThemeOption[];
   initialTheme: string | null;
   /** Date du jour à Paris (AAAA-MM-JJ), calculée par le serveur : la graine du défi. */
   day: string;
   dayLabel: string;
+  /** Membre connecté et actif : ses parties rapportent des points. */
+  isMember: boolean;
+  /** Défi du jour déjà joué par ce membre, d'après le serveur (vaut sur tous ses appareils). */
+  serverDaily: DailyResult | null;
 }) {
+  const router = useRouter();
   const themeNames = useMemo(() => new Map(themes.map((t) => [t.slug, t.name])), [themes]);
   const initialMode: Mode = initialTheme ? { kind: "quiz", theme: initialTheme } : null;
   const [mode, setMode] = useState<Mode>(initialMode);
-  // Première manche sans aléa : même HTML côté serveur et navigateur. Les relances mélangent.
-  const [round, setRound] = useState<PlayableQuestion[]>(() => buildRound(initialMode, day, false));
+  // Première manche sans aléa (graine vide) : même HTML côté serveur et navigateur. Les relances mélangent.
+  const [seed, setSeed] = useState("");
+  const [round, setRound] = useState<PlayableQuestion[]>(() => buildRound(initialMode, day, ""));
   const [step, setStep] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
-  const [marks, setMarks] = useState<boolean[]>([]);
+  const [picks, setPicks] = useState<number[]>([]);
   const [saved, setSaved] = useState<DailyResult | null>(null);
+  const [outcome, setOutcome] = useState<Outcome>(null);
 
   useEffect(() => { setSaved(readDaily()); }, []);
-  const today = saved?.day === day ? saved : null;
+  const today = serverDaily ?? (saved?.day === day ? saved : null);
+  const marks = picks.map((p, i) => p === round[i]?.answer);
 
   const start = (next: Mode) => {
+    const fresh = newSeed();
     setMode(next);
-    setRound(buildRound(next, day, true));
+    setSeed(fresh);
+    setRound(buildRound(next, day, fresh));
     setStep(0);
     setPicked(null);
-    setMarks([]);
+    setPicks([]);
+    setOutcome(null);
   };
 
-  if (mode?.kind === "frise") return <FriseGame themeNames={themeNames} onExit={() => start(null)} />;
+  const report = async (body: Parameters<typeof sendScore>[0]) => {
+    if (!isMember) return;
+    setOutcome({ state: "sending" });
+    setOutcome(await sendScore(body));
+    router.refresh(); // Le classement, rendu par le serveur, se met à jour.
+  };
+
+  if (mode?.kind === "frise") return <FriseGame key={seed} seed={seed} themeNames={themeNames} isMember={isMember} outcome={outcome} onFinish={(all) => report({ game: "frise", seed, picks: all })} onReplay={() => start({ kind: "frise" })} onExit={() => start(null)} />;
 
   // Écran d'accueil : le défi du jour, puis les jeux libres.
   if (!mode || round.length === 0) {
@@ -150,6 +190,7 @@ export function GamesClient({ themes, initialTheme, day, dayLabel }: {
             <p className="mt-2 text-soft">{scoreMessage(score, round.length)}</p>
           </>
         )}
+        <PointsNote outcome={outcome} isMember={isMember} />
         <div className="mt-5 flex flex-wrap justify-center gap-2">
           {mode.kind !== "defi" && <button type="button" onClick={() => start(mode)} className="btn-primary">Rejouer</button>}
           <button type="button" onClick={() => start(null)} className="btn-secondary">{mode.kind === "defi" ? "Voir les autres jeux" : "Changer de jeu"}</button>
@@ -162,10 +203,13 @@ export function GamesClient({ themes, initialTheme, day, dayLabel }: {
   const q = round[step];
   const answered = picked !== null;
   const next = () => {
-    if (step + 1 === round.length && mode.kind === "defi") {
-      const result = { day, marks, streak: saved?.day === previousDay(day) ? saved.streak + 1 : 1 };
-      writeDaily(result);
-      setSaved(result);
+    if (step + 1 === round.length) {
+      if (mode.kind === "defi") {
+        const result = { day, marks, streak: saved?.day === previousDay(day) ? saved.streak + 1 : 1 };
+        writeDaily(result);
+        setSaved(result);
+      }
+      void report({ game: mode.kind, seed, theme: mode.kind === "quiz" ? mode.theme : undefined, day: mode.kind === "defi" ? day : undefined, picks });
     }
     setStep((s) => s + 1);
     setPicked(null);
@@ -192,7 +236,7 @@ export function GamesClient({ themes, initialTheme, day, dayLabel }: {
               <button
                 type="button"
                 disabled={answered}
-                onClick={() => { setPicked(i); setMarks((m) => [...m, i === q.answer]); }}
+                onClick={() => { setPicked(i); setPicks((p) => [...p, i]); }}
                 className={`w-full rounded-lg px-4 py-3 text-left text-[15px] transition ${cls}`}
               >
                 {choice}
@@ -262,15 +306,24 @@ function DailySummary({ result, dayLabel, centered = false }: { result: DailyRes
 }
 
 /** La frise : toucher les événements du plus ancien au plus récent, puis valider. */
-function FriseGame({ themeNames, onExit }: { themeNames: Map<string, string>; onExit: () => void }) {
-  const [frises, setFrises] = useState<Frise[]>(() => friseRound(FRISE_ROUND, Math.random));
+function FriseGame({ seed, themeNames, isMember, outcome, onFinish, onReplay, onExit }: {
+  /** Graine de la partie : le parent remonte le composant (key) à chaque nouvelle graine. */
+  seed: string;
+  themeNames: Map<string, string>;
+  isMember: boolean;
+  outcome: Outcome;
+  /** Fin de partie : pour chaque frise, les index d'événements dans l'ordre proposé. */
+  onFinish: (picks: number[][]) => void;
+  onReplay: () => void;
+  onExit: () => void;
+}) {
+  const [frises] = useState<Frise[]>(() => friseGame(seed));
   const [step, setStep] = useState(0);
   const [order, setOrder] = useState<RankedItem[]>([]);
   const [checked, setChecked] = useState(false);
   const [score, setScore] = useState(0);
+  const [allPicks, setAllPicks] = useState<number[][]>([]);
   const total = frises.length * FRISE_EVENTS;
-
-  const restart = () => { setFrises(friseRound(FRISE_ROUND, Math.random)); setStep(0); setOrder([]); setChecked(false); setScore(0); };
 
   if (step >= frises.length) {
     return (
@@ -279,8 +332,9 @@ function FriseGame({ themeNames, onExit }: { themeNames: Map<string, string>; on
         <p className="mt-3 text-4xl font-extrabold">{score} / {total}</p>
         <p className="mt-1 text-sm text-muted">événements à la bonne place</p>
         <p className="mt-2 text-soft">{scoreMessage(score, total)}</p>
+        <PointsNote outcome={outcome} isMember={isMember} />
         <div className="mt-5 flex flex-wrap justify-center gap-2">
-          <button type="button" onClick={restart} className="btn-primary">Rejouer</button>
+          <button type="button" onClick={onReplay} className="btn-primary">Rejouer</button>
           <button type="button" onClick={onExit} className="btn-secondary">Changer de jeu</button>
         </div>
       </section>
@@ -319,7 +373,7 @@ function FriseGame({ themeNames, onExit }: { themeNames: Map<string, string>; on
             })}
           </ul>
           <div className="mt-4 flex flex-wrap gap-2">
-            <button type="button" disabled={!complete} onClick={() => { setChecked(true); setScore((s) => s + friseScore(frise, order)); }} className="btn-primary">Valider l’ordre</button>
+            <button type="button" disabled={!complete} onClick={() => { setChecked(true); setScore((s) => s + friseScore(frise, order)); setAllPicks((p) => [...p, order.map((e) => frise.events.indexOf(e))]); }} className="btn-primary">Valider l’ordre</button>
             {order.length > 0 && <button type="button" onClick={() => setOrder([])} className="btn-secondary">Recommencer</button>}
           </div>
         </>
@@ -343,7 +397,7 @@ function FriseGame({ themeNames, onExit }: { themeNames: Map<string, string>; on
               );
             })}
           </ol>
-          <button type="button" onClick={() => { setStep((s) => s + 1); setOrder([]); setChecked(false); }} className="btn-primary mt-4">
+          <button type="button" onClick={() => { if (step + 1 === frises.length) onFinish(allPicks); setStep((s) => s + 1); setOrder([]); setChecked(false); }} className="btn-primary mt-4">
             {step + 1 < frises.length ? "Frise suivante" : "Voir mon score"}
           </button>
         </div>

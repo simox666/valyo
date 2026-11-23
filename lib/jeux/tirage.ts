@@ -27,6 +27,12 @@ export interface Frise {
 
 export const DAILY_SIZE = 7;
 export const FRISE_EVENTS = 4;
+export const VF_ROUND = 8;
+export const DUEL_ROUND = 8;
+export const FRISE_ROUND = 3;
+
+export const GAMES = ["defi", "quiz", "vf", "duel", "frise"] as const;
+export type Game = (typeof GAMES)[number];
 
 /** Générateur déterministe (hachage de la graine puis mulberry32). */
 export function seededRandom(seed: string): Random {
@@ -144,4 +150,30 @@ export function previousDay(day: string): string {
   const date = new Date(`${day}T12:00:00Z`);
   date.setUTCDate(date.getUTCDate() - 1);
   return date.toISOString().slice(0, 10);
+}
+
+/**
+ * La manche de questions d'une partie, reconstruite à l'identique à partir de sa graine :
+ * le navigateur la joue, le serveur la rejoue pour noter les réponses. Graine vide pour
+ * un quiz = ordre du fichier (première manche rendue côté serveur).
+ */
+export function questionRound(game: Exclude<Game, "frise">, opts: { seed: string; theme?: string; day: string }): PlayableQuestion[] {
+  if (game === "defi") return dailyChallenge(opts.day);
+  if (game === "quiz") return themeRound(opts.theme ?? "", opts.seed ? seededRandom(`quiz-${opts.seed}`) : null);
+  if (game === "vf") return trueFalseRound(VF_ROUND, seededRandom(`vf-${opts.seed}`));
+  return duelRound(DUEL_ROUND, seededRandom(`duel-${opts.seed}`));
+}
+
+export function friseGame(seed: string): Frise[] {
+  return friseRound(FRISE_ROUND, seededRandom(`frise-${seed}`));
+}
+
+/** Une case par question : la réponse choisie est-elle la bonne ? */
+export function markAnswers(round: readonly PlayableQuestion[], picks: readonly number[]): boolean[] {
+  return round.map((q, i) => picks[i] === q.answer);
+}
+
+/** Une case par événement : `picks[f]` donne, pour la frise f, les index d'événements dans l'ordre proposé. */
+export function markFrises(frises: readonly Frise[], picks: readonly (readonly number[])[]): boolean[] {
+  return frises.flatMap((frise, f) => frise.solution.map((event, i) => frise.events[picks[f]?.[i] ?? -1] === event));
 }

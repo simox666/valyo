@@ -936,4 +936,24 @@ export const MIGRATIONS: Migration[] = [
         CHECK (scientific_status IN ('announcement', 'preprint', 'published', 'unknown', 'analysis'))`,
     ],
   },
+  {
+    id: "031_scores_jeux",
+    statements: [
+      // Points des jeux et classement entre membres (23 novembre 2026). Une ligne par membre,
+      // par jour et par jeu : seule la première partie du jour compte, d'où la clé primaire.
+      // `marks` garde le détail des réponses (« 1011011 ») pour réafficher le défi du jour.
+      `CREATE TABLE game_scores (
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        day DATE NOT NULL,
+        game TEXT NOT NULL CHECK (game IN ('defi', 'quiz', 'vf', 'duel', 'frise')),
+        correct SMALLINT NOT NULL CHECK (correct >= 0),
+        total SMALLINT NOT NULL CHECK (total > 0 AND correct <= total),
+        points INTEGER NOT NULL CHECK (points >= 0),
+        marks TEXT NOT NULL DEFAULT '',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (user_id, day, game)
+      )`,
+      `CREATE INDEX game_scores_day ON game_scores (day)`,
+    ],
+  },
 ];

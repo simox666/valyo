@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Confidentialité" };
 const EXPLOITANT = "M2S Consulting";
 const CONTACT = "rgpd@valyo.si";
 
-const MAJ = "18 novembre 2026";
+const MAJ = "23 novembre 2026";
 
 export default function PrivacyPage() {
   return (
@@ -34,6 +34,10 @@ export default function PrivacyPage() {
           exécution du service.
         </li>
         <li>
+          <strong>Vos scores aux jeux</strong>, si vous jouez en étant connecté (la date, le jeu, le score et les points), pour le classement
+          entre membres, où votre pseudonyme apparaît. Sans compte, rien n’est enregistré chez nous. Base : exécution du service.
+        </li>
+        <li>
           <strong>Un jour de présence</strong> par membre (la date, rien d’autre : ni pages vues, ni durée), pour mesurer la santé de la
           communauté. Conservé 24 mois. Base : intérêt légitime.
         </li>
@@ -50,7 +54,7 @@ export default function PrivacyPage() {
 
       <h2 className="text-lg font-bold">Combien de temps</h2>
       <ul className="list-disc space-y-1 pl-5">
-        <li>Votre compte et vos contenus : tant que le compte existe.</li>
+        <li>Votre compte, vos contenus et vos scores aux jeux : tant que le compte existe.</li>
         <li>Lien de connexion : 15 minutes, et sa trace est purgée sous 7 jours.</li>
         <li>Sessions : 60 jours ; les sessions expirées sont purgées.</li>
         <li>Notifications : 12 mois.</li>
