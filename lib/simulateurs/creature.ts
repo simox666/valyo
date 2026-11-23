@@ -47,6 +47,10 @@ export type Creature = {
   common: string;
   heightM: number;
   massKg: number;
+  /** Famille illustrée : nom du fichier dans public/creatures (sans extension). */
+  family: string;
+  /** Particularités que l'illustration de la famille ne montre pas (elles se voient sur le croquis). */
+  extras: string[];
   locomotion: Locomotion;
   cover: Cover;
   /** Proportions du dessin, toutes entre 0 et 1 (sauf les nombres entiers). */
@@ -215,6 +219,22 @@ export function creatureFor(input: Planet): Creature {
       ? t < -90 ? "des mers de méthane" : t < 0 ? "des océans sous la glace" : t <= 45 ? "des océans tempérés" : "des mers chaudes"
       : t < -90 ? "des mers de méthane" : t < -20 ? "des glaces" : t <= 45 ? (webbed ? "des archipels" : hump ? "des steppes arides" : "des plaines tempérées") : t <= 110 ? "des déserts brûlants" : "des fournaises";
 
+  const band = t < -90 ? "methane" : t < -20 ? "glace" : t <= 45 ? "tempere" : t <= 110 ? "chaud" : "fournaise";
+  const family =
+    locomotion === "marche" ? `marche-${g < 0.5 ? "leger" : g < 1.2 ? "moyen" : g < 2 ? "lourd" : "ecrasant"}-${band}`
+    : locomotion === "vol" ? `vol-${band === "fournaise" ? "chaud" : band}`
+    : locomotion === "flotte" ? `flotte-${band}`
+    : locomotion === "fouit" ? `fouit-${t < -20 ? "froid" : t <= 45 ? "tempere" : "chaud"}`
+    : `nage-${t < -90 ? "methane" : t < 0 ? "glace" : t <= 45 ? "tempere" : "chaud"}`;
+  const extras = [
+    dark ? "aveugle, avec de longues antennes" : !airless && eyes > 0.6 ? "yeux très grands" : !airless && eyes < 0.3 ? "petits yeux enfoncés" : "",
+    glow ? "points lumineux le long du corps" : "",
+    l > 1.4 ? "pigments plus sombres" : "",
+    webbed ? "pieds palmés" : "",
+    hump ? "bosse de réserve sur le dos" : "",
+    !airless && nostrils > 0.5 ? "larges narines" : "",
+  ].filter(Boolean);
+
   const traits: Trait[] = [];
   traits.push(
     locomotion === "marche"
@@ -301,6 +321,8 @@ export function creatureFor(input: Planet): Creature {
     common: `${base}${dark ? " aveugle" : ""} ${climate}`,
     heightM,
     massKg,
+    family,
+    extras,
     locomotion,
     cover,
     legs,

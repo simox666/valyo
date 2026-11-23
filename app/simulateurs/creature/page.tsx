@@ -18,7 +18,7 @@ export default async function CreaturePage({ searchParams }: { searchParams: Pro
         <p className="label-mono text-accent">Simulateur</p>
         <h1 className="mt-1 text-2xl font-bold">La créature d’une autre planète</h1>
         <p className="mt-1 text-soft">
-          Réglez la gravité, la température, l’atmosphère, la lumière et les mers : le croquis montre l’animal qui pourrait y vivre, et pourquoi il aurait cette allure.
+          Réglez la gravité, la température, l’atmosphère, la lumière et les mers : découvrez l’animal qui pourrait y vivre, et pourquoi il aurait cette allure.
         </p>
       </header>
       <CreatureLab initial={initial} />

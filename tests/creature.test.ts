@@ -1,6 +1,7 @@
 // Simulateur de créature : mêmes réglages → même créature, et les règles annoncées tiennent
 // (plus de gravité → plus de pattes et plus petit ; air dense et gravité faible → vol puis flottaison).
 import assert from "node:assert/strict";
+import { existsSync, readdirSync } from "node:fs";
 import { test } from "node:test";
 import { EARTH, PRESETS, RANGES, clampPlanet, creatureFor } from "../lib/simulateurs/creature.ts";
 
@@ -89,4 +90,19 @@ test("créature : les mers font nager, palmer ou stocker l'eau", () => {
     assert.match(c.name, /^[A-Z][a-z]+ [a-z]+$/);
     assert.ok(c.eyes >= 0 && c.eyes <= 1 && c.heightM > 0 && c.massKg > 0);
   }
+});
+
+test("créature : chaque réglage tombe sur une illustration qui existe, et toutes servent", () => {
+  const used = new Set<string>();
+  for (let g = RANGES.g.min; g <= RANGES.g.max + 1e-9; g += 0.1) {
+    for (let t = RANGES.t.min; t <= RANGES.t.max; t += 10) {
+      for (const p of [0, 0.3, 1, 2, 3, 5]) for (const w of [0, 50, 100]) {
+        const c = creatureFor({ g, t, p, l: 1, w });
+        assert.ok(existsSync(`public/creatures/${c.family}.webp`), `illustration manquante : ${c.family}`);
+        used.add(c.family);
+      }
+    }
+  }
+  const files = readdirSync("public/creatures").filter((f) => f.endsWith(".webp")).map((f) => f.replace(".webp", ""));
+  assert.deepEqual(files.filter((f) => !used.has(f)), [], "illustrations jamais affichées");
 });

@@ -27,6 +27,7 @@ function Slider({ id, label, value, unit, hint, range, onChange }: {
 
 export function CreatureLab({ initial }: { initial: Planet }) {
   const [planet, setPlanet] = useState<Planet>(initial);
+  const [view, setView] = useState<"illustration" | "croquis">("illustration");
   const creature = useMemo(() => creatureFor(planet), [planet]);
   const path = `/simulateurs/creature?g=${planet.g}&t=${planet.t}&p=${planet.p}&l=${planet.l}&w=${planet.w}`;
   // L'adresse suit les réglages : un lien partagé redonne exactement la même créature.
@@ -36,7 +37,8 @@ export function CreatureLab({ initial }: { initial: Planet }) {
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] md:items-start">
-      <section className="card space-y-5 p-5" aria-labelledby="planete">
+      {/* Mobile : la créature d'abord, les curseurs juste dessous, pour voir l'effet de chaque réglage. */}
+      <section className="card order-2 space-y-5 p-5 md:order-none" aria-labelledby="planete">
         <div>
           <h2 id="planete" className="label-mono text-accent">Votre planète</h2>
           <ul className="mt-3 flex flex-wrap gap-1.5">
@@ -57,8 +59,8 @@ export function CreatureLab({ initial }: { initial: Planet }) {
         <Slider id="mers" label="Mers" value={String(planet.w)} unit="%" hint={describeWater(planet.w, planet.t)} range={{ ...RANGES.w, current: planet.w }} onChange={set("w")} />
       </section>
 
-      <div className="space-y-5">
-        <section className="card overflow-hidden" aria-live="polite" aria-labelledby="espece">
+      <div className="contents md:block md:space-y-5">
+        <section className="card order-1 overflow-hidden" aria-live="polite" aria-labelledby="espece">
           <div className="flex items-start justify-between gap-3 px-5 pt-5">
             <div className="min-w-0">
               <p className="label-mono text-accent">Espèce probable</p>
@@ -67,7 +69,32 @@ export function CreatureLab({ initial }: { initial: Planet }) {
             </div>
             <ShareButton path={path} title={`${creature.common} (${creature.name}) — ma créature sur Valyo`} />
           </div>
-          <div className="px-3 pt-2"><CreatureSketch creature={creature} /></div>
+          <div role="group" aria-label="Type d’image" className="mx-5 mt-3 inline-flex gap-1 rounded-lg bg-chip p-1 text-sm">
+            {(["illustration", "croquis"] as const).map((v) => (
+              <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)}
+                className={`rounded-md px-3 py-1.5 ${view === v ? "bg-white font-semibold text-ink ring-1 ring-line" : "text-soft hover:text-ink"}`}>
+                {v === "illustration" ? "Illustration" : "Croquis à l’échelle"}
+              </button>
+            ))}
+          </div>
+          {view === "illustration" ? (
+            <>
+              {/* Planche sur fond crème fixe (#F7F7F3) : c'est le fond des illustrations, en clair comme en sombre. */}
+              <div className="mt-3 bg-[#F7F7F3]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img key={creature.family} src={`/creatures/${creature.family}.webp`} width={800} height={800}
+                  alt={`Illustration : ${creature.common}, ${creature.name}`} className="mx-auto block aspect-square w-full max-w-[300px] sm:max-w-[520px]" />
+              </div>
+              {creature.extras.length > 0 && (
+                <p className="px-5 py-3 text-sm text-soft">
+                  <span className="font-semibold text-ink">Chez cette espèce :</span> {creature.extras.join(", ")}.{" "}
+                  <button type="button" onClick={() => setView("croquis")} className="font-semibold text-accent hover:underline">Voir sur le croquis</button>
+                </p>
+              )}
+            </>
+          ) : (
+            <div className="px-3 pt-2"><CreatureSketch creature={creature} /></div>
+          )}
           <dl className="grid grid-cols-3 divide-x divide-hairline border-t border-hairline text-center">
             <div className="px-2 py-3"><dt className="label-mono">Taille</dt><dd className="mt-0.5 font-display text-lg font-bold">{fr(creature.heightM, 2)} m</dd></div>
             <div className="px-2 py-3"><dt className="label-mono">Masse</dt><dd className="mt-0.5 font-display text-lg font-bold">{creature.massKg >= 1000 ? `${fr(creature.massKg / 1000)} t` : `${fr(creature.massKg)} kg`}</dd></div>
@@ -76,7 +103,7 @@ export function CreatureLab({ initial }: { initial: Planet }) {
           {creature.caveat && <p className="border-t border-amber-300 bg-amber-50 px-5 py-3 text-sm text-amber-900">{creature.caveat}</p>}
         </section>
 
-        <section className="card p-5" aria-labelledby="pourquoi">
+        <section className="card order-3 p-5" aria-labelledby="pourquoi">
           <h2 id="pourquoi" className="label-mono text-accent">Pourquoi cette allure ?</h2>
           <dl className="mt-3 space-y-3.5">
             {creature.traits.map((trait) => (
