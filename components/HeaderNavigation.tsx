@@ -103,6 +103,9 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
       <Link href="/recherche" aria-label="Rechercher" className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden>{ICONS.search}</svg>
       </Link>
+      <Link href="/jeux" aria-label="Jeux" aria-current={active("/jeux") ? "page" : undefined} className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{ICONS.game}</svg>
+      </Link>
       {user?.onboarded && (
         <Link href="/messages" aria-label={`Messages${messages ? ` (${messages} non lus)` : ""}`} className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{ICONS.messages}</svg>
@@ -163,6 +166,7 @@ function AccountMenu({ user, pathname }: { user: { handle: string | null; displa
         <Link href={`/m/${user.handle}/abonnes`} className="account-link">Mes abonnés</Link>
         <Link href={`/m/${user.handle}/abonnements`} className="account-link">Mes abonnements</Link>
         <Link href="/a-creuser" className="account-link">Ma liste « À creuser »</Link>
+        <Link href="/jeux" className="account-link">Jeux</Link>
         <Link href="/inviter" className="account-link">Inviter des proches</Link>
         <Link href="/parametres" className="account-link">Paramètres</Link>
         <Link href="/avis" className="account-link">Votre avis sur la bêta</Link>
