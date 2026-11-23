@@ -98,6 +98,14 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
         publisher: PUBLISHER,
       }} />
 
+      {/* La définition du site, visible de tous dès l'ouverture (les visiteurs ont en plus l'encart ci-dessous). */}
+      {signedIn && (
+        <p className="text-sm text-soft">
+          <strong className="font-semibold text-ink">Valyo</strong>, le réseau social des passionnés d’IA, d’espace, de sciences et de
+          technologie. Ici, les membres s’appellent les <strong className="font-semibold text-ink">Valyors</strong>.
+        </p>
+      )}
+
       <ThemeNav
         allHref={feedHref({ vue })}
         current={theme?.slug ?? null}

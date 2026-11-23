@@ -74,7 +74,10 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
   return <>
   {/* Ordinateur : menu vertical */}
   <aside aria-label="Menu Valyo" className="sticky top-0 hidden h-screen w-[190px] shrink-0 flex-col gap-0.5 py-7 lg:flex">
-    <div className="px-2.5 pb-5"><Logo /></div>
+    <div className="px-2.5 pb-5">
+      <Logo />
+      <p className="mt-1.5 text-[11px] leading-snug text-muted">Le réseau social des passionnés de tech et de sciences : les Valyors.</p>
+    </div>
     <form action="/recherche" role="search" className="relative mb-3">
       <label htmlFor="recherche-menu" className="sr-only">Rechercher sur Valyo</label>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">{ICONS.search}</svg>
