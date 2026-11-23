@@ -18,6 +18,7 @@ import { ThemeNav } from "@/components/ThemeNav";
 import { QuickComposer } from "@/components/QuickComposer";
 import { Avatar } from "@/components/Avatar";
 import { getSyntheses } from "@/lib/actus/synthesis.ts";
+import { JsonLd, PUBLISHER, SITE_URL } from "@/components/JsonLd";
 
 type SearchParams = Promise<{ vue?: string; theme?: string; n?: string }>;
 
@@ -87,6 +88,15 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
       <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_17.5rem]">
       <div className="mx-auto w-full min-w-0 max-w-[760px] space-y-[18px] 2xl:max-w-[840px]">
       <h1 className="sr-only">Fil d’actualité Valyo</h1>
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "Valyo",
+        url: SITE_URL,
+        inLanguage: "fr",
+        description: "Les nouvelles en IA, technologie et sciences, et la communauté qui en discute.",
+        publisher: PUBLISHER,
+      }} />
 
       <ThemeNav
         allHref={feedHref({ vue })}

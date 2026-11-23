@@ -4,7 +4,11 @@ import { getCurrentUser } from "@/lib/auth";
 import { listMyRooms, listPublicRooms } from "@/lib/data/rooms";
 import { RoomDirectory } from "./RoomDirectory";
 
-export const metadata: Metadata = { title: "Salons — discussions de groupe" };
+export const metadata: Metadata = {
+  title: "Salons — discussions de groupe",
+  description: "Rejoignez les salons de Valyo : des discussions de groupe entre passionnés d’IA, d’espace, de sciences et de technologie.",
+  alternates: { canonical: "/salons" },
+};
 
 export default async function RoomsPage() {
   const user = await getCurrentUser();

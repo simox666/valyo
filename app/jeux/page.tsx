@@ -10,7 +10,9 @@ import { GamesClient } from "./GamesClient";
 
 export const metadata: Metadata = {
   title: "Jeux",
-  description: "Défi du jour, quiz, vrai ou faux, ordres de grandeur et frises chronologiques sur les thèmes de Valyo.",
+  description: "Défi du jour, quiz, vrai ou faux, ordres de grandeur et frises chronologiques sur l’IA, l’espace, les sciences et la tech. Marquez des points et grimpez au classement.",
+  // /jeux?theme=… ouvre le quiz d'un thème : une seule adresse canonique.
+  alternates: { canonical: "/jeux" },
 };
 
 /**

@@ -11,6 +11,7 @@ import { RecapArticle, type RecapItemView } from "@/components/RecapArticle";
 export const metadata: Metadata = {
   title: "Le récap sciences & tech",
   description: "Trois fois par semaine, l'essentiel des nouvelles en IA, robotique et espace, avec leurs sources.",
+  alternates: { canonical: "/recap" },
 };
 
 // Exemple de PRÉSENTATION, clairement étiqueté fictif : jamais présenté comme une nouvelle

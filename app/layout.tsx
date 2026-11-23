@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     siteName: "Valyo",
     locale: "fr_BE",
     type: "website",
-    title: "Valyo — les nouvelles tech et science, et ceux qui en parlent",
-    description: SITE_DESCRIPTION,
+    // Pas de titre ni de description ici : chaque page transmet les siens à son aperçu de
+    // lien (une valeur fixée à la racine s'imposait à /jeux, /recap, /salons, aux thèmes…).
     // Carte de partage par défaut (public/partage.png) ; les articles la remplacent par la leur.
     images: ["/partage.png"],
   },

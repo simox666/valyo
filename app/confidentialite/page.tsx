@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Confidentialité" };
+export const metadata: Metadata = {
+  title: "Confidentialité",
+  description: "Quelles données Valyo collecte, pourquoi, combien de temps, et comment exercer vos droits (accès, rectification, suppression).",
+  alternates: { canonical: "/confidentialite" },
+};
 
 const EXPLOITANT = "M2S Consulting";
 const CONTACT = "rgpd@valyo.si";

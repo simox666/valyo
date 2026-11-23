@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Règles de la communauté" };
+export const metadata: Metadata = {
+  title: "Règles de la communauté",
+  description: "Les règles de la communauté Valyo : ce qui est attendu des membres, ce qui est interdit et comment fonctionne la modération.",
+  alternates: { canonical: "/regles" },
+};
 
 // Version provisoire : les règles définitives restent à valider par le porteur du projet avant la mise en production.
 export default function RulesPage() {

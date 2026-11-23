@@ -25,6 +25,7 @@ import { ThemeTile } from "@/components/ThemeTile";
 import { Avatar } from "@/components/Avatar";
 import { MentionText } from "@/components/MentionText";
 import { getSyntheses } from "@/lib/actus/synthesis.ts";
+import { JsonLd, PUBLISHER, SITE_URL } from "@/components/JsonLd";
 import { PostGallery } from "@/components/PostGallery";
 import { PinButton } from "@/components/PinButton";
 import { Comments } from "./Comments";
@@ -93,8 +94,46 @@ export default async function PostPage({ params }: { params: Params }) {
   // Article republié sous licence libre : l'attribution (auteur, licence, lien) suit le séparateur.
   const [mainBody, attribution] = post.sourceName ? post.body.split("\n\n———\n\n") : [post.body];
 
+  // Données structurées (SEO) : une actu de l'agent ou importée est un article édité par
+  // Valyo ; une publication de membre est un message de forum, avec son auteur et ses réponses.
+  const url = `${SITE_URL}/p/${post.id}`;
+  const absolute = (path: string) => (path.startsWith("http") ? path : `${SITE_URL}${path}`);
+  const picture = post.imageUrl ?? (post.images[0] ? `/media/${post.images[0].id}` : null);
+  const editorial = post.author.isAgent || Boolean(post.sourceName);
+  const structured: Record<string, unknown>[] = post.status !== "published" ? [] : [
+    {
+      "@context": "https://schema.org",
+      "@type": editorial ? "Article" : "DiscussionForumPosting",
+      headline: post.title.slice(0, 110),
+      text: mainBody.replace(/\s+/g, " ").trim().slice(0, 5000),
+      url,
+      mainEntityOfPage: url,
+      datePublished: post.createdAt,
+      dateModified: post.editedAt ?? post.createdAt,
+      ...(picture ? { image: absolute(picture) } : {}),
+      ...(post.themes.length ? { articleSection: post.themes.map((t) => t.name) } : {}),
+      // Article republié : l'auteur est la source d'origine (NASA…), Valyo n'est que l'éditeur.
+      author: post.sourceName ? { "@type": "Organization", name: post.sourceName }
+        : editorial || !post.author.handle ? PUBLISHER
+        : { "@type": "Person", name: post.author.displayName, url: `${SITE_URL}/m/${post.author.handle}` },
+      publisher: PUBLISHER,
+      commentCount: post.commentCount,
+      interactionStatistic: { "@type": "InteractionCounter", interactionType: "https://schema.org/CommentAction", userInteractionCount: post.commentCount },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { name: "Valyo", item: SITE_URL },
+        ...(post.themes[0] ? [{ name: post.themes[0].name, item: `${SITE_URL}/theme/${post.themes[0].slug}` }] : []),
+        { name: post.title, item: url },
+      ].map((entry, i) => ({ "@type": "ListItem", position: i + 1, ...entry })),
+    },
+  ];
+
   return (
     <div className="wide-page space-y-4">
+      {structured.length > 0 && <JsonLd data={structured} />}
       <Link href="/" className="btn-link">← Fil</Link>
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
       <div className="min-w-0 space-y-6">
