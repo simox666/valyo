@@ -16,7 +16,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-extrabold tracking-tight">Paramètres</h1>
+      <h1 className="text-2xl font-bold">Paramètres</h1>
 
       <section className="card space-y-4 p-5" aria-labelledby="compte-titre">
         <h2 id="compte-titre" className="text-lg font-bold">
@@ -27,7 +27,7 @@ export default async function SettingsPage() {
           <dd>@{profile?.handle}</dd>
           <dt className="font-semibold">Adresse e-mail</dt>
           <dd>
-            {profile?.email} <span className="text-neutral-500">(visible par vous seul)</span>
+            {profile?.email} <span className="text-muted">(visible par vous seul)</span>
           </dd>
         </dl>
       </section>

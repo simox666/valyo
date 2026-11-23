@@ -68,7 +68,7 @@ export default async function PostPage({ params }: { params: Params }) {
     return (
       <div className="card p-6 text-center">
         <h1 className="text-xl font-bold">Publication indisponible</h1>
-        <p className="mt-2 text-neutral-600">
+        <p className="mt-2 text-soft">
           {post.status === "removed" ? "Cette publication a été retirée par la modération." : "Cette publication a été supprimée par son auteur."}
         </p>
         <Link href="/" className="btn-secondary mt-4">
@@ -151,7 +151,7 @@ export default async function PostPage({ params }: { params: Params }) {
               <AuthorName author={post.author} avatar={false} />
               <span className="chip">{KIND_LABELS[post.kind]}</span>
               {post.kind === "question" && post.bestCommentId && (
-                <a href="#commentaires" className="chip bg-[#F0FAF2] font-semibold text-[#15803D] ring-1 ring-[#BBE3C4]">✓ Résolue</a>
+                <a href="#commentaires" className="chip bg-success-soft font-semibold text-success ring-1 ring-success-line">✓ Résolue</a>
               )}
             </>
           )}
@@ -213,14 +213,14 @@ export default async function PostPage({ params }: { params: Params }) {
         {/* Une seule source : déjà proposée à côté du bouton de synthèse ; la liste ne sert qu'à partir de deux. */}
         {post.sources.length > 1 && (
           <section className="mt-5 border-t border-line pt-4">
-            <h2 className="label-mono text-neutral-600">Sources</h2>
+            <h2 className="label-mono text-soft">Sources</h2>
             <ul className="mt-2 space-y-1">
               {post.sources.map((source) => (
                 <li key={source}>
                   <a href={source} {...EXTERNAL} className="btn-link">
                     {displayHost(source)}
                   </a>
-                  <span className="ml-2 break-all text-sm text-neutral-500">{source}</span>
+                  <span className="ml-2 break-all text-sm text-muted">{source}</span>
                 </li>
               ))}
             </ul>
@@ -228,18 +228,18 @@ export default async function PostPage({ params }: { params: Params }) {
         )}
 
         {post.demoUrl && (
-          <section className="mt-5 rounded-xl bg-accent-soft p-4">
+          <section className="mt-5 rounded-card bg-accent-soft p-4">
             <a href={post.demoUrl} {...EXTERNAL} className="btn-primary">
               Tester ↗
             </a>
-            <p className="mt-2 text-sm text-neutral-700">
+            <p className="mt-2 text-sm text-soft">
               Ouvre un service externe ({displayHost(post.demoUrl)}), non géré par Valyo. Ses conditions d’accès et son éventuel coût ne sont pas vérifiés.
             </p>
           </section>
         )}
 
 
-        <div className="mt-5 flex flex-wrap items-center gap-0.5 border-t border-[#ECECE5] pt-2">
+        <div className="mt-5 flex flex-wrap items-center gap-0.5 border-t border-hairline pt-2">
           <ReactionBar postId={post.id} initial={reactions} signedIn={Boolean(user?.onboarded)} canReact={Boolean(viewer?.canContribute)} variant="inline" />
           <RoomsPopover postId={post.id} postTitle={post.title} roomCount={roomCount} signedIn={Boolean(user?.onboarded)} canCreate={Boolean(viewer?.canContribute)} />
           <RelayButton postId={post.id} initial={{ count: relay.count, mine: relay.mine, myNote: relay.myNote }} signedIn={Boolean(user?.onboarded)} canRelay={Boolean(viewer?.canContribute)} />

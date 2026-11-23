@@ -27,9 +27,9 @@ export default async function NewRoomPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-extrabold tracking-tight">Créer un salon</h1>
+      <h1 className="text-2xl font-bold">Créer un salon</h1>
       {origin && (
-        <p className="text-neutral-600">
+        <p className="text-soft">
           Depuis la publication <Link href={`/p/${origin.id}`} className="btn-link">{origin.title}</Link>. Le thème est prérempli et la
           publication restera associée au salon.
         </p>
@@ -37,13 +37,13 @@ export default async function NewRoomPage({ searchParams }: { searchParams: Prom
       {existing && existing.rooms.length > 0 && (
         <section className="card p-5" aria-labelledby="existants">
           <h2 id="existants" className="text-lg font-bold">Des salons discutent déjà de cette publication</h2>
-          <p className="mt-1 text-sm text-neutral-600">Rejoindre une discussion existante évite de la disperser. Créer un autre angle reste possible dessous.</p>
+          <p className="mt-1 text-sm text-soft">Rejoindre une discussion existante évite de la disperser. Créer un autre angle reste possible dessous.</p>
           <ul className="mt-2 divide-y divide-line">
             {existing.rooms.map((room) => (
               <li key={room.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
                 <span>
                   <Link href={`/s/${room.id}`} className="font-semibold hover:underline">{room.name}</Link>{" "}
-                  <span className="text-sm text-neutral-500">{room.members} membre{room.members > 1 ? "s" : ""} · {room.recentMessages} message{room.recentMessages > 1 ? "s" : ""} sur 7 jours</span>
+                  <span className="text-sm text-muted">{room.members} membre{room.members > 1 ? "s" : ""} · {room.recentMessages} message{room.recentMessages > 1 ? "s" : ""} sur 7 jours</span>
                 </span>
                 <Link href={`/s/${room.id}`} className="btn-primary px-3 py-1.5">Rejoindre</Link>
               </li>

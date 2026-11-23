@@ -72,7 +72,7 @@ export function MemberBar({ roomId, roomName, following, isOwner, archived }: { 
       )}
       {isOwner && confirmOpen && (
         <span className="inline-flex flex-wrap items-center gap-2">
-          <label htmlFor="confirm-suppression-salon" className="text-sm text-neutral-700">
+          <label htmlFor="confirm-suppression-salon" className="text-sm text-soft">
             Définitif pour tout le monde, messages compris. Tapez le nom du salon :
           </label>
           <input
@@ -112,7 +112,7 @@ export function InviteButton({ roomId }: { roomId: string }) {
     if (result.ok) setUrl(String(result.data.url));
   }
   return (
-    <div className="rounded-xl border border-line p-3 text-sm">
+    <div className="rounded-card border border-line p-3 text-sm">
       <button type="button" disabled={busy} onClick={create} className="btn-secondary px-3 py-1.5">
         Créer un lien d’invitation (7 jours, usage unique)
       </button>
@@ -175,7 +175,7 @@ export function MemberActions({ roomId, userId, role, viewerIsOwner }: { roomId:
 export function TransferBanner({ transferId, roomName }: { transferId: string; roomName: string }) {
   const { busy, error, call } = useCall();
   return (
-    <div role="status" className="rounded-xl border border-amber-300 bg-amber-50 p-3">
+    <div role="status" className="rounded-card border border-amber-300 bg-amber-50 p-3">
       <p className="font-semibold">On vous propose la propriété du salon « {roomName} ».</p>
       <div className="mt-2 flex gap-3">
         <button type="button" disabled={busy} onClick={() => call("POST", `/api/transfers/${transferId}`, { answer: "accept" })} className="btn-primary px-3 py-1.5">

@@ -37,14 +37,14 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
 
   return (
     <div className="wide-page space-y-6">
-      <header className="rounded-2xl bg-accent p-6 text-white sm:p-8">
+      <header className="rounded-card bg-ink p-5 text-white sm:p-6">
         <p className="label-mono text-white/70">Premiers pas</p>
-        <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Bienvenue, {user.displayName ?? user.handle} !</h1>
+        <h1 className="mt-2 text-2xl font-bold sm:text-3xl">Bienvenue, {user.displayName ?? user.handle} !</h1>
         <p className="mt-2 max-w-2xl text-white/85">
           Valyo, c’est surtout les échanges. Voici trois façons de rejoindre la conversation dès aujourd’hui
           {steps.themeNames.length ? <> — en commençant par vos thèmes : {steps.themeNames.join(", ")}.</> : "."}
         </p>
-        <div className="mt-5 rounded-xl bg-white/10 p-4">
+        <div className="mt-5 rounded-card bg-white/10 p-4">
           <p className="text-sm font-semibold">{doneCount === 3 ? "Bravo, vous êtes lancé·e !" : `${doneCount} sur 3`}</p>
           <ol className="mt-3 grid gap-2 text-sm sm:grid-cols-3">
             <Check ok={done[0]} label="Rejoindre un salon" />
@@ -57,8 +57,8 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
       {!steps.progress.repliedOrPosted && (
         <section className="card flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
           <div className="min-w-0">
-            <h2 className="text-lg font-extrabold">Présentez-vous à la communauté</h2>
-            <p className="mt-1 max-w-xl text-sm text-neutral-600">
+            <h2 className="text-lg font-bold">Présentez-vous à la communauté</h2>
+            <p className="mt-1 max-w-xl text-sm text-soft">
               Qui vous êtes, ce qui vous passionne, ce qu’on peut vous demander. Les membres de vos thèmes viendront vous souhaiter la bienvenue.
             </p>
           </div>
@@ -68,8 +68,8 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
 
       {nothingYet ? (
         <section className="card space-y-3 p-6">
-          <h2 className="text-lg font-extrabold">La communauté démarre : vous faites partie des premiers.</h2>
-          <p className="text-neutral-700">
+          <h2 className="text-lg font-bold">La communauté démarre : vous faites partie des premiers.</h2>
+          <p className="text-soft">
             Il n’y a pas encore d’échange récent à vous proposer. C’est le moment idéal pour lancer le premier sujet : une question attire
             souvent les premières réponses.
           </p>
@@ -82,15 +82,15 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
         <div className="grid items-start gap-6 lg:grid-cols-2">
           <section className="card p-5 sm:p-6 lg:col-span-2" aria-labelledby="pp-questions">
             <p className="label-mono text-accent">1 · Le plus simple</p>
-            <h2 id="pp-questions" className="mt-1 text-lg font-extrabold">Des questions attendent une réponse</h2>
-            <p className="mt-1 text-sm text-neutral-600">Partager ce que vous savez, même brièvement, est la meilleure façon de rencontrer quelqu’un ici.</p>
+            <h2 id="pp-questions" className="mt-1 text-lg font-bold">Des questions attendent une réponse</h2>
+            <p className="mt-1 text-sm text-soft">Partager ce que vous savez, même brièvement, est la meilleure façon de rencontrer quelqu’un ici.</p>
             {steps.questions.length ? (
               <ul className="mt-3 divide-y divide-line">
                 {steps.questions.map((q) => (
                   <li key={q.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                     <div className="min-w-0">
                       <Link href={`/p/${q.id}`} className="font-bold leading-snug hover:underline">{q.title}</Link>
-                      <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-neutral-600">
+                      <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-soft">
                         <span>{q.authorName}</span>
                         <span aria-hidden>·</span>
                         <LocalTime iso={q.createdAt} />
@@ -106,7 +106,7 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
                 ))}
               </ul>
             ) : (
-              <p className="mt-3 text-sm text-neutral-600">
+              <p className="mt-3 text-sm text-soft">
                 Aucune question récente sans vous. <Link href="/publier" className="btn-link">Posez la vôtre →</Link>
               </p>
             )}
@@ -114,8 +114,8 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
 
           <section className="card p-5 sm:p-6" aria-labelledby="pp-salons">
             <p className="label-mono text-accent">2 · À plusieurs</p>
-            <h2 id="pp-salons" className="mt-1 text-lg font-extrabold">Des salons actifs à rejoindre</h2>
-            <p className="mt-1 text-sm text-neutral-600">Des discussions de groupe qui ont eu lieu ces deux dernières semaines.</p>
+            <h2 id="pp-salons" className="mt-1 text-lg font-bold">Des salons actifs à rejoindre</h2>
+            <p className="mt-1 text-sm text-soft">Des discussions de groupe qui ont eu lieu ces deux dernières semaines.</p>
             {steps.rooms.length ? (
               <ul className="mt-3 divide-y divide-line">
                 {steps.rooms.map((r) => (
@@ -126,8 +126,8 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
                         {r.themeName && <span className="chip">{r.themeName}</span>}
                         {r.matchesTheme && <span className="chip bg-accent-soft text-accent">Votre thème</span>}
                       </div>
-                      {r.description && <p className="mt-1 text-sm text-neutral-700">{r.description}</p>}
-                      <p className="mt-1 text-xs text-neutral-600">
+                      {r.description && <p className="mt-1 text-sm text-soft">{r.description}</p>}
+                      <p className="mt-1 text-xs text-soft">
                         {r.members} membre{r.members > 1 ? "s" : ""} · {r.recentMessages} message{r.recentMessages > 1 ? "s" : ""} sur 7 jours
                       </p>
                     </div>
@@ -136,7 +136,7 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
                 ))}
               </ul>
             ) : (
-              <p className="mt-3 text-sm text-neutral-600">
+              <p className="mt-3 text-sm text-soft">
                 Pas de salon actif à vous proposer pour l’instant. <Link href="/salons" className="btn-link">Voir tous les salons →</Link>
               </p>
             )}
@@ -144,8 +144,8 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
 
           <section className="card p-5 sm:p-6" aria-labelledby="pp-membres">
             <p className="label-mono text-accent">3 · Des personnes</p>
-            <h2 id="pp-membres" className="mt-1 text-lg font-extrabold">Des membres actifs à suivre</h2>
-            <p className="mt-1 text-sm text-neutral-600">Leurs publications remonteront dans votre fil « Pour vous ».</p>
+            <h2 id="pp-membres" className="mt-1 text-lg font-bold">Des membres actifs à suivre</h2>
+            <p className="mt-1 text-sm text-soft">Leurs publications remonteront dans votre fil « Pour vous ».</p>
             {steps.members.length ? (
               <ul className="mt-3 divide-y divide-line">
                 {steps.members.map((m) => (
@@ -154,11 +154,11 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
                       <Avatar name={m.displayName} seed={m.handle} size="md" />
                       <div className="min-w-0">
                         <Link href={`/m/${m.handle}`} className="font-bold hover:underline">{m.displayName}</Link>
-                        <p className="text-xs text-neutral-600">
+                        <p className="text-xs text-soft">
                           @{m.handle} · {m.contributions} contribution{m.contributions > 1 ? "s" : ""} en 2 semaines
                         </p>
                         {m.sharedThemes.length > 0 && <p className="mt-1 text-xs font-semibold text-accent">Aime aussi : {m.sharedThemes.join(", ")}</p>}
-                        {m.bio && <p className="mt-1 line-clamp-2 text-sm text-neutral-700">{m.bio}</p>}
+                        {m.bio && <p className="mt-1 line-clamp-2 text-sm text-soft">{m.bio}</p>}
                       </div>
                     </div>
                     {canAct && <FollowButton target="member" keyValue={m.handle} initialFollowing={false} signedIn label="" />}
@@ -166,14 +166,14 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
                 ))}
               </ul>
             ) : (
-              <p className="mt-3 text-sm text-neutral-600">Personne d’actif à vous suggérer pour l’instant : vos premières contributions feront venir les autres.</p>
+              <p className="mt-3 text-sm text-soft">Personne d’actif à vous suggérer pour l’instant : vos premières contributions feront venir les autres.</p>
             )}
           </section>
         </div>
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
-        <p className="text-sm text-neutral-600">Vous retrouverez ces suggestions depuis l’accueil pendant votre première semaine.</p>
+        <p className="text-sm text-soft">Vous retrouverez ces suggestions depuis l’accueil pendant votre première semaine.</p>
         <Link href={next} className="btn-secondary">{next === "/" ? "Aller au fil →" : "Continuer →"}</Link>
       </div>
     </div>

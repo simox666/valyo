@@ -12,8 +12,8 @@ export const metadata: Metadata = { title: "Inviter des proches", robots: { inde
 const STATE: Record<InvitationView["state"], { label: string; cls: string }> = {
   active: { label: "En attente", cls: "bg-accent-soft text-accent" },
   utilisee: { label: "A rejoint Valyo", cls: "bg-accent text-white" },
-  revoquee: { label: "Révoquée", cls: "bg-chip text-neutral-600" },
-  expiree: { label: "Expirée", cls: "bg-chip text-neutral-600" },
+  revoquee: { label: "Révoquée", cls: "bg-chip text-soft" },
+  expiree: { label: "Expirée", cls: "bg-chip text-soft" },
 };
 
 function InvitationRow({ inv, showCreator }: { inv: InvitationView; showCreator?: boolean }) {
@@ -24,7 +24,7 @@ function InvitationRow({ inv, showCreator }: { inv: InvitationView; showCreator?
           <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${STATE[inv.state].cls}`}>{STATE[inv.state].label}</span>
           <span className="font-semibold">{inv.note || "Sans note"}</span>
         </p>
-        <p className="mt-1 text-xs text-neutral-600">
+        <p className="mt-1 text-xs text-soft">
           {showCreator && inv.creatorName ? <>Par {inv.creatorName} · </> : null}
           Créée <LocalTime iso={inv.createdAt} />
           {inv.state === "active" && <> · expire <LocalTime iso={inv.expiresAt} mode="full" /></>}
@@ -51,9 +51,9 @@ export default async function InvitePage() {
 
   return (
     <div className="wide-page space-y-6">
-      <header className="rounded-2xl bg-accent p-6 text-white sm:p-8">
+      <header className="rounded-card bg-ink p-5 text-white sm:p-6">
         <p className="label-mono text-white/70">Bêta</p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight">Inviter des proches</h1>
+        <h1 className="mt-2 text-2xl font-bold sm:text-3xl">Inviter des proches</h1>
         <p className="mt-2 max-w-2xl text-white/85">
           {mode === "invitation"
             ? "Valyo est pour l’instant sur invitation. Invitez des personnes curieuses qui aimeront en discuter : c’est ce qui fera vivre la communauté."
@@ -63,33 +63,33 @@ export default async function InvitePage() {
       </header>
 
       {user.status !== "active" ? (
-        <p className="card p-5 text-neutral-600">Votre compte ne peut pas inviter pour le moment.</p>
+        <p className="card p-5 text-soft">Votre compte ne peut pas inviter pour le moment.</p>
       ) : (
         <section className="card p-5 sm:p-6" aria-labelledby="nouvelle-invitation">
-          <h2 id="nouvelle-invitation" className="mb-3 text-lg font-extrabold">Nouvelle invitation</h2>
+          <h2 id="nouvelle-invitation" className="mb-3 text-lg font-bold">Nouvelle invitation</h2>
           <CreateInvitation remaining={remaining} />
         </section>
       )}
 
       <section className="card p-5 sm:p-6" aria-labelledby="mes-invitations">
-        <h2 id="mes-invitations" className="text-lg font-extrabold">Mes invitations</h2>
+        <h2 id="mes-invitations" className="text-lg font-bold">Mes invitations</h2>
         {mine.length ? (
           <ul className="mt-1 divide-y divide-line">{mine.map((inv) => <InvitationRow key={inv.id} inv={inv} />)}</ul>
         ) : (
-          <p className="mt-2 text-sm text-neutral-600">Vous n’avez encore invité personne.</p>
+          <p className="mt-2 text-sm text-soft">Vous n’avez encore invité personne.</p>
         )}
       </section>
 
       {user.isAdmin && (
         <section className="card p-5 sm:p-6" aria-labelledby="toutes-invitations">
-          <h2 id="toutes-invitations" className="text-lg font-extrabold">Toutes les invitations (administration)</h2>
-          <p className="mt-1 text-sm text-neutral-600">
+          <h2 id="toutes-invitations" className="text-lg font-bold">Toutes les invitations (administration)</h2>
+          <p className="mt-1 text-sm text-soft">
             Mode d’inscription : <strong>{mode === "invitation" ? "sur invitation" : "ouvert"}</strong> (variable <code>INSCRIPTIONS</code>). Quota par membre : {memberInviteQuota()}.
           </p>
           {all.length ? (
             <ul className="mt-1 divide-y divide-line">{all.map((inv) => <InvitationRow key={inv.id} inv={inv} showCreator />)}</ul>
           ) : (
-            <p className="mt-2 text-sm text-neutral-600">Aucune invitation.</p>
+            <p className="mt-2 text-sm text-soft">Aucune invitation.</p>
           )}
         </section>
       )}

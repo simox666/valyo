@@ -23,23 +23,23 @@ export default async function ContestationPage({ searchParams }: { searchParams:
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-extrabold tracking-tight">Contester une sanction</h1>
+      <h1 className="text-2xl font-bold">Contester une sanction</h1>
       {!holder ? (
         <div className="card space-y-3 p-5">
-          <p className="text-neutral-700">
+          <p className="text-soft">
             Un compte banni ne peut plus se connecter, mais garde le droit de contester sa sanction dans les 14 jours (une fois par
             sanction). Indiquez l’adresse e-mail du compte : un lien de contestation à durée limitée lui sera envoyé. Ce lien n’ouvre
             aucune session et ne rétablit aucun accès.
           </p>
           {token && <p role="alert" className="error-text">Lien de contestation expiré ou déjà utilisé : demandez-en un nouveau.</p>}
           <AccessRequestForm />
-          <p className="text-sm text-neutral-600">Compte actif ou suspendu : utilisez plutôt la page « Mes sanctions » après connexion.</p>
+          <p className="text-sm text-soft">Compte actif ou suspendu : utilisez plutôt la page « Mes sanctions » après connexion.</p>
         </div>
       ) : (
         <div className="card p-5">
-          <p className="text-neutral-700">Sanctions de votre compte. La sanction reste active pendant l’examen d’une contestation.</p>
+          <p className="text-soft">Sanctions de votre compte. La sanction reste active pendant l’examen d’une contestation.</p>
           {sanctions.length === 0 ? (
-            <p className="mt-3 text-neutral-600">Aucune décision de modération ne concerne ce compte.</p>
+            <p className="mt-3 text-soft">Aucune décision de modération ne concerne ce compte.</p>
           ) : (
             <ul className="mt-2 divide-y divide-line">
               {sanctions.map((s) => (
@@ -48,7 +48,7 @@ export default async function ContestationPage({ searchParams }: { searchParams:
                     {KIND_LABELS[s.kind as string] ?? (s.kind as string)}
                     {s.duration_days ? ` (${s.duration_days} jours)` : ""} — <LocalTime iso={new Date(s.created_at as string).toISOString()} mode="full" />
                   </p>
-                  <p className="text-sm text-neutral-700">Motif : {s.reason as string}</p>
+                  <p className="text-sm text-soft">Motif : {s.reason as string}</p>
                   {s.appeal_id ? (
                     <p className="mt-1 text-sm">
                       Contestation déjà déposée —{" "}

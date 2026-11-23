@@ -282,9 +282,9 @@ export function RoomChat({ roomId, initialMessages, initialCursor, initialHasMor
   const firstUnread = messages.find((m) => m.seq > lastReadSeq && m.authorId !== viewerId)?.seq;
   const day = (m: ChatMessage) => localDates ? new Date(m.createdAt).toLocaleDateString("fr-BE", { dateStyle: "long" }) : m.createdAt.slice(0, 10);
   return <div className="min-w-0">
-    <p className="flex items-center gap-2 text-xs text-neutral-500" role="status"><span aria-hidden className={`h-1.5 w-1.5 rounded-full ${connection === "en direct" ? "bg-accent" : "bg-neutral-400"}`} />{connection === "en direct" ? "Discussion en direct" : connection === "reconnexion" ? "Reconnexion en cours…" : connection === "acces retire" ? "Accès retiré" : "Connexion…"}</p>
+    <p className="flex items-center gap-2 text-xs text-muted" role="status"><span aria-hidden className={`h-1.5 w-1.5 rounded-full ${connection === "en direct" ? "bg-accent" : "bg-neutral-400"}`} />{connection === "en direct" ? "Discussion en direct" : connection === "reconnexion" ? "Reconnexion en cours…" : connection === "acces retire" ? "Accès retiré" : "Connexion…"}</p>
     {archived && <p className="mt-2 text-sm">Salon archivé : la discussion reste consultable.</p>}
-    <div ref={scrollRef} className="mt-3 h-[min(52dvh,34rem)] min-h-56 overflow-y-auto overscroll-contain rounded-xl bg-paper p-3 sm:p-4" tabIndex={0} role="region" aria-label="Historique de la discussion" onScroll={() => {
+    <div ref={scrollRef} className="mt-3 h-[min(52dvh,34rem)] min-h-56 overflow-y-auto overscroll-contain rounded-card bg-paper p-3 sm:p-4" tabIndex={0} role="region" aria-label="Historique de la discussion" onScroll={() => {
       const box = scrollRef.current;
       if (!box) return;
       followsBottom.current = box.scrollHeight - box.scrollTop - box.clientHeight < 32;
@@ -297,7 +297,7 @@ export function RoomChat({ roomId, initialMessages, initialCursor, initialHasMor
           {m.seq === firstUnread && <p className="mb-2 border-t-2 border-accent pt-2 text-xs font-bold text-accent">Nouveaux messages</p>}
           <div className={`group max-w-[94%] rounded-2xl px-3 py-2.5 sm:max-w-[88%] sm:px-4 ${m.authorId === viewerId ? "ml-auto rounded-br-sm bg-accent-soft" : "rounded-bl-sm border border-line bg-white"}`}>
           <p className="mb-1 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-sm"><span className="font-semibold">{m.authorName}</span>{" "}<span className="text-xs text-soft"><LocalTime iso={m.createdAt} mode="time" />{m.editedAt && !m.deleted && " · modifié"}</span></p>
-          {m.deleted ? <p className="italic text-neutral-500">{m.removedByModeration ? "Message retiré par la modération." : "Message supprimé par son auteur."}</p> : editing?.id === m.id ? <form onSubmit={saveEdit} className="mt-2 space-y-2">
+          {m.deleted ? <p className="italic text-muted">{m.removedByModeration ? "Message retiré par la modération." : "Message supprimé par son auteur."}</p> : editing?.id === m.id ? <form onSubmit={saveEdit} className="mt-2 space-y-2">
             <label className="label" htmlFor={`edit-${m.id}`}>Modifier votre message</label>
             <MentionTextarea id={`edit-${m.id}`} className="field" value={editing.body} onValueChange={(body) => setEditing({ id: m.id, body })} room={roomId} maxLength={2000} required rows={3} />
             <div className="flex flex-wrap gap-3"><button className="btn-primary" disabled={saving || !editing.body.trim()}>Enregistrer</button><button type="button" className="btn-link" onClick={() => setEditing(null)}>Annuler</button></div>
@@ -311,7 +311,7 @@ export function RoomChat({ roomId, initialMessages, initialCursor, initialHasMor
           </div>
         </li>)}
         {pending.map((p) => <li key={p.clientId} className="opacity-70"><p className="text-sm font-semibold">Vous · {p.state === "envoi" ? "envoi en cours…" : "échec de l’envoi"}</p><MessageBody body={p.body} />{p.state === "echec" && <button type="button" className="btn-link" onClick={() => send(p.clientId, p.body)}>Relancer sans doublon</button>}</li>)}
-        {!messages.length && !pending.length && <li className="text-neutral-600">{revoked.current ? "Discussion indisponible." : "Aucun message pour l’instant."}</li>}
+        {!messages.length && !pending.length && <li className="text-soft">{revoked.current ? "Discussion indisponible." : "Aucun message pour l’instant."}</li>}
       </ol>
       <div ref={bottomRef} className="h-px" />
     </div>
@@ -321,12 +321,12 @@ export function RoomChat({ roomId, initialMessages, initialCursor, initialHasMor
       setNewMessages(0); setReadTick((n) => n + 1);
     }}>{newMessages} nouveau{newMessages > 1 ? "x" : ""} message{newMessages > 1 ? "s" : ""} — aller en bas</button>}
     {notice && <p role="alert" className="error-text mt-2">{notice}</p>}
-    {writable && <form onSubmit={submit} className="mt-4 space-y-2 rounded-xl border border-line bg-white p-3">
+    {writable && <form onSubmit={submit} className="mt-4 space-y-2 rounded-card border border-line bg-white p-3">
       <label className="label" htmlFor={`compose-${roomId}`}>Votre message</label>
       <MentionTextarea id={`compose-${roomId}`} value={draft} onValueChange={setDraft} room={roomId} maxLength={2000} rows={2} placeholder="Partagez une idée, posez une question…" className="field w-full resize-y border-0 bg-paper" aria-describedby={`hint-${roomId}`} onKeyDown={(e) => {
         if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && e.keyCode !== 229) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); }
       }} />
-      <div className="flex flex-wrap items-center justify-between gap-2"><p id={`hint-${roomId}`} className="text-xs text-neutral-500">Entrée : envoyer · Maj+Entrée : nouvelle ligne · 2 000 caractères maximum{draft.length >= 1800 && ` (${draft.length}/2 000)`}</p><button type="submit" className="btn-primary" disabled={!draft.trim()}>Envoyer</button></div>
+      <div className="flex flex-wrap items-center justify-between gap-2"><p id={`hint-${roomId}`} className="text-xs text-muted">Entrée : envoyer · Maj+Entrée : nouvelle ligne · 2 000 caractères maximum{draft.length >= 1800 && ` (${draft.length}/2 000)`}</p><button type="submit" className="btn-primary" disabled={!draft.trim()}>Envoyer</button></div>
       <VoiceRecorder roomId={roomId} onSent={upsert} onError={setNotice} />
     </form>}
   </div>;

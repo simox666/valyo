@@ -92,7 +92,7 @@ export function ProgressToast({ data }: { data: ProgressData | null }) {
   if (!current) return null;
   return (
     <div role="status" aria-live="polite" className="fixed inset-x-4 bottom-[84px] z-40 mx-auto max-w-sm animate-[toast-in_.35s_ease-out] lg:inset-x-auto lg:bottom-6 lg:right-6">
-      <div className="flex items-start gap-3 rounded-xl bg-ink p-3.5 pr-9 text-white shadow-xl">
+      <div className="flex items-start gap-3 rounded-card bg-ink p-3.5 pr-9 text-white shadow-xl">
         {current.slug ? (
           <ThemeTile slug={current.slug} size="lg" active />
         ) : (

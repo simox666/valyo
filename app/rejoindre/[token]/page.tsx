@@ -20,11 +20,11 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
   if (!invitation) {
     return (
       <div className="mx-auto max-w-md space-y-4">
-        <h1 className="text-2xl font-extrabold tracking-tight">Invitation indisponible</h1>
-        <p className="text-neutral-700">
+        <h1 className="text-2xl font-bold">Invitation indisponible</h1>
+        <p className="text-soft">
           Ce lien d’invitation a déjà servi, a été révoqué ou a expiré. Demandez-en un nouveau à la personne qui vous l’a envoyé.
         </p>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-soft">
           Vous avez déjà un compte ? <Link href="/connexion" className="btn-link">Se connecter</Link>
         </p>
       </div>
@@ -33,9 +33,9 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
-      <section className="rounded-2xl bg-accent p-6 text-white sm:p-8">
+      <section className="rounded-card bg-ink p-5 text-white sm:p-6">
         <p className="label-mono text-white/70">Invitation</p>
-        <h1 className="mt-2 text-2xl font-extrabold tracking-tight">{invitation.inviterName} vous invite sur Valyo</h1>
+        <h1 className="mt-2 text-2xl font-bold">{invitation.inviterName} vous invite sur Valyo</h1>
         <p className="mt-3 text-white/85">
           Une communauté francophone pour suivre les avancées en IA, robotique et espace, les comprendre, et en discuter — par écrit
           aujourd’hui, à voix haute bientôt.
@@ -47,8 +47,8 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
         </ul>
       </section>
       <section className="card p-6">
-        <h2 className="text-lg font-extrabold">Créer votre compte</h2>
-        <p className="mt-1 text-sm text-neutral-600">Indiquez votre adresse e-mail : vous recevrez un lien pour terminer l’inscription. Pas de mot de passe.</p>
+        <h2 className="text-lg font-bold">Créer votre compte</h2>
+        <p className="mt-1 text-sm text-soft">Indiquez votre adresse e-mail : vous recevrez un lien pour terminer l’inscription. Pas de mot de passe.</p>
         <LoginForm next="/" invitation={token} />
       </section>
     </div>

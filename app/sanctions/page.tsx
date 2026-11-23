@@ -24,14 +24,14 @@ export default async function SanctionsPage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-extrabold tracking-tight">Mes sanctions</h1>
+      <h1 className="text-2xl font-bold">Mes sanctions</h1>
       {user.status === "suspended" && (
         <p role="alert" className="card border-amber-300 bg-amber-50 p-3">
           Votre compte est actuellement suspendu : la lecture reste possible, pas la contribution.
         </p>
       )}
       {sanctions.length === 0 ? (
-        <p className="card p-5 text-neutral-600">Aucune décision de modération ne concerne votre compte.</p>
+        <p className="card p-5 text-soft">Aucune décision de modération ne concerne votre compte.</p>
       ) : (
         <ul className="card divide-y divide-line p-5">
           {sanctions.map((s) => (
@@ -40,7 +40,7 @@ export default async function SanctionsPage() {
                 {KIND_LABELS[s.kind as string] ?? (s.kind as string)}
                 {s.duration_days ? ` (${s.duration_days} jours)` : ""} — <LocalTime iso={new Date(s.created_at as string).toISOString()} mode="full" />
               </p>
-              <p className="text-sm text-neutral-700">Motif : {s.reason as string}</p>
+              <p className="text-sm text-soft">Motif : {s.reason as string}</p>
               {s.appeal_id ? (
                 <p className="mt-1 text-sm">
                   Contestation envoyée le <LocalTime iso={new Date(s.appeal_at as string).toISOString()} mode="full" /> —{" "}

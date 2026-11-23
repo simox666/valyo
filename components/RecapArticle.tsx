@@ -25,7 +25,7 @@ const EXTERNAL = { target: "_blank", rel: "noopener noreferrer nofollow ugc" } a
 export function RecapArticle({ items }: { items: RecapItemView[] }) {
   return (
     <div className="mt-4 space-y-2">
-      <p className="rounded-xl bg-accent-soft p-3 text-sm">
+      <p className="rounded-card bg-accent-soft p-3 text-sm">
         Récapitulatif rédigé automatiquement par l’agent éditorial à partir des sources citées, puis vérifié. Signalez toute erreur : elle sera
         corrigée ou retirée.
       </p>
@@ -56,7 +56,7 @@ export function RecapArticle({ items }: { items: RecapItemView[] }) {
               </p>
             )}
             {item.correction && (
-              <p className="mt-2 text-sm italic text-neutral-600">
+              <p className="mt-2 text-sm italic text-soft">
                 Corrigé le <LocalTime iso={new Date(item.correction.le).toISOString()} mode="full" /> — {item.correction.motif}
               </p>
             )}

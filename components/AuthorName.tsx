@@ -5,7 +5,7 @@ import { Avatar } from "./Avatar";
 export function AuthorName({ author, avatar = true }: { author: Author; avatar?: boolean }) {
   if (author.isDeleted || !author.handle) {
     return (
-      <span className="inline-flex items-center gap-1.5 text-neutral-500">
+      <span className="inline-flex items-center gap-1.5 text-muted">
         {avatar && <Avatar name={author.displayName} size="xs" deleted />}
         {author.displayName}
       </span>

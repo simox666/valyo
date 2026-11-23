@@ -46,7 +46,7 @@ export function RoomMeetups({ roomId, initial, canManage }: { roomId: string; in
   if (!meetups.length && !canManage) return null;
   return (
     <section className="card p-5">
-      <h2 className="flex items-center gap-1.5 text-sm font-extrabold">
+      <h2 className="flex items-center gap-1.5 text-sm font-bold">
         <span aria-hidden>📅</span> Rendez-vous
       </h2>
       {meetups.length ? (
@@ -69,7 +69,7 @@ export function RoomMeetups({ roomId, initial, canManage }: { roomId: string; in
       {canManage && (
         <>
           <button type="button" onClick={() => dialog.current?.showModal()} className="btn-secondary mt-3 w-full">+ Proposer un rendez-vous</button>
-          <dialog ref={dialog} aria-label="Proposer un rendez-vous" className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-xl bg-white p-0 shadow-xl backdrop:bg-ink/30"
+          <dialog ref={dialog} aria-label="Proposer un rendez-vous" className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-card bg-white p-0 shadow-xl backdrop:bg-ink/30"
             onClick={(e) => { if (e.target === dialog.current) dialog.current?.close(); }}>
             <form onSubmit={create} className="space-y-3 p-4 sm:p-5">
               <p className="label-mono">Nouveau rendez-vous</p>

@@ -23,11 +23,11 @@ export function LoginForm({ next, invitation }: { next: string; invitation?: str
     return (
       <div className="card mt-6 p-5" role="status">
         <p className="font-semibold">Vérifiez votre boîte de réception.</p>
-        <p className="mt-1 text-neutral-700">
+        <p className="mt-1 text-soft">
           Un lien de connexion a été envoyé à <strong>{email}</strong>. Il est valable 15 minutes et ne sert qu’une fois.
         </p>
         {sent.devLink && (
-          <div className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm">
+          <div className="mt-4 rounded-card border border-amber-300 bg-amber-50 p-3 text-sm">
             <p className="font-semibold">Mode développement : aucun e-mail n’a été envoyé.</p>
             <p className="mt-1">Le service d’envoi n’est pas configuré. Utilisez ce lien local :</p>
             <a href={sent.devLink} className="mt-2 block font-semibold text-accent underline">

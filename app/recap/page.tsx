@@ -54,16 +54,16 @@ export default async function RecapPage() {
 
   return (
     <div className="wide-page space-y-6">
-      <header className="rounded-2xl bg-accent p-6 text-white sm:p-8">
+      <header className="rounded-card bg-ink p-5 text-white sm:p-6">
         <p className="label-mono text-white/70">Le récap</p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight">L’essentiel des sciences et de la tech, trois fois par semaine.</h1>
+        <h1 className="mt-2 text-2xl font-bold sm:text-3xl">L’essentiel des sciences et de la tech, trois fois par semaine.</h1>
         <p className="mt-3 max-w-2xl text-white/85">
           Lundi, mercredi et vendredi à 7 h : une sélection de nouvelles en IA, robotique et espace, résumées fidèlement, avec leurs
           sources et leur statut. Chaque résumé est vérifié contre ses sources avant d’être publié.
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-4">
           {agent && (
-            <div className="rounded-xl bg-white p-1">
+            <div className="rounded-card bg-white p-1">
               <FollowButton target="member" keyValue={agent.handle} initialFollowing={following} signedIn={signedIn} label="le récap" />
             </div>
           )}
@@ -86,14 +86,14 @@ export default async function RecapPage() {
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
           <section className="card min-w-0 p-5 sm:p-6" aria-labelledby="exemple-recap">
             <p className="inline-block rounded-full bg-amber-100 px-3 py-1 label-mono text-amber-900">Exemple fictif — aperçu du format</p>
-            <h2 id="exemple-recap" className="mt-3 text-2xl font-extrabold tracking-tight">À quoi ressemblera un récapitulatif</h2>
-            <p className="mt-2 text-sm text-neutral-600">Ces nouvelles n’existent pas : elles montrent seulement la présentation. Le premier vrai récap arrive bientôt.</p>
+            <h2 id="exemple-recap" className="mt-3 text-2xl font-bold">À quoi ressemblera un récapitulatif</h2>
+            <p className="mt-2 text-sm text-soft">Ces nouvelles n’existent pas : elles montrent seulement la présentation. Le premier vrai récap arrive bientôt.</p>
             <RecapArticle items={EXEMPLE} />
           </section>
           <aside className="space-y-4">
             <section className="card p-5">
-              <h2 className="font-extrabold">Comment c’est fait</h2>
-              <ol className="mt-3 list-inside list-decimal space-y-2 text-sm text-neutral-700">
+              <h2 className="font-bold">Comment c’est fait</h2>
+              <ol className="mt-3 list-inside list-decimal space-y-2 text-sm text-soft">
                 <li>Collecte auprès de sources primaires vérifiées (laboratoires, agences, revues).</li>
                 <li>Sélection et résumé par l’agent éditorial.</li>
                 <li>Vérification indépendante de chaque phrase contre sa source.</li>
@@ -101,8 +101,8 @@ export default async function RecapPage() {
               </ol>
             </section>
             <section className="card p-5">
-              <h2 className="font-extrabold">Développer un sujet</h2>
-              <p className="mt-2 text-sm text-neutral-700">Une nouvelle vous intrigue ? Elle pourra être développée en article, et discutée dans un salon.</p>
+              <h2 className="font-bold">Développer un sujet</h2>
+              <p className="mt-2 text-sm text-soft">Une nouvelle vous intrigue ? Elle pourra être développée en article, et discutée dans un salon.</p>
               <Link href="/salons" className="btn-link mt-3 inline-block">Découvrir les salons →</Link>
             </section>
           </aside>

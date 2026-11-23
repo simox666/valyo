@@ -134,7 +134,7 @@ export function MentionTextarea({ value, onValueChange, room, containerClassName
       />
       {open && (
         <ul id={listId} role="listbox" aria-label="Mentionner un contact"
-          className={`absolute left-0 z-20 max-h-64 w-full max-w-xs overflow-y-auto rounded-xl border border-line bg-white py-1 shadow-lg ${menu?.up ? "bottom-full mb-1" : "top-full mt-1"}`}>
+          className={`absolute left-0 z-20 max-h-64 w-full max-w-xs overflow-y-auto rounded-card border border-line bg-white py-1 shadow-lg ${menu?.up ? "bottom-full mb-1" : "top-full mt-1"}`}>
           {items.map((c, i) => (
             <li key={c.handle} id={`${listId}-${i}`} role="option" aria-selected={i === index}>
               <button

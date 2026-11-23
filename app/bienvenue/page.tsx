@@ -15,8 +15,8 @@ export default async function WelcomePage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="text-2xl font-extrabold tracking-tight">Bienvenue sur Valyo</h1>
-      <p className="mt-2 text-neutral-700">Choisissez comment vous apparaîtrez auprès des autres membres.</p>
+      <h1 className="text-2xl font-bold">Bienvenue sur Valyo</h1>
+      <p className="mt-2 text-soft">Choisissez comment vous apparaîtrez auprès des autres membres.</p>
       <OnboardingForm next={next} themes={themes} />
     </div>
   );

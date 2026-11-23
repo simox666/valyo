@@ -138,7 +138,7 @@ export function GamesClient({ themes, initialTheme, day, dayLabel, isMember, ser
       <div className="space-y-5">
         <section className="card border-l-4 border-accent p-5 sm:p-6">
           <p className="label-mono text-accent">Défi du jour · {dayLabel}</p>
-          <h2 className="mt-1 text-lg font-extrabold">{DAILY_SIZE} questions, les mêmes pour tout le monde</h2>
+          <h2 className="mt-1 text-lg font-bold">{DAILY_SIZE} questions, les mêmes pour tout le monde</h2>
           {today ? (
             <DailySummary result={today} dayLabel={dayLabel} />
           ) : (
@@ -150,7 +150,7 @@ export function GamesClient({ themes, initialTheme, day, dayLabel, isMember, ser
         </section>
         <section className="card p-5 sm:p-6">
           <p className="label-mono text-accent">Quiz du thème</p>
-          <h2 className="mt-1 text-lg font-extrabold">Cinq questions sur un thème</h2>
+          <h2 className="mt-1 text-lg font-bold">Cinq questions sur un thème</h2>
           <p className="mt-1 text-sm text-soft">Choisissez un thème : une explication accompagne chaque réponse.</p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {themes.map((t) => (
@@ -186,7 +186,7 @@ export function GamesClient({ themes, initialTheme, day, dayLabel, isMember, ser
           <DailySummary result={today} dayLabel={dayLabel} centered />
         ) : (
           <>
-            <p className="mt-3 text-4xl font-extrabold">{score} / {round.length}</p>
+            <p className="mt-3 text-4xl font-bold">{score} / {round.length}</p>
             <p className="mt-2 text-soft">{scoreMessage(score, round.length)}</p>
           </>
         )}
@@ -266,7 +266,7 @@ function GameCard({ label, title, text, onStart }: { label: string; title: strin
   return (
     <section className="card flex flex-col p-5">
       <p className="label-mono text-accent">{label}</p>
-      <h2 className="mt-1 text-lg font-extrabold">{title}</h2>
+      <h2 className="mt-1 text-lg font-bold">{title}</h2>
       <p className="mt-1 flex-1 text-sm text-soft">{text}</p>
       <button type="button" onClick={onStart} className="btn-secondary mt-3 self-start">Jouer</button>
     </section>
@@ -291,7 +291,7 @@ function DailySummary({ result, dayLabel, centered = false }: { result: DailyRes
 
   return (
     <div className={centered ? "flex flex-col items-center" : ""}>
-      <p className="mt-3 text-4xl font-extrabold">{score} / {total}</p>
+      <p className="mt-3 text-4xl font-bold">{score} / {total}</p>
       <ol aria-label="Détail des réponses" className="mt-3 flex gap-1.5">
         {result.marks.map((ok, i) => (
           <li key={i} aria-label={`Question ${i + 1} : ${ok ? "juste" : "ratée"}`} className={`h-5 w-5 rounded ${ok ? "bg-accent" : "bg-chip ring-1 ring-line"}`} />
@@ -329,7 +329,7 @@ function FriseGame({ seed, themeNames, isMember, outcome, onFinish, onReplay, on
     return (
       <section className="card p-6 text-center" aria-live="polite">
         <p className="label-mono text-accent">La frise</p>
-        <p className="mt-3 text-4xl font-extrabold">{score} / {total}</p>
+        <p className="mt-3 text-4xl font-bold">{score} / {total}</p>
         <p className="mt-1 text-sm text-muted">événements à la bonne place</p>
         <p className="mt-2 text-soft">{scoreMessage(score, total)}</p>
         <PointsNote outcome={outcome} isMember={isMember} />

@@ -46,7 +46,7 @@ const needsRun = (s: SynthesisState) => s.status === "none" || s.status === "fai
 function SynthesisView({ postId, s, access, roomHref }: { postId: string; s: ReturnType<typeof useSynthesis>; access: Access; roomHref: string }) {
   const { state, busy, error } = s;
   return (
-    <div className="rounded-lg border-l-2 border-accent bg-[#FBF7F2] p-4 text-[15px] leading-relaxed ring-1 ring-[#ECECE5] sm:p-5" aria-live="polite">
+    <div className="rounded-lg border-l-2 border-accent bg-cream p-4 text-[15px] leading-relaxed ring-1 ring-hairline sm:p-5" aria-live="polite">
       <p className="label-mono text-accent">Synthèse IA de l’article</p>
       {state.status === "ready" ? (
         <div className="mt-2 space-y-3">
@@ -105,8 +105,8 @@ function SynthesisView({ postId, s, access, roomHref }: { postId: string; s: Ret
  */
 function SynthesisButton({ open, onClick, subtle = false }: { open: boolean; onClick: () => void; subtle?: boolean }) {
   const style = subtle
-    ? open ? "h-9 bg-accent-soft px-3 text-accent ring-1 ring-accent" : "h-9 px-3 text-accent ring-1 ring-[#EDDCCB] hover:bg-accent-soft"
-    : open ? "h-10 bg-white px-4 text-accent ring-1 ring-accent" : "h-10 bg-accent px-4 text-white hover:bg-[#9A3412]";
+    ? open ? "h-9 bg-accent-soft px-3 text-accent ring-1 ring-accent" : "h-9 px-3 text-accent ring-1 ring-accent-line hover:bg-accent-soft"
+    : open ? "h-10 bg-white px-4 text-accent ring-1 ring-accent" : "h-10 bg-accent px-4 text-white hover:bg-accent-dark";
   return (
     <button type="button" onClick={onClick} aria-expanded={open}
       className={`inline-flex items-center gap-2 rounded-lg text-sm font-semibold transition ${style}`}>
@@ -170,7 +170,7 @@ export function CardActions({
           <SynthesisView postId={postId} s={s} access={access} roomHref={roomHref} />
         </div>
       )}
-      <div className="mt-4 flex flex-wrap items-center gap-0.5 border-t border-[#ECECE5] pt-2">
+      <div className="mt-4 flex flex-wrap items-center gap-0.5 border-t border-hairline pt-2">
         {reactions}
         <button type="button" onClick={() => setCommentsOpen(!commentsOpen)} aria-expanded={commentsOpen}
           className={`${ACTION} ${commentsOpen ? "bg-chip text-ink" : ""}`} aria-label={`Commentaires${count ? ` (${count})` : ""}`}>

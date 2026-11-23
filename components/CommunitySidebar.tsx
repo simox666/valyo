@@ -11,8 +11,8 @@ function RoomLink({ room }: { room: RoomCard & { unread?: number } }) {
       {room.themeName && <span className="chip">{room.themeName}</span>}
       {room.unread !== undefined && room.unread > 0 && <span className="chip bg-accent-soft text-accent">{room.unread} non lu{room.unread > 1 ? "s" : ""}</span>}
     </div>
-    <p className="mt-1 text-xs text-neutral-600">{room.members} membre{room.members > 1 ? "s" : ""} · {room.recentMessages} message{room.recentMessages > 1 ? "s" : ""} sur 7 jours</p>
-    {room.lastMessageAt && <p className="mt-1 text-xs text-neutral-500">Dernier message <LocalTime iso={room.lastMessageAt} /></p>}
+    <p className="mt-1 text-xs text-soft">{room.members} membre{room.members > 1 ? "s" : ""} · {room.recentMessages} message{room.recentMessages > 1 ? "s" : ""} sur 7 jours</p>
+    {room.lastMessageAt && <p className="mt-1 text-xs text-muted">Dernier message <LocalTime iso={room.lastMessageAt} /></p>}
   </li>;
 }
 
@@ -25,19 +25,19 @@ export function CommunitySidebar({ active, discussions, signedIn }: { active: Ro
     </Link>
     {signedIn && discussions.length > 0 && <section className="card p-5" aria-labelledby="mes-discussions">
       <h2 id="mes-discussions" className="text-lg font-bold">Mes discussions</h2>
-      {discussions.length ? <ul className="divide-y divide-line">{discussions.map(room => <RoomLink key={room.id} room={room} />)}</ul> : <p className="my-3 text-sm text-neutral-600">Vous n’avez pas encore de discussion accessible. Rejoignez un salon pour échanger.</p>}
+      {discussions.length ? <ul className="divide-y divide-line">{discussions.map(room => <RoomLink key={room.id} room={room} />)}</ul> : <p className="my-3 text-sm text-soft">Vous n’avez pas encore de discussion accessible. Rejoignez un salon pour échanger.</p>}
       <Link href="/salons#mes-salons" className="btn-link">Retrouver mes salons →</Link>
     </section>}
     <section className="card p-5" aria-labelledby="salons-actifs">
       <p className="label-mono mb-1">Salons en direct</p>
       <h2 id="salons-actifs" className="text-lg font-bold">Salons publics actifs</h2>
-      <p className="mt-1 text-xs text-neutral-500">L’activité réelle des sept derniers jours.</p>
+      <p className="mt-1 text-xs text-muted">L’activité réelle des sept derniers jours.</p>
       {active.length ? <ul className="divide-y divide-line">{active.map(room => <RoomLink key={room.id} room={room} />)}</ul> : <p className="my-3 text-sm text-ink">Ouvrez un salon sur une actu et invitez les curieux à en discuter.</p>}
       <Link href="/salons" className="btn-link">Découvrir les salons →</Link>
     </section>
-    {!signedIn && <section className="rounded-[10px] bg-ink p-5 text-white">
+    {!signedIn && <section className="rounded-card bg-ink p-5 text-white">
       <h2 className="font-bold">Une question, un point de vue ?</h2>
-      <p className="mt-2 text-sm text-[#C9CED6]">Rejoignez Valyo pour commenter, publier et écrire aux membres.</p>
+      <p className="mt-2 text-sm text-on-ink">Rejoignez Valyo pour commenter, publier et écrire aux membres.</p>
       <Link href="/connexion" className="btn-primary mt-3">Rejoindre la communauté</Link>
     </section>}
   </aside>;

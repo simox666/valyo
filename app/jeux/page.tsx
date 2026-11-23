@@ -56,7 +56,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
 
       <section id="classement" className="card p-5 sm:p-6">
         <p className="label-mono text-accent">Classement des Valyors</p>
-        <h2 className="mt-1 text-lg font-extrabold">Qui mène la danse ?</h2>
+        <h2 className="mt-1 text-lg font-bold">Qui mène la danse ?</h2>
         <p className="mt-1 text-sm text-soft">
           Défi du jour : {DAILY_POINTS} points par bonne réponse, +{DAILY_PERFECT_BONUS} pour un sans-faute. Autres jeux : {FREE_POINTS} points
           par bonne réponse. Seule la première partie du jour de chaque jeu compte.

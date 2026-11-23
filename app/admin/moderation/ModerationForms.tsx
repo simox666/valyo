@@ -85,10 +85,10 @@ export function ReportActions({
         )}
       </div>
       {context && (
-        <ol className="rounded-xl border border-line p-2">
+        <ol className="rounded-card border border-line p-2">
           {context.map((m, i) => (
             <li key={i} className={m.signale ? "bg-amber-50 font-semibold" : ""}>
-              <span className="text-neutral-500">{new Date(m.created_at).toLocaleTimeString("fr-BE")}</span> {m.author} :{" "}
+              <span className="text-muted">{new Date(m.created_at).toLocaleTimeString("fr-BE")}</span> {m.author} :{" "}
               {m.body ?? <em>message retiré</em>}
             </li>
           ))}

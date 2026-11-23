@@ -113,7 +113,7 @@ export function RevisionForm({ itemId, initialTitle, initialSummary }: { itemId:
   }
 
   return (
-    <form onSubmit={submit} className="mt-2 space-y-2 rounded-xl border border-line p-3 text-sm">
+    <form onSubmit={submit} className="mt-2 space-y-2 rounded-card border border-line p-3 text-sm">
       <label className="block font-semibold">
         Titre corrigé
         <input value={title} onChange={(e) => setTitle(e.target.value)} required minLength={5} maxLength={200} className="input mt-1 w-full" />
@@ -134,7 +134,7 @@ export function RevisionForm({ itemId, initialTitle, initialSummary }: { itemId:
           className="input mt-1 w-full"
         />
       </label>
-      <p className="text-neutral-600">Toute modification du texte invalide la vérification de fidélité : elle sera affichée comme telle.</p>
+      <p className="text-soft">Toute modification du texte invalide la vérification de fidélité : elle sera affichée comme telle.</p>
       <div className="flex gap-2">
         <button type="submit" disabled={busy} className="btn-primary px-3 py-1.5">Enregistrer la révision</button>
         <button type="button" className="btn-link" onClick={() => setOpen(false)}>Annuler</button>

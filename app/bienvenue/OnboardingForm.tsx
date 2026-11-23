@@ -45,7 +45,7 @@ export function OnboardingForm({ next, themes }: { next: string; themes: { id: s
           Pseudonyme
         </label>
         <div className="flex items-center gap-1">
-          <span className="text-neutral-500" aria-hidden>
+          <span className="text-muted" aria-hidden>
             @
           </span>
           <input

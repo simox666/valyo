@@ -30,9 +30,9 @@ export function FeedbackForm({ page }: { page: string }) {
 
   if (sent) {
     return (
-      <div role="status" className="rounded-xl bg-accent-soft p-5">
+      <div role="status" className="rounded-card bg-accent-soft p-5">
         <p className="font-bold text-accent">Merci, c’est bien reçu !</p>
-        <p className="mt-1 text-sm text-neutral-700">Chaque retour est lu. C’est ce qui décide de la suite de Valyo.</p>
+        <p className="mt-1 text-sm text-soft">Chaque retour est lu. C’est ce qui décide de la suite de Valyo.</p>
         <button type="button" className="btn-link mt-3" onClick={() => setSent(false)}>Envoyer un autre avis</button>
       </div>
     );
@@ -44,7 +44,7 @@ export function FeedbackForm({ page }: { page: string }) {
         <legend className="label">De quoi s’agit-il ?</legend>
         <div className="flex flex-wrap gap-2">
           {KINDS.map(([value, label]) => (
-            <label key={value} className={`cursor-pointer rounded-xl border px-3 py-2 text-sm font-semibold ${kind === value ? "border-accent bg-accent-soft text-accent" : "border-line bg-white"}`}>
+            <label key={value} className={`cursor-pointer rounded-card border px-3 py-2 text-sm font-semibold ${kind === value ? "border-accent bg-accent-soft text-accent" : "border-line bg-white"}`}>
               <input type="radio" name="kind" value={value} checked={kind === value} onChange={() => setKind(value)} className="sr-only" />
               {label}
             </label>
@@ -62,9 +62,9 @@ export function FeedbackForm({ page }: { page: string }) {
           placeholder={kind === "bug" ? "Qu’avez-vous fait, qu’attendiez-vous, que s’est-il passé ?" : "Dites-nous tout…"}
           className="field"
         />
-        <span className="mt-1 block text-right text-xs text-neutral-500">{body.length}/2 000</span>
+        <span className="mt-1 block text-right text-xs text-muted">{body.length}/2 000</span>
       </label>
-      {page && <p className="text-xs text-neutral-500">Page concernée : {page}</p>}
+      {page && <p className="text-xs text-muted">Page concernée : {page}</p>}
       {error && <p role="alert" className="error-text">{error}</p>}
       <button type="submit" disabled={busy || body.trim().length < 5} className="btn-primary">{busy ? "Envoi…" : "Envoyer mon avis"}</button>
     </form>

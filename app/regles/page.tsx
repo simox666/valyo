@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 export default function RulesPage() {
   return (
     <article className="space-y-4 leading-relaxed">
-      <h1 className="text-2xl font-extrabold tracking-tight">Règles de la communauté</h1>
-      <p className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm">
+      <h1 className="text-2xl font-bold">Règles de la communauté</h1>
+      <p className="rounded-card border border-amber-300 bg-amber-50 p-3 text-sm">
         Version provisoire, en attente de validation avant l’ouverture publique.
       </p>
       <ol className="list-decimal space-y-3 pl-5">

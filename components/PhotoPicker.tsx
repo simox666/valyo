@@ -40,10 +40,10 @@ export function PhotoPicker({ images, onChange }: { images: Img[]; onChange: (im
 
   return (
     <div id="photos">
-      <p className="label">Photos <span className="font-normal text-neutral-500">· facultatif, {MAX} au plus</span></p>
+      <p className="label">Photos <span className="font-normal text-muted">· facultatif, {MAX} au plus</span></p>
       <div className="flex flex-wrap gap-2">
         {images.map((img) => (
-          <div key={img.id} className="relative h-24 w-24 overflow-hidden rounded-xl bg-chip">
+          <div key={img.id} className="relative h-24 w-24 overflow-hidden rounded-card bg-chip">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`/media/${img.id}`} alt="" className="h-full w-full object-cover" />
             <button
@@ -57,13 +57,13 @@ export function PhotoPicker({ images, onChange }: { images: Img[]; onChange: (im
           </div>
         ))}
         {Array.from({ length: busy }).map((_, i) => (
-          <div key={`envoi-${i}`} className="flex h-24 w-24 animate-pulse items-center justify-center rounded-xl bg-chip text-xs text-neutral-500">Envoi…</div>
+          <div key={`envoi-${i}`} className="flex h-24 w-24 animate-pulse items-center justify-center rounded-card bg-chip text-xs text-muted">Envoi…</div>
         ))}
         {images.length + busy < MAX && (
           <button
             type="button"
             onClick={() => input.current?.click()}
-            className="flex h-24 w-24 flex-col items-center justify-center rounded-xl border-2 border-dashed border-line text-sm font-semibold text-neutral-600 hover:border-accent hover:text-accent"
+            className="flex h-24 w-24 flex-col items-center justify-center rounded-card border-2 border-dashed border-line text-sm font-semibold text-soft hover:border-accent hover:text-accent"
           >
             <span aria-hidden className="text-2xl">📷</span> Ajouter
           </button>
@@ -71,7 +71,7 @@ export function PhotoPicker({ images, onChange }: { images: Img[]; onChange: (im
       </div>
       <input ref={input} type="file" accept="image/*" multiple aria-label="Choisir des photos à joindre" className="sr-only" tabIndex={-1} onChange={(e) => void add(e.target.files)} />
       {error && <p className="error-text mt-2">{error}</p>}
-      <p className="mt-1 text-xs text-neutral-500">Les photos sont compressées et leurs données cachées (position GPS, appareil) supprimées.</p>
+      <p className="mt-1 text-xs text-muted">Les photos sont compressées et leurs données cachées (position GPS, appareil) supprimées.</p>
     </div>
   );
 }

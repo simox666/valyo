@@ -37,7 +37,7 @@ export function Avatar({
   imageId?: string | null;
 }) {
   const base = `inline-flex shrink-0 select-none items-center justify-center rounded-full font-bold ${SIZES[size]}`;
-  if (deleted) return <span aria-hidden className={`${base} bg-line text-neutral-500`}>?</span>;
+  if (deleted) return <span aria-hidden className={`${base} bg-line text-muted`}>?</span>;
   // eslint-disable-next-line @next/next/no-img-element
   if (imageId) return <img src={`/media/${imageId}`} alt="" aria-hidden loading="lazy" className={`${base} bg-chip object-cover`} />;
   if (agent) return <span aria-hidden className={`${base} bg-accent-soft text-accent ring-1 ring-accent/30`}>✦</span>;

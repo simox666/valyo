@@ -27,12 +27,12 @@ const reasonLabel = (code: string | null) =>
 
 function Status({ title, enabled, missing }: { title: string; enabled: boolean; missing: string[] }) {
   return (
-    <div className="rounded-xl border border-line p-3">
+    <div className="rounded-card border border-line p-3">
       <p className="font-semibold">
         {title} : <span className={enabled ? "text-accent" : "text-red-700"}>{enabled ? "active" : "désactivée"}</span>
       </p>
       {missing.length > 0 && (
-        <ul className="mt-1 list-disc pl-5 text-sm text-neutral-700">
+        <ul className="mt-1 list-disc pl-5 text-sm text-soft">
           {missing.map((m) => <li key={m}>{m}</li>)}
         </ul>
       )}
@@ -50,8 +50,8 @@ export default async function EditorialAdminPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight">Agent éditorial</h1>
-        <p className="mt-1 text-neutral-600">Brouillons uniquement : aucune publication publique. Aucun appel à Claude tant que le worker n’est pas lancé et que la configuration est incomplète.</p>
+        <h1 className="text-2xl font-bold">Agent éditorial</h1>
+        <p className="mt-1 text-soft">Brouillons uniquement : aucune publication publique. Aucun appel à Claude tant que le worker n’est pas lancé et que la configuration est incomplète.</p>
         <p className="mt-1 flex flex-wrap gap-4">
           <Link href="/admin/indicateurs" className="btn-link">Indicateurs de la communauté →</Link>
           <Link href="/admin/moderation" className="btn-link">File de modération →</Link>
@@ -59,7 +59,7 @@ export default async function EditorialAdminPage() {
       </div>
 
       {c.provider === "test" && (
-        <p role="note" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-semibold">
+        <p role="note" className="rounded-card border border-amber-300 bg-amber-50 p-3 text-sm font-semibold">
           Fournisseur de test déterministe actif : les brouillons et les coûts affichés sont simulés et ne doivent jamais être présentés comme réels.
         </p>
       )}
@@ -72,7 +72,7 @@ export default async function EditorialAdminPage() {
           <Status title="Récapitulatifs" {...o.ready.recap} />
           <Status title="Publication" {...o.ready.publication} />
         </div>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-soft">
           Le worker s’exécute hors du site : <code>npm run worker</code> (un cycle borné, lancé par le planificateur de l’hébergement).
         </p>
       </section>
@@ -80,13 +80,13 @@ export default async function EditorialAdminPage() {
       <section className="card p-5" aria-labelledby="budget">
         <h2 id="budget" className="text-lg font-bold">Budget du mois {o.budget.period} (UTC)</h2>
         <dl className="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
-          <dt className="text-neutral-600">Plafond</dt><dd className="font-semibold">{formatMicros(o.budget.capMicros, o.budget.currency)}</dd>
-          <dt className="text-neutral-600">Dépensé (rapproché)</dt><dd className="font-semibold">{formatMicros(o.budget.settledMicros, o.budget.currency)}</dd>
-          <dt className="text-neutral-600">Réservé (en cours ou incertain)</dt><dd className="font-semibold">{formatMicros(o.budget.reservedMicros, o.budget.currency)}</dd>
-          <dt className="text-neutral-600">Lots au coût inconnu (incertains)</dt><dd className="font-semibold">{o.budget.uncertainCount}</dd>
+          <dt className="text-soft">Plafond</dt><dd className="font-semibold">{formatMicros(o.budget.capMicros, o.budget.currency)}</dd>
+          <dt className="text-soft">Dépensé (rapproché)</dt><dd className="font-semibold">{formatMicros(o.budget.settledMicros, o.budget.currency)}</dd>
+          <dt className="text-soft">Réservé (en cours ou incertain)</dt><dd className="font-semibold">{formatMicros(o.budget.reservedMicros, o.budget.currency)}</dd>
+          <dt className="text-soft">Lots au coût inconnu (incertains)</dt><dd className="font-semibold">{o.budget.uncertainCount}</dd>
         </dl>
         {c.estimationBlocked && (
-          <div role="alert" className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm">
+          <div role="alert" className="mt-3 rounded-card border border-red-200 bg-red-50 p-3 text-sm">
             Un coût réel a dépassé sa réservation : nouvelles soumissions bloquées jusqu’à vérification.
             <ClearEstimationButton />
           </div>
@@ -113,18 +113,18 @@ export default async function EditorialAdminPage() {
       <section className="card space-y-4 p-5" aria-labelledby="sources">
         <h2 id="sources" className="text-lg font-bold">Sources</h2>
         {o.sources.length === 0 ? (
-          <p className="text-neutral-600">Aucune source. Une source ajoutée reste inactive jusqu’au contrôle de ses conditions d’usage.</p>
+          <p className="text-soft">Aucune source. Une source ajoutée reste inactive jusqu’au contrôle de ses conditions d’usage.</p>
         ) : (
           <ul className="divide-y divide-line">
             {o.sources.map((s) => (
               <li key={s.id as string} className="space-y-1 py-3">
                 <p className="font-semibold">
                   {s.name as string} <span className="chip">{s.active ? "active" : "inactive"}</span>{" "}
-                  <span className="text-sm font-normal text-neutral-600">priorité {String(s.priority)} · {s.source_type as string}</span>
+                  <span className="text-sm font-normal text-soft">priorité {String(s.priority)} · {s.source_type as string}</span>
                 </p>
-                <p className="break-all text-sm text-neutral-600">{s.feed_url as string}</p>
+                <p className="break-all text-sm text-soft">{s.feed_url as string}</p>
                 {s.authorization_reference ? (
-                  <p className="text-sm text-neutral-600">Autorisation : {s.authorization_reference as string}</p>
+                  <p className="text-sm text-soft">Autorisation : {s.authorization_reference as string}</p>
                 ) : null}
                 {s.last_error ? <p className="text-sm text-red-700">Dernière erreur : {s.last_error as string}</p> : null}
                 <SourceToggle id={s.id as string} active={Boolean(s.active)} />
@@ -138,7 +138,7 @@ export default async function EditorialAdminPage() {
       <section className="card p-5" aria-labelledby="recaps">
         <h2 id="recaps" className="text-lg font-bold">Récapitulatifs</h2>
         {o.recaps.length === 0 ? (
-          <p className="mt-2 text-neutral-600">Aucun créneau planifié.</p>
+          <p className="mt-2 text-soft">Aucun créneau planifié.</p>
         ) : (
           <ul className="mt-2 divide-y divide-line text-sm">
             {o.recaps.map((r) => (
@@ -158,17 +158,17 @@ export default async function EditorialAdminPage() {
 
       <section className="card p-5" aria-labelledby="sujets">
         <h2 id="sujets" className="text-lg font-bold">Sujets</h2>
-        <p className="mt-1 text-sm text-neutral-600">{o.subjectCounts.map((s) => `${s.status} : ${s.n}`).join(" · ") || "Aucun sujet."}</p>
+        <p className="mt-1 text-sm text-soft">{o.subjectCounts.map((s) => `${s.status} : ${s.n}`).join(" · ") || "Aucun sujet."}</p>
         {o.review.length > 0 && (
           <ul className="mt-3 divide-y divide-line text-sm">
             {o.review.map((s) => (
               <li key={s.id as string} className="py-2">
                 <p className="font-semibold">{s.title as string}</p>
-                <p className="text-neutral-700">
+                <p className="text-soft">
                   {s.status === "duplicate" ? "Doublon d’une publication de membre (non republié)" : `À examiner : ${reasonLabel(s.block_reason as string)}`}
                   {s.refus ? ` — ${s.refus as string}` : ""}
                 </p>
-                {s.url ? <p className="break-all text-neutral-500">{s.url as string}</p> : null}
+                {s.url ? <p className="break-all text-muted">{s.url as string}</p> : null}
               </li>
             ))}
           </ul>
@@ -177,7 +177,7 @@ export default async function EditorialAdminPage() {
 
       <section className="card p-5" aria-labelledby="taches">
         <h2 id="taches" className="text-lg font-bold">Tâches et lots</h2>
-        <p className="mt-1 text-sm text-neutral-600">{o.taskCounts.map((t) => `${t.state} : ${t.n}`).join(" · ") || "Aucune tâche."}</p>
+        <p className="mt-1 text-sm text-soft">{o.taskCounts.map((t) => `${t.state} : ${t.n}`).join(" · ") || "Aucune tâche."}</p>
         {o.tasks.length > 0 && (
           <ul className="mt-3 divide-y divide-line text-sm">
             {o.tasks.map((t) => (

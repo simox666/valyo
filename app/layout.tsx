@@ -47,7 +47,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <main id="contenu" tabIndex={-1} className="px-4 py-5 lg:px-0 lg:py-7">
               {children}
             </main>
-            <footer className="px-4 pb-24 pt-4 text-xs text-muted lg:px-0 lg:pb-10">
+            <footer className="site-footer px-4 pb-24 pt-4 text-xs text-muted lg:px-0 lg:pb-10">
               {/* La définition du site, discrète et présente partout : pour les visiteurs comme pour les moteurs. */}
               <p className="mb-2 max-w-xl">
                 <strong className="font-semibold text-soft">Valyo</strong> est le réseau social des passionnés d’IA, d’espace, de sciences et de

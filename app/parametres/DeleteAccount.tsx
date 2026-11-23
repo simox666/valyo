@@ -32,7 +32,7 @@ export function DeleteAccount() {
   return (
     <div className="mt-3 space-y-3 text-[15px]">
       <p>Ce qui se passe si vous supprimez votre compte :</p>
-      <ul className="list-disc space-y-1 pl-5 text-neutral-700">
+      <ul className="list-disc space-y-1 pl-5 text-soft">
         <li>vous êtes déconnecté de tous vos appareils ;</li>
         <li>votre profil, votre adresse e-mail, votre pseudonyme et vos abonnements sont effacés ;</li>
         <li>vos messages privés, vos notifications et votre historique de présence sont effacés aussi ;</li>

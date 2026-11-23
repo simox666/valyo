@@ -19,7 +19,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
   const themes = await listActiveThemes();
   return (
     <div className="wide-page space-y-5">
-      <h1 className="text-2xl font-extrabold tracking-tight">Modifier la publication</h1>
+      <h1 className="text-2xl font-bold">Modifier la publication</h1>
       <PostForm
         themes={themes}
         authorName={user.displayName ?? "Vous"}

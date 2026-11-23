@@ -23,19 +23,19 @@ export default async function SearchPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold tracking-tight">Recherche</h1>
+      <h1 className="text-2xl font-bold">Recherche</h1>
       <form action="/recherche" method="get" className="flex gap-2" role="search">
         <label htmlFor="q" className="sr-only">Rechercher</label>
         <input id="q" name="q" defaultValue={q} minLength={2} maxLength={100} placeholder="Publications, membres, thèmes, salons publics…" className="input flex-1" />
         <button type="submit" className="btn-primary px-4 py-2">Rechercher</button>
       </form>
 
-      {q && !results && <p className="card p-5 text-neutral-600">Saisissez au moins deux caractères.</p>}
+      {q && !results && <p className="card p-5 text-soft">Saisissez au moins deux caractères.</p>}
       {/* Audit UX (P2-4) : seules les sections AVEC résultats s'affichent ; un état vide global sinon. */}
       {results && results.posts.items.length + results.members.items.length + results.themes.items.length + results.rooms.items.length === 0 && (
         <div className="card p-6 text-center">
           <p className="font-semibold">Aucun résultat pour « {results.query} ».</p>
-          <p className="mt-1 text-sm text-neutral-600">Essayez un autre mot, un pseudonyme ou un thème. Les salons sur invitation ne sont jamais listés ici.</p>
+          <p className="mt-1 text-sm text-soft">Essayez un autre mot, un pseudonyme ou un thème. Les salons sur invitation ne sont jamais listés ici.</p>
         </div>
       )}
       {results && (
@@ -48,7 +48,7 @@ export default async function SearchPage({
                   <li key={p.id} className="py-2">
                     <span className="chip mr-2">{KIND_LABELS[p.kind as keyof typeof KIND_LABELS] ?? p.kind}</span>
                     <Link href={`/p/${p.id}`} className="font-semibold hover:underline">{p.title}</Link>
-                    <span className="ml-2 text-sm text-neutral-500">{p.authorName} · <LocalTime iso={p.createdAt} /></span>
+                    <span className="ml-2 text-sm text-muted">{p.authorName} · <LocalTime iso={p.createdAt} /></span>
                   </li>
                 ))}
               </ul>
@@ -63,8 +63,8 @@ export default async function SearchPage({
                 {results.members.items.map((m) => (
                   <li key={m.handle} className="py-2">
                     <Link href={`/m/${m.handle}`} className="font-semibold hover:underline">{m.displayName || m.handle}</Link>
-                    <span className="ml-2 text-sm text-neutral-500">@{m.handle}</span>
-                    {m.bio && <p className="text-sm text-neutral-600">{m.bio}</p>}
+                    <span className="ml-2 text-sm text-muted">@{m.handle}</span>
+                    {m.bio && <p className="text-sm text-soft">{m.bio}</p>}
                   </li>
                 ))}
               </ul>
@@ -92,8 +92,8 @@ export default async function SearchPage({
                 {results.rooms.items.map((r) => (
                   <li key={r.id} className="py-2">
                     <Link href={`/s/${r.id}`} className="font-semibold hover:underline">{r.name}</Link>
-                    <span className="ml-2 text-sm text-neutral-500">{r.members} membre{r.members > 1 ? "s" : ""}</span>
-                    {r.description && <p className="text-sm text-neutral-600">{r.description}</p>}
+                    <span className="ml-2 text-sm text-muted">{r.members} membre{r.members > 1 ? "s" : ""}</span>
+                    {r.description && <p className="text-sm text-soft">{r.description}</p>}
                   </li>
                 ))}
               </ul>

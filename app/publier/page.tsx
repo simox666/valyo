@@ -29,9 +29,9 @@ export default async function ComposePage({ searchParams }: { searchParams: Prom
   return (
     <div className="wide-page space-y-6">
       <Link href="/" className="btn-link">← Retour au fil</Link>
-      <header className="rounded-2xl bg-accent px-5 py-7 text-white sm:px-8">
+      <header className="rounded-card bg-ink p-5 text-white sm:p-6">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-white">Contribuer à Valyo</p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Une découverte, une question, une expérience.</h1>
+        <h1 className="mt-2 text-2xl font-bold sm:text-3xl">Une découverte, une question, une expérience.</h1>
         <p className="mt-3 max-w-2xl text-white">Partagez ce qui vous intéresse. Votre publication peut devenir le point de départ d’une discussion.</p>
       </header>
       <PostForm themes={themes} authorName={user.displayName ?? "Vous"} initial={presentation} userKey={user.id} />

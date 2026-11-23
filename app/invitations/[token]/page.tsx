@@ -18,7 +18,7 @@ export default async function InvitationPage({ params }: { params: Promise<{ tok
   return (
     <div className="card p-6 text-center">
       <h1 className="text-xl font-bold">Invitation à un salon</h1>
-      <p className="mt-2 text-neutral-600">
+      <p className="mt-2 text-soft">
         On vous invite à rejoindre un salon. L’invitation est à usage unique et expire d’elle-même ; rien n’est accepté sans votre accord.
       </p>
       <div className="mt-4 flex justify-center">

@@ -36,7 +36,7 @@ export function NewRoomForm({ themes, postId, initialThemeId }: { themes: ThemeO
         <input value={name} onChange={(e) => setName(e.target.value)} required minLength={3} maxLength={60} className="input mt-1 w-full" />
       </label>
       <label className="block font-semibold">
-        Courte description <span className="font-normal text-neutral-500">(facultative)</span>
+        Courte description <span className="font-normal text-muted">(facultative)</span>
         <input value={description} onChange={(e) => setDescription(e.target.value)} maxLength={280} className="input mt-1 w-full" />
       </label>
       <label className="block font-semibold">
@@ -52,7 +52,7 @@ export function NewRoomForm({ themes, postId, initialThemeId }: { themes: ThemeO
       </label>
       <fieldset>
         <legend className="font-semibold">Accès</legend>
-        <p className="mt-1 text-sm text-neutral-600">Fixé à la création : un salon privé ne devient jamais public par accident.</p>
+        <p className="mt-1 text-sm text-soft">Fixé à la création : un salon privé ne devient jamais public par accident.</p>
         <div className="mt-2 flex flex-wrap gap-4">
           <label className="inline-flex items-center gap-2">
             <input type="radio" name="visibility" checked={visibility === "public"} onChange={() => setVisibility("public")} />

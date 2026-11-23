@@ -22,11 +22,11 @@ export default async function RecapPreviewPage({ params }: { params: Promise<{ i
   return (
     <div className="space-y-6">
       <Link href="/admin/editorial" className="btn-link">← Console de l’agent</Link>
-      <p className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm">
+      <p className="rounded-card border border-amber-300 bg-amber-50 p-3 text-sm">
         Aperçu non publié (état : {recap.state as string}). Aucune publication publique dans le lot 2A.
       </p>
       {(recap.state as string) === "review_required" && (
-        <div className="rounded-xl border border-line p-3 text-sm">
+        <div className="rounded-card border border-line p-3 text-sm">
           <p className="mb-2">
             Ce brouillon a été révisé : chaque élément modifié doit être relu contre ses sources avant de pouvoir redevenir publiable.
           </p>
@@ -34,12 +34,12 @@ export default async function RecapPreviewPage({ params }: { params: Promise<{ i
         </div>
       )}
       <article className="card p-5 sm:p-6">
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-soft">
           Agent éditorial · créneau du <LocalTime iso={new Date(recap.slot_at as string).toISOString()} mode="full" />
         </p>
-        <h1 className="mt-1 text-2xl font-extrabold tracking-tight">La semaine en sciences et tech</h1>
+        <h1 className="mt-1 text-2xl font-bold">La semaine en sciences et tech</h1>
         {items.length === 0 ? (
-          <p className="mt-4 text-neutral-600">Aucune nouvelle retenue : un récapitulatif vide n’est pas publié.</p>
+          <p className="mt-4 text-soft">Aucune nouvelle retenue : un récapitulatif vide n’est pas publié.</p>
         ) : (
           <ol className="mt-5 space-y-6">
             {items.map((item) => {
@@ -63,20 +63,20 @@ export default async function RecapPreviewPage({ params }: { params: Promise<{ i
                     ))}
                   </p>
                   {verification ? (
-                    <details className="mt-2 text-sm text-neutral-700">
+                    <details className="mt-2 text-sm text-soft">
                       <summary className="cursor-pointer font-semibold">
                         Vérification de fidélité (administration){verification.simulated ? " — SIMULÉE par le fournisseur de test" : ""}
                       </summary>
                       <ul className="mt-1 list-disc space-y-1 pl-5">
                         {verification.statements.map((s, i) => (
                           <li key={i}>
-                            {s.text} <span className="text-neutral-500">← « {s.quote} »</span>
+                            {s.text} <span className="text-muted">← « {s.quote} »</span>
                           </li>
                         ))}
                       </ul>
                     </details>
                   ) : (
-                    <div className="mt-2 rounded-xl border border-amber-300 bg-amber-50 p-2 text-sm">
+                    <div className="mt-2 rounded-card border border-amber-300 bg-amber-50 p-2 text-sm">
                       <p>
                         Vérification de fidélité invalidée par une révision humaine
                         {revision ? <> — motif : {revision.motif} ({revision.par}, <LocalTime iso={new Date(revision.le).toISOString()} mode="full" />)</> : null}.
@@ -93,7 +93,7 @@ export default async function RecapPreviewPage({ params }: { params: Promise<{ i
                       <RevisionForm itemId={item.id as string} initialTitle={item.title as string} initialSummary={item.summary as string} />
                     </div>
                   )}
-                  <p className="mt-2 text-sm text-neutral-500">
+                  <p className="mt-2 text-sm text-muted">
                     Demandes publiques de développement : indisponibles tant que la règle de déclenchement (D8) n’est pas validée.{" "}
                     <DevelopmentRequestButton itemId={item.id as string} />
                   </p>

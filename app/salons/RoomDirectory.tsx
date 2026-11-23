@@ -23,9 +23,9 @@ export function RoomDirectory({ publicRooms, myRooms, signedIn }: { publicRooms:
   const unread = myRooms.reduce((n, room) => n + room.unread, 0);
   return <div className="space-y-5">
     {signedIn && <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4" id="mes-salons">
-      <div className="inline-flex flex-wrap gap-1 rounded-xl bg-chip p-1" role="group" aria-label="Choisir les salons à afficher">
-        <button onClick={() => setView("discover")} aria-pressed={view === "discover"} className={`rounded-lg px-4 py-2 text-sm font-bold ${view === "discover" ? "bg-white text-accent shadow-sm" : "text-neutral-600"}`}>Découvrir</button>
-        {signedIn && <button onClick={() => setView("mine")} aria-pressed={view === "mine"} className={`rounded-lg px-4 py-2 text-sm font-bold ${view === "mine" ? "bg-white text-accent shadow-sm" : "text-neutral-600"}`}>Mes salons <span className="ml-1 text-xs">({myRooms.length})</span></button>}
+      <div className="inline-flex flex-wrap gap-1 rounded-card bg-chip p-1" role="group" aria-label="Choisir les salons à afficher">
+        <button onClick={() => setView("discover")} aria-pressed={view === "discover"} className={`rounded-lg px-4 py-2 text-sm font-bold ${view === "discover" ? "bg-white text-accent shadow-sm" : "text-soft"}`}>Découvrir</button>
+        {signedIn && <button onClick={() => setView("mine")} aria-pressed={view === "mine"} className={`rounded-lg px-4 py-2 text-sm font-bold ${view === "mine" ? "bg-white text-accent shadow-sm" : "text-soft"}`}>Mes salons <span className="ml-1 text-xs">({myRooms.length})</span></button>}
       </div>
       {unread > 0 && <p className="text-sm font-semibold text-accent">{unread} message{unread > 1 ? "s" : ""} à lire dans vos salons</p>}
     </div>}
@@ -33,7 +33,7 @@ export function RoomDirectory({ publicRooms, myRooms, signedIn }: { publicRooms:
       <div><label htmlFor="room-search" className="label">Trouver une discussion</label><input id="room-search" type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Un sujet, un nom de salon…" className="field" /></div>
       <div><label htmlFor="room-theme" className="label">Thème</label><select id="room-theme" value={theme} onChange={e => setTheme(e.target.value)} className="field"><option value="">Tous les thèmes</option>{themes.map(name => <option key={name}>{name}</option>)}</select></div>
     </div>
-    <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-neutral-600">
+    <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-soft">
       <p role="status">{rooms.length} salon{rooms.length > 1 ? "s" : ""} {view === "mine" ? "dans votre sélection" : "à découvrir"}{view === "discover" && " · activité des 7 derniers jours"}</p>
       <label className="inline-flex cursor-pointer items-center gap-2"><input type="checkbox" checked={archives} onChange={e => setArchives(e.target.checked)} className="h-4 w-4 accent-accent" /> Inclure les archives</label>
     </div>
@@ -49,19 +49,19 @@ export function RoomDirectory({ publicRooms, myRooms, signedIn }: { publicRooms:
             {membership && <span className="chip bg-accent-soft text-accent">{membership.role === "owner" ? "Propriétaire" : membership.role === "moderator" ? "Modération" : "Membre"}</span>}
             {membership && membership.unread > 0 && <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-white">{membership.unread} non lu{membership.unread > 1 ? "s" : ""}</span>}
           </div>
-          <h2 className="text-xl font-extrabold leading-snug"><Link href={`/s/${room.id}${membership ? "#chat" : ""}`} className="hover:underline">{room.name}</Link></h2>
-          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-neutral-600">{room.description || "Un espace pour poser vos questions et partager vos découvertes."}</p>
+          <h2 className="text-xl font-bold leading-snug"><Link href={`/s/${room.id}${membership ? "#chat" : ""}`} className="hover:underline">{room.name}</Link></h2>
+          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-soft">{room.description || "Un espace pour poser vos questions et partager vos découvertes."}</p>
           <div className="mt-5 grid grid-cols-2 gap-3 border-t border-line pt-3">
-            <p><span className="block text-xl font-bold">{room.members}</span><span className="text-xs text-neutral-500">membre{room.members > 1 ? "s" : ""}</span></p>
-            <p><span className="block text-xl font-bold">{room.recentMessages}</span><span className="text-xs text-neutral-500">message{room.recentMessages > 1 ? "s" : ""} cette semaine</span></p>
+            <p><span className="block text-xl font-bold">{room.members}</span><span className="text-xs text-muted">membre{room.members > 1 ? "s" : ""}</span></p>
+            <p><span className="block text-xl font-bold">{room.recentMessages}</span><span className="text-xs text-muted">message{room.recentMessages > 1 ? "s" : ""} cette semaine</span></p>
           </div>
-          <p className="mb-4 mt-3 text-xs text-neutral-500">{room.lastMessageAt ? <>Dernier échange <LocalTime iso={room.lastMessageAt} /></> : "La discussion attend son premier message."}</p>
+          <p className="mb-4 mt-3 text-xs text-muted">{room.lastMessageAt ? <>Dernier échange <LocalTime iso={room.lastMessageAt} /></> : "La discussion attend son premier message."}</p>
           <Link href={`/s/${room.id}${membership ? "#chat" : ""}`} className={`${membership ? "btn-primary" : "btn-secondary"} mt-auto w-full`}>{membership ? "Ouvrir la discussion" : "Découvrir le salon"}<span aria-hidden>→</span></Link>
         </div>
       </li>;
     })}</ul> : <div className="card px-5 py-10 text-center">
       <p className="text-lg font-bold">{search || theme ? "Aucun salon ne correspond à votre recherche." : view === "mine" ? "Vos prochaines discussions vous attendent." : "Les premiers échanges commencent avec vous."}</p>
-      <p className="mx-auto mt-2 max-w-lg text-sm text-neutral-600">{view === "mine" && !search && !theme ? "Rejoignez un salon public : vous le retrouverez ici avec ses nouveaux messages." : "Essayez un autre thème ou lancez un salon sur un sujet qui vous intéresse."}</p>
+      <p className="mx-auto mt-2 max-w-lg text-sm text-soft">{view === "mine" && !search && !theme ? "Rejoignez un salon public : vous le retrouverez ici avec ses nouveaux messages." : "Essayez un autre thème ou lancez un salon sur un sujet qui vous intéresse."}</p>
       <div className="mt-5 flex flex-wrap justify-center gap-3">
         {(search || theme || archives) && <button className="btn-secondary" onClick={() => { setSearch(""); setTheme(""); setArchives(false); }}>Effacer les filtres</button>}
         {view === "mine" && <button className="btn-primary" onClick={() => { setView("discover"); setSearch(""); setTheme(""); }}>Découvrir les salons</button>}

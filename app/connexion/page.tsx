@@ -14,8 +14,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="text-2xl font-extrabold tracking-tight">Se connecter ou créer un compte</h1>
-      <p className="mt-2 text-neutral-700">
+      <h1 className="text-2xl font-bold">Se connecter ou créer un compte</h1>
+      <p className="mt-2 text-soft">
         Indiquez votre adresse e-mail : vous recevrez un lien de connexion. Pas de mot de passe à retenir.
       </p>
       {params.erreur === "lien" && (
@@ -35,6 +35,15 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </p>
       )}
       <LoginForm next={next} />
+      <section className="card mt-8 p-5" aria-labelledby="pourquoi">
+        <h2 id="pourquoi" className="label-mono text-accent">Avec un compte</h2>
+        <ul className="mt-3 space-y-2.5 text-sm text-soft">
+          <li><strong className="font-semibold text-ink">Un fil à votre goût</strong> : l’actualité IA, espace, sciences et tech, triée selon vos thèmes.</li>
+          <li><strong className="font-semibold text-ink">La discussion</strong> : commentez, réagissez et rejoignez les salons.</li>
+          <li><strong className="font-semibold text-ink">Les jeux</strong> : le défi du jour et le classement des Valyors.</li>
+        </ul>
+        <p className="mt-3 text-xs text-muted">Gratuit. Votre adresse e-mail n’est jamais affichée.</p>
+      </section>
     </div>
   );
 }

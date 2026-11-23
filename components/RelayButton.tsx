@@ -58,7 +58,7 @@ export function RelayButton({ postId, initial, signedIn, canRelay }: {
         {state.count > 0 ? state.count : <span className="hidden sm:inline">Relayer</span>}
       </button>
       <dialog ref={dialog} aria-label="Relayer cette publication"
-        className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-xl bg-white p-0 shadow-xl backdrop:bg-ink/30"
+        className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-card bg-white p-0 shadow-xl backdrop:bg-ink/30"
         onClick={(e) => { if (e.target === dialog.current) dialog.current?.close(); }}>
         <div className="p-4 sm:p-5">
           <p className="label-mono">{state.mine ? "Votre relais" : "Relayer à vos abonnés"}</p>

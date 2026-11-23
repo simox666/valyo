@@ -42,7 +42,11 @@ body[data-nav-pending] #fil-liste {
       margin-right: auto;
     }
   }
+  @media (min-width: 1280px) {
+    .site-footer { padding-left: max(0px, calc((100% - 19.5rem - 760px) / 2)); }
+  }
   @media (min-width: 1536px) {
+    .site-footer { padding-left: max(0px, calc((100% - 19.5rem - 840px) / 2)); }
     main#contenu > :not(.wide-page) {
       max-width: 840px;
       margin-left: max(0px, calc((100% - 19.5rem - 840px) / 2));
@@ -55,7 +59,7 @@ body[data-nav-pending] #fil-liste {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary {
-    @apply btn bg-accent text-white hover:bg-[#9A3412];
+    @apply btn bg-accent text-white hover:bg-accent-dark;
   }
   .btn-secondary {
     @apply btn bg-white text-ink ring-1 ring-line hover:ring-ink;
@@ -76,13 +80,13 @@ body[data-nav-pending] #fil-liste {
     @apply mb-1 block text-sm font-semibold;
   }
   .hint {
-    @apply mt-1 text-sm text-neutral-600;
+    @apply mt-1 text-sm text-soft;
   }
   .error-text {
     @apply mt-1 text-sm font-medium text-red-700;
   }
   .card {
-    @apply rounded-[10px] bg-white ring-1 ring-line;
+    @apply rounded-card bg-white ring-1 ring-line;
   }
   .label-mono {
     @apply font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted;

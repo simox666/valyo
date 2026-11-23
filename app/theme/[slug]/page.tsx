@@ -45,17 +45,17 @@ export default async function ThemePage({ params, searchParams }: { params: Para
 
   return (
     <div className="wide-page space-y-6">
-      <header className="rounded-2xl bg-accent p-6 text-white sm:p-8">
+      <header className="rounded-card bg-ink p-5 text-white sm:p-6">
         <Link href="/" className="text-sm font-semibold text-white/80 hover:underline">← Tous les thèmes</Link>
         <p className="mt-4 label-mono text-white/70">Thème</p>
-        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">{theme.name}</h1>
+        <h1 className="mt-1 text-3xl font-bold">{theme.name}</h1>
         {theme.description && <p className="mt-2 max-w-2xl text-white/85">{theme.description}</p>}
         <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
           <p className="text-sm text-white/85">
             <strong className="text-white">{overview.followers}</strong> membre{overview.followers > 1 ? "s" : ""} suive{overview.followers > 1 ? "nt" : ""} ce thème ·{" "}
             <strong className="text-white">{overview.postsLast30}</strong> publication{overview.postsLast30 > 1 ? "s" : ""} en 30 jours
           </p>
-          <div className="rounded-xl bg-white p-1">
+          <div className="rounded-card bg-white p-1">
             <FollowButton target="theme" keyValue={theme.slug} initialFollowing={followed.includes(theme.id)} signedIn={signedIn} label="ce thème" />
           </div>
         </div>
@@ -68,7 +68,7 @@ export default async function ThemePage({ params, searchParams }: { params: Para
             {canCreate && <Link href="/publier" className="btn-secondary">Publier dans ce thème</Link>}
           </div>
           {posts.length === 0 ? (
-            <p className="card p-6 text-neutral-600">
+            <p className="card p-6 text-soft">
               Rien encore dans ce thème. {canCreate ? <Link href="/publier" className="btn-link">Soyez la première personne à publier →</Link> : null}
             </p>
           ) : (
@@ -89,43 +89,43 @@ export default async function ThemePage({ params, searchParams }: { params: Para
 
         <aside className="space-y-4" aria-label={`La communauté ${theme.name}`}>
           <section className="card p-5" aria-labelledby="theme-salons">
-            <h2 id="theme-salons" className="font-extrabold">Salons du thème</h2>
+            <h2 id="theme-salons" className="font-bold">Salons du thème</h2>
             {overview.rooms.length ? (
               <ul className="mt-2 divide-y divide-line">
                 {overview.rooms.map((r) => (
                   <li key={r.id} className="py-2">
                     <Link href={`/s/${r.id}#chat`} className="font-bold text-accent hover:underline">{r.name}</Link>
-                    {r.description && <p className="text-sm text-neutral-700">{r.description}</p>}
-                    <p className="text-xs text-neutral-500">{r.members} membre{r.members > 1 ? "s" : ""} · {r.recentMessages} message{r.recentMessages > 1 ? "s" : ""} sur 7 jours</p>
+                    {r.description && <p className="text-sm text-soft">{r.description}</p>}
+                    <p className="text-xs text-muted">{r.members} membre{r.members > 1 ? "s" : ""} · {r.recentMessages} message{r.recentMessages > 1 ? "s" : ""} sur 7 jours</p>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-neutral-600">Aucun salon public dans ce thème.</p>
+              <p className="mt-2 text-sm text-soft">Aucun salon public dans ce thème.</p>
             )}
             {canCreate && <Link href="/salons/nouveau" className="btn-link mt-2 inline-block">Créer un salon →</Link>}
           </section>
           <section className="card p-5" aria-labelledby="theme-membres">
-            <h2 id="theme-membres" className="font-extrabold">Membres actifs</h2>
-            <p className="mt-1 text-xs text-neutral-500">Publications et commentaires du thème sur 30 jours.</p>
+            <h2 id="theme-membres" className="font-bold">Membres actifs</h2>
+            <p className="mt-1 text-xs text-muted">Publications et commentaires du thème sur 30 jours.</p>
             {overview.members.length ? (
               <ul className="mt-2 space-y-2">
                 {overview.members.map((m) => (
                   <li key={m.handle} className="flex items-center gap-2">
                     <Avatar name={m.displayName} seed={m.handle} size="sm" />
                     <Link href={`/m/${m.handle}`} className="min-w-0 truncate font-semibold hover:underline">{m.displayName}</Link>
-                    <span className="ml-auto shrink-0 text-xs text-neutral-500">{m.contributions}</span>
+                    <span className="ml-auto shrink-0 text-xs text-muted">{m.contributions}</span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-neutral-600">Personne n’a encore contribué ce mois-ci.</p>
+              <p className="mt-2 text-sm text-soft">Personne n’a encore contribué ce mois-ci.</p>
             )}
           </section>
           {themesWithGames().has(theme.slug) && (
             <section className="card p-5" aria-labelledby="theme-quiz">
-              <h2 id="theme-quiz" className="font-extrabold">Quiz du thème</h2>
-              <p className="mt-1 text-sm text-neutral-600">Cinq questions pour tester vos connaissances, avec une explication à chaque réponse.</p>
+              <h2 id="theme-quiz" className="font-bold">Quiz du thème</h2>
+              <p className="mt-1 text-sm text-soft">Cinq questions pour tester vos connaissances, avec une explication à chaque réponse.</p>
               <Link href={`/jeux?theme=${theme.slug}`} className="btn-link mt-2 inline-block">Jouer au quiz {theme.name} →</Link>
             </section>
           )}

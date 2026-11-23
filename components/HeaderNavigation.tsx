@@ -95,7 +95,12 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
     </nav>
     {user?.canPublish && pathname !== "/" && <Link href="/publier" className="mt-5 flex h-11 items-center justify-center rounded-lg bg-ink text-[15px] font-semibold text-white hover:bg-black">Publier</Link>}
     {user?.onboarded && <ProgressMini data={progress} handle={user.handle} />}
-    <div className="mt-auto">{accountMenu}</div>
+    {user?.onboarded
+      ? <div className="mt-auto">{accountMenu}</div>
+      : <div className="mt-5 [&>a]:w-full">
+          {accountMenu}
+          {!user && <p className="mt-2 px-1 text-xs leading-snug text-muted">Un e-mail suffit : pas de mot de passe à retenir.</p>}
+        </div>}
   </aside>
   <ProgressToast data={progress} />
 
@@ -126,7 +131,7 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
   <nav aria-label="Navigation mobile" className="fixed inset-x-0 bottom-0 z-20 grid h-[68px] grid-cols-5 items-center border-t border-line bg-white px-1 pb-[env(safe-area-inset-bottom)] text-[11px] lg:hidden">
     <TabLink href="/" label="Fil" active={active("/")}>{ICONS.home}</TabLink>
     <TabLink href="/salons" label="Salons" active={active("/salons")}>{ICONS.rooms}</TabLink>
-    <Link href={user?.canPublish ? "/publier" : `/connexion?next=${encodeURIComponent("/publier")}`} aria-label="Publier" className="mx-auto flex h-12 w-12 items-center justify-center rounded-[10px] bg-accent text-white">
+    <Link href={user?.canPublish ? "/publier" : `/connexion?next=${encodeURIComponent("/publier")}`} aria-label="Publier" className="mx-auto flex h-12 w-12 items-center justify-center rounded-card bg-accent text-white">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M12 5v14M5 12h14" /></svg>
     </Link>
     {user?.onboarded
@@ -167,7 +172,7 @@ function AccountMenu({ user, pathname }: { user: { handle: string | null; displa
         <span className="hidden truncate lg:inline">@{user.handle}</span>
         <span aria-hidden className="ml-auto text-xs">▾</span>
       </summary>
-      <nav aria-label="Mon compte" className="absolute right-0 top-full z-30 mt-2 max-h-[calc(100dvh-5rem)] w-60 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-[10px] bg-white p-1.5 shadow-lg ring-1 ring-line lg:bottom-full lg:left-0 lg:right-auto lg:top-auto lg:mb-2" onClick={e => {
+      <nav aria-label="Mon compte" className="absolute right-0 top-full z-30 mt-2 max-h-[calc(100dvh-5rem)] w-60 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-card bg-white p-1.5 shadow-lg ring-1 ring-line lg:bottom-full lg:left-0 lg:right-auto lg:top-auto lg:mb-2" onClick={e => {
         if ((e.target as HTMLElement).closest("a")) { if (account.current) account.current.open = false; }
       }}>
         <Link href={`/m/${user.handle}`} className="account-link">Mon profil</Link>

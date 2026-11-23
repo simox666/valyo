@@ -12,8 +12,8 @@ export default async function FeedbackPage({ searchParams }: { searchParams: Pro
     <div className="mx-auto max-w-2xl space-y-6">
       <header>
         <p className="label-mono text-accent">Bêta</p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight">Votre avis compte</h1>
-        <p className="mt-2 text-neutral-700">
+        <h1 className="mt-2 text-3xl font-bold">Votre avis compte</h1>
+        <p className="mt-2 text-soft">
           Valyo est en construction avec ses premiers membres. Un bug, une idée, quelque chose qui vous agace ou vous plaît : dites-le, c’est
           lu et ça oriente la suite.
         </p>
@@ -22,7 +22,7 @@ export default async function FeedbackPage({ searchParams }: { searchParams: Pro
         {user?.onboarded ? (
           <FeedbackForm page={page === "/" ? "" : page} />
         ) : (
-          <p className="text-neutral-700">
+          <p className="text-soft">
             <Link href={`/connexion?next=${encodeURIComponent("/avis")}`} className="btn-link">Connectez-vous</Link> pour envoyer votre avis.
           </p>
         )}

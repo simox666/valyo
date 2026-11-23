@@ -51,7 +51,7 @@ export function RoomsPopover({ postId, postTitle, roomCount, signedIn, canCreate
         {roomCount > 0 ? <>{roomCount} salon{roomCount > 1 ? "s" : ""}</> : "Salon"}
       </button>
       <dialog ref={dialog} aria-labelledby={`salons-${postId}`}
-        className="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-[12px] bg-white p-0 text-ink shadow-xl ring-1 ring-line backdrop:bg-ink/40">
+        className="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-card bg-white p-0 text-ink shadow-xl ring-1 ring-line backdrop:bg-ink/40">
         <div className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
           <div className="min-w-0">
             <p className="label-mono text-accent">Salons sur ce sujet</p>

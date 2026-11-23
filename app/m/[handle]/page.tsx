@@ -88,7 +88,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
           // eslint-disable-next-line @next/next/no-img-element
           <img src={`/media/${member.bannerId}`} alt="" className="aspect-[3/1] max-h-44 w-full object-cover sm:aspect-[5/1]" />
         ) : (
-          <div aria-hidden className="h-24 bg-[#FBEEE6] bg-[linear-gradient(#F3D9C8_1px,transparent_1px),linear-gradient(90deg,#F3D9C8_1px,transparent_1px)] bg-[size:16px_16px] sm:h-32" />
+          <div aria-hidden className="h-24 bg-accent-soft bg-[linear-gradient(#F3D9C8_1px,transparent_1px),linear-gradient(90deg,#F3D9C8_1px,transparent_1px)] bg-[size:16px_16px] sm:h-32" />
         )}
         <div className="px-5 pb-5 sm:px-7">
           <div className="-mt-12 flex flex-wrap items-end justify-between gap-4">
@@ -233,8 +233,8 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
             <h3 className="label-mono">Découvertes · <span className="text-ink">{progress.badges.filter((b) => b.unlocked).length}/{progress.badges.length}</span></h3>
             <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {badges.map((b) => (
-                <li key={b.key} className={`flex items-center gap-3 rounded-lg p-2.5 ring-1 ${b.unlocked ? "bg-accent-soft ring-[#F3D9C8]" : "bg-paper ring-line"}`}>
-                  <span aria-hidden className={`flex h-11 w-11 shrink-0 flex-col justify-between rounded p-1 ${b.unlocked ? "bg-accent text-white" : "border border-dashed border-[#C9C9C0] bg-white text-muted"}`}>
+                <li key={b.key} className={`flex items-center gap-3 rounded-lg p-2.5 ring-1 ${b.unlocked ? "bg-accent-soft ring-accent-line" : "bg-paper ring-line"}`}>
+                  <span aria-hidden className={`flex h-11 w-11 shrink-0 flex-col justify-between rounded p-1 ${b.unlocked ? "bg-accent text-white" : "border border-dashed border-line-strong bg-white text-muted"}`}>
                     <span className="font-mono text-[8px] leading-none">{b.unlocked ? "★" : "?"}</span>
                     <span className="font-display text-base font-bold leading-none">{b.symbol}</span>
                   </span>

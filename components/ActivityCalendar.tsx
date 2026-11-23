@@ -1,7 +1,7 @@
 // Carte d'activité façon GitHub : une case par jour (lundi en haut), une colonne par semaine.
 // Teinte selon le nombre de contributions publiques (publications et commentaires).
 
-const SHADES = ["bg-[#EEEEE8]", "bg-[#F6C9AE]", "bg-[#E8915F]", "bg-[#C2410C]"];
+const SHADES = ["bg-chip", "bg-[#F6C9AE]", "bg-[#E8915F]", "bg-accent"];
 const shade = (n: number) => SHADES[n === 0 ? 0 : n === 1 ? 1 : n <= 3 ? 2 : 3];
 const MONTHS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
 const label = (day: string) => {

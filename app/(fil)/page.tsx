@@ -121,15 +121,15 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
         />
       ) : (
         // Compact sur mobile : le premier article doit rester visible dès l'ouverture.
-        <section className="rounded-[10px] bg-ink p-4 text-white sm:p-6">
-          <p className="label-mono hidden text-[#B9C1CB] sm:block">Le réseau des curieux</p>
+        <section className="rounded-card bg-ink p-4 text-white sm:p-6">
+          <p className="label-mono hidden text-on-ink sm:block">Le réseau des curieux</p>
           <h2 className="text-lg font-semibold leading-snug sm:mt-1.5 sm:text-2xl">Les nouvelles tech et sciences, et ceux qui en parlent.</h2>
-          <p className="mt-1.5 text-sm text-[#C9CED6] sm:mt-2">
+          <p className="mt-1.5 text-sm text-on-ink sm:mt-2">
             Valyo est le réseau social des passionnés d’IA, d’espace, de sciences et de technologie
             <span className="hidden sm:inline"> : on y suit l’actualité sourcée, on la commente et on en discute en salon</span>. Ses membres
             s’appellent les <strong className="font-semibold text-white">Valyors</strong>.
           </p>
-          <Link href="/connexion" className="mt-3 inline-flex h-10 items-center rounded-lg bg-accent px-4 text-sm font-semibold text-white hover:bg-[#9A3412] sm:mt-4">Rejoindre Valyo</Link>
+          <Link href="/connexion" className="mt-3 inline-flex h-10 items-center rounded-lg bg-accent px-4 text-sm font-semibold text-white hover:bg-accent-dark sm:mt-4">Rejoindre Valyo</Link>
         </section>
       )}
 
@@ -182,7 +182,7 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
         <section className="card flex flex-wrap items-center justify-between gap-3 p-4">
           <div>
             <h2 className="text-lg font-bold">{theme.name}</h2>
-            <p className="text-sm text-neutral-600">{theme.description}</p>
+            <p className="text-sm text-soft">{theme.description}</p>
           </div>
           <FollowButton target="theme" keyValue={theme.slug} initialFollowing={following} signedIn={signedIn} label="ce thème" />
         </section>
@@ -197,7 +197,7 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
       ) : posts.length === 0 ? (
         <div className="card p-6 text-center">
           <p className="font-semibold">Les premières actus arrivent{theme ? " dans ce thème" : ""}…</p>
-          <p className="mt-1 text-neutral-600">Rechargez dans un instant, ou lancez la discussion vous-même.</p>
+          <p className="mt-1 text-soft">Rechargez dans un instant, ou lancez la discussion vous-même.</p>
           <Link href={signedIn ? "/publier" : "/connexion?next=/publier"} className="btn-primary mt-4">
             Publier
           </Link>

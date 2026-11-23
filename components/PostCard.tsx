@@ -59,13 +59,13 @@ export function PostCard({
   return (
     <article className="card min-w-0 px-4 pb-3 pt-4 sm:px-[22px] sm:pb-4 sm:pt-5">
       {relayedBy && (
-        <div className="-mx-4 -mt-4 mb-3.5 border-b border-[#ECECE5] bg-paper px-4 py-2.5 sm:-mx-[22px] sm:-mt-5 sm:px-[22px]">
+        <div className="-mx-4 -mt-4 mb-3.5 border-b border-hairline bg-paper px-4 py-2.5 sm:-mx-[22px] sm:-mt-5 sm:px-[22px]">
           <p className="flex items-start gap-1.5 text-[13px] leading-snug text-soft">
             <Icon id="relayer" size={14} strokeWidth={1.8} className="mt-0.5 shrink-0 text-accent" />
             <span className="min-w-0">
               Relayé par <Link href={`/m/${relayedBy.handle}`} className="font-semibold text-ink hover:underline">{relayedBy.name}</Link>
               {relayedBy.total > 1 && <> et {relayedBy.total - 1} autre{relayedBy.total > 2 ? "s" : ""}</>}
-              {relayedBy.note && <span className="mt-0.5 block italic text-[#2E3742]">« {relayedBy.note} »</span>}
+              {relayedBy.note && <span className="mt-0.5 block italic text-body">« {relayedBy.note} »</span>}
             </span>
           </p>
         </div>
@@ -93,7 +93,7 @@ export function PostCard({
                 <strong className="font-semibold text-ink">{post.author.displayName}</strong>
               )}{" "}
               {VERB[post.kind]}
-              {post.kind === "question" && post.bestCommentId && <strong className="font-semibold text-[#15803D]"> · résolue ✓</strong>}
+              {post.kind === "question" && post.bestCommentId && <strong className="font-semibold text-success"> · résolue ✓</strong>}
             </>
           ) : (
             <strong className="font-semibold text-ink">{isRecap ? "Récap Valyo" : post.sourceName}</strong>
@@ -122,12 +122,12 @@ export function PostCard({
 
       {post.body &&
         (isActu ? (
-          <p className="mt-3.5 border-l-2 border-accent pl-3 text-[15px] leading-relaxed text-[#2E3742]">
+          <p className="mt-3.5 border-l-2 border-accent pl-3 text-[15px] leading-relaxed text-body">
             <span className="label-mono mr-2 text-accent">En bref</span>
             {excerpt(post.body)}
           </p>
         ) : (
-          <p className="mt-2 line-clamp-3 text-[15px] leading-relaxed text-[#2E3742]">{excerpt(post.body)}</p>
+          <p className="mt-2 line-clamp-3 text-[15px] leading-relaxed text-body">{excerpt(post.body)}</p>
         ))}
 
       {/* Un seul encart social par carte : le bandeau « Relayé par » prime (audit UX, P1-2). */}
@@ -143,7 +143,7 @@ export function PostCard({
       )}
 
       {(reactions?.counts.a_creuser ?? 0) >= DIG_THRESHOLD && (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-[#FBF7F2] px-3 py-2 text-sm ring-1 ring-[#F3D9C8]">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-cream px-3 py-2 text-sm ring-1 ring-accent-line">
           <span className="text-soft">
             <span aria-hidden>🔎 </span>
             <strong className="font-semibold text-ink">{reactions!.counts.a_creuser} personnes</strong> veulent creuser ce sujet

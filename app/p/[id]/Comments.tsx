@@ -124,20 +124,20 @@ function CommentItem({ comment, postId, viewer, isReply, question }: { comment: 
   }
 
   return (
-    <div className={isReply ? "border-l-2 border-line pl-4" : isBest ? "-mx-2 rounded-lg bg-[#F0FAF2] px-2 ring-1 ring-[#BBE3C4]" : ""}>
+    <div className={isReply ? "border-l-2 border-line pl-4" : isBest ? "-mx-2 rounded-lg bg-success-soft px-2 ring-1 ring-success-line" : ""}>
       {isBest && (
-        <p className="flex items-center gap-1.5 pt-2 text-xs font-bold text-[#15803D]">
+        <p className="flex items-center gap-1.5 pt-2 text-xs font-bold text-success">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="m4.5 12.5 5 5 10-11" /></svg>
           Meilleure réponse · retenue par l’auteur de la question
         </p>
       )}
       {comment.isDeleted ? (
-        <p className="py-2 italic text-neutral-500">Commentaire supprimé</p>
+        <p className="py-2 italic text-muted">Commentaire supprimé</p>
       ) : comment.isMasked ? (
-        <p className="py-2 italic text-neutral-500">Commentaire masqué (membre que vous avez bloqué)</p>
+        <p className="py-2 italic text-muted">Commentaire masqué (membre que vous avez bloqué)</p>
       ) : (
         <div className="py-2">
-          <div className="flex flex-wrap items-center gap-x-2 text-sm text-neutral-600">
+          <div className="flex flex-wrap items-center gap-x-2 text-sm text-soft">
             <AuthorName author={comment.author} />
             <span aria-hidden>·</span>
             <LocalTime iso={comment.createdAt} />
@@ -169,7 +169,7 @@ function CommentItem({ comment, postId, viewer, isReply, question }: { comment: 
                 </button>
               )}
               {canPick && (
-                <button type="button" className={`font-semibold underline-offset-2 hover:underline ${isBest ? "text-neutral-500" : "text-[#15803D]"}`} disabled={busy} onClick={() => pickBest(isBest ? null : comment.id)}>
+                <button type="button" className={`font-semibold underline-offset-2 hover:underline ${isBest ? "text-muted" : "text-success"}`} disabled={busy} onClick={() => pickBest(isBest ? null : comment.id)}>
                   {isBest ? "Retirer la meilleure réponse" : "✓ Retenir comme meilleure réponse"}
                 </button>
               )}
@@ -231,14 +231,14 @@ export function Comments({ postId, comments, viewer, question = null }: { postId
       {viewer?.canContribute ? (
         <CommentForm postId={postId} label="Écrire un commentaire…" />
       ) : viewer ? (
-        <p className="card p-4 text-neutral-700">
+        <p className="card p-4 text-soft">
           <Link href={`/bienvenue?next=${encodeURIComponent(pathname)}`} className="btn-link">
             Terminez votre inscription
           </Link>{" "}
           pour commenter.
         </p>
       ) : (
-        <p className="card p-4 text-neutral-700">
+        <p className="card p-4 text-soft">
           <Link href={loginUrl(`${pathname}#commentaires`)} className="btn-link">
             Connectez-vous
           </Link>{" "}
@@ -247,7 +247,7 @@ export function Comments({ postId, comments, viewer, question = null }: { postId
       )}
       {comments.length === 0 ? (
         // Visiteur : l'invitation à se connecter ci-dessus suffit, pas de second état vide.
-        viewer?.canContribute ? <p className="text-neutral-600">Aucun commentaire pour l’instant. Lancez la discussion !</p> : null
+        viewer?.canContribute ? <p className="text-soft">Aucun commentaire pour l’instant. Lancez la discussion !</p> : null
       ) : (
         <div className="card divide-y divide-line px-4">
           {ordered.map((comment) => (

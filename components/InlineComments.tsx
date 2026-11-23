@@ -74,7 +74,7 @@ function Item({ c, postId, canComment, onReply, replyingTo, refresh, child = fal
         <Avatar name={c.author.displayName} size={child ? "xs" : "sm"} deleted={c.author.isDeleted} />
       )}
       <div className="min-w-0 flex-1">
-        <div className="rounded-xl bg-paper px-3 py-2 ring-1 ring-[#ECECE5]">
+        <div className="rounded-card bg-paper px-3 py-2 ring-1 ring-hairline">
           <p className="text-sm">
             {c.author.handle ? <Link href={`/m/${c.author.handle}`} className="font-semibold hover:underline">{c.author.displayName}</Link> : <span className="font-semibold">{c.author.displayName}</span>}
             <span className="text-xs text-muted"> · {ago(c.createdAt)}</span>
@@ -121,7 +121,7 @@ export function InlineComments({ postId, access, onCount }: { postId: string; ac
 
   const shown = comments ? (all ? comments : comments.slice(-SHOWN)) : [];
   return (
-    <div className="mt-2 space-y-3 border-t border-[#ECECE5] pt-3" aria-live="polite">
+    <div className="mt-2 space-y-3 border-t border-hairline pt-3" aria-live="polite">
       {comments === null && !error && <p className="animate-pulse text-sm text-muted">Chargement des commentaires…</p>}
       {error && <p className="text-sm text-muted">{error}</p>}
       {comments && comments.length > SHOWN && !all && (

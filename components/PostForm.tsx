@@ -147,37 +147,37 @@ export function PostForm({ themes, initial, postId, authorName = "Vous", userKey
   if (publishedId) return <section className="card mx-auto max-w-3xl space-y-6 p-6 sm:p-10">
     <span aria-hidden className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft text-2xl text-accent">✓</span>
     <div>
-      <h2 ref={stageRef} tabIndex={-1} className="text-2xl font-extrabold">Votre publication est en ligne.</h2>
-      <p className="mt-2 text-neutral-600">Les membres peuvent maintenant la lire et y répondre.</p>
+      <h2 ref={stageRef} tabIndex={-1} className="text-2xl font-bold">Votre publication est en ligne.</h2>
+      <p className="mt-2 text-soft">Les membres peuvent maintenant la lire et y répondre.</p>
     </div>
-    <div className="rounded-xl bg-chip p-4"><span className="chip bg-white">{KIND_LABELS[values.kind]}</span><p className="mt-2 text-xl font-bold">{values.title.trim()}</p></div>
+    <div className="rounded-card bg-chip p-4"><span className="chip bg-white">{KIND_LABELS[values.kind]}</span><p className="mt-2 text-xl font-bold">{values.title.trim()}</p></div>
     <div className="flex flex-wrap gap-3"><Link href={`/p/${publishedId}`} className="btn-primary">Voir ma publication →</Link><CopyLinkButton path={`/p/${publishedId}`} /></div>
     <div className="border-t border-line pt-5">
       <h3 className="font-bold">Envie de poursuivre ensemble ?</h3>
-      <p className="mb-4 mt-1 text-sm text-neutral-600">Créez un salon associé pour échanger en groupe autour de votre publication.</p>
+      <p className="mb-4 mt-1 text-sm text-soft">Créez un salon associé pour échanger en groupe autour de votre publication.</p>
       <Link href={`/salons/nouveau?post=${publishedId}`} className="btn-secondary">Créer un salon sur ce sujet</Link>
     </div>
     <Link href="/" className="btn-link inline-block">Retour au fil</Link>
   </section>;
 
   return <div className="space-y-6">
-    {savedDraft && <section role="status" className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent-soft p-4">
+    {savedDraft && <section role="status" className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-accent/30 bg-accent-soft p-4">
       <div className="min-w-0">
         <p className="font-bold text-accent">Brouillon retrouvé</p>
-        <p className="truncate text-sm text-neutral-700">« {savedDraft.values.title.trim() || savedDraft.values.body.trim().slice(0, 60)} » · enregistré le {new Date(savedDraft.at).toLocaleString("fr-BE", { dateStyle: "short", timeStyle: "short" })}</p>
+        <p className="truncate text-sm text-soft">« {savedDraft.values.title.trim() || savedDraft.values.body.trim().slice(0, 60)} » · enregistré le {new Date(savedDraft.at).toLocaleString("fr-BE", { dateStyle: "short", timeStyle: "short" })}</p>
       </div>
       <div className="flex gap-2">
         <button type="button" className="btn-primary" onClick={() => { setValues({ ...savedDraft.values, sources: savedDraft.values.sources.length ? savedDraft.values.sources : [""] }); setSavedDraft(null); }}>Reprendre</button>
         <button type="button" className="btn-secondary" onClick={() => { clearDraft(); setSavedDraft(null); }}>Ignorer</button>
       </div>
     </section>}
-    {!editing && !savedDraft && (values.title.trim() || values.body.trim()) && <p className="text-xs text-neutral-500" aria-live="polite">Brouillon enregistré automatiquement sur cet appareil.</p>}
+    {!editing && !savedDraft && (values.title.trim() || values.body.trim()) && <p className="text-xs text-muted" aria-live="polite">Brouillon enregistré automatiquement sur cet appareil.</p>}
     <ol aria-label="Étapes de publication" className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
-      <li aria-current={!preview ? "step" : undefined} className={!preview ? "text-accent" : "text-neutral-500"}>1. Rédiger</li>
-      <li aria-current={preview ? "step" : undefined} className={preview ? "text-accent" : "text-neutral-500"}>2. Relire l’aperçu</li>
-      <li className="text-neutral-500">3. {editing ? "Enregistrer" : "Publier et discuter"}</li>
+      <li aria-current={!preview ? "step" : undefined} className={!preview ? "text-accent" : "text-muted"}>1. Rédiger</li>
+      <li aria-current={preview ? "step" : undefined} className={preview ? "text-accent" : "text-muted"}>2. Relire l’aperçu</li>
+      <li className="text-muted">3. {editing ? "Enregistrer" : "Publier et discuter"}</li>
     </ol>
-    {error && <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-800">
+    {error && <div ref={errorRef} tabIndex={-1} role="alert" className="rounded-card border border-red-200 bg-red-50 p-4 text-red-800">
       <p className="font-semibold">{error}</p>
       {Object.keys(fields).length > 0 && <ul className="mt-2 list-inside list-disc text-sm">{Object.entries(fields).map(([key, message]) => <li key={key}><a className="underline" href={`#${key === "sources" ? "source-0" : key === "themeIds" ? "post-themes" : key}`}>{message}</a></li>)}</ul>}
     </div>}
@@ -185,7 +185,7 @@ export function PostForm({ themes, initial, postId, authorName = "Vous", userKey
       <h2 ref={stageRef} tabIndex={-1} className="text-xl font-bold">Cette source a déjà été partagée.</h2>
       <p>Vous pouvez rejoindre la discussion existante :</p>
       <ul className="space-y-2">{duplicates.map(d => <li key={d.id}><Link href={`/p/${d.id}`} className="btn-link">{d.title || "Publication existante"} →</Link></li>)}</ul>
-      <p className="text-sm text-neutral-600">Si votre publication apporte un autre point de vue, vous pouvez la maintenir. Elle restera séparée de la discussion existante.</p>
+      <p className="text-sm text-soft">Si votre publication apporte un autre point de vue, vous pouvez la maintenir. Elle restera séparée de la discussion existante.</p>
       <div className="flex flex-wrap gap-3">
         <button type="button" className="btn-primary" disabled={busy} onClick={() => submit(true)}>{busy ? "Publication…" : "Publier quand même"}</button>
         <button type="button" className="btn-secondary" disabled={busy} onClick={() => { setDuplicates(null); setPreview(false); }}>Revenir à ma publication</button>
@@ -202,33 +202,33 @@ export function PostForm({ themes, initial, postId, authorName = "Vous", userKey
           <h2 ref={stageRef} tabIndex={-1} className="sr-only">Rédiger votre publication</h2>
           {!editing ? <fieldset>
             <legend className="mb-3 text-lg font-bold">Que souhaitez-vous partager ?</legend>
-            <div className="grid gap-3 sm:grid-cols-3">{POST_KINDS.map(kind => <label key={kind} className={`min-w-0 cursor-pointer rounded-2xl border p-4 transition ${values.kind === kind ? "border-accent bg-accent-soft ring-1 ring-accent" : "border-line bg-white hover:border-accent/50"}`}>
+            <div className="grid gap-3 sm:grid-cols-3">{POST_KINDS.map(kind => <label key={kind} className={`min-w-0 cursor-pointer rounded-card border p-4 transition ${values.kind === kind ? "border-accent bg-accent-soft ring-1 ring-accent" : "border-line bg-white hover:border-accent/50"}`}>
               <span className="mb-3 flex items-center justify-between"><span aria-hidden className="text-2xl font-bold text-accent">{KIND_GUIDE[kind].icon}</span><input type="radio" name="kind" value={kind} checked={values.kind === kind} onChange={() => set("kind", kind)} className="h-4 w-4 accent-[#1C4F3C]" /></span>
-              <span className="block font-bold">{KIND_LABELS[kind]}</span><span className="mt-1 block text-sm text-neutral-600">{KIND_GUIDE[kind].help}</span>
+              <span className="block font-bold">{KIND_LABELS[kind]}</span><span className="mt-1 block text-sm text-soft">{KIND_GUIDE[kind].help}</span>
             </label>)}</div>
-          </fieldset> : <p className="text-sm text-neutral-600">Type : <span className="chip">{KIND_LABELS[values.kind]}</span> · Le type d’une publication reste inchangé.</p>}
+          </fieldset> : <p className="text-sm text-soft">Type : <span className="chip">{KIND_LABELS[values.kind]}</span> · Le type d’une publication reste inchangé.</p>}
           <section className="card space-y-5 p-5 sm:p-6" aria-label="Contenu de la publication">
             <div>
               <label htmlFor="title" className="label">{guide.title}</label>
               <input id="title" value={values.title} maxLength={200} placeholder={values.kind === "question" ? "Une question précise pour lancer l’échange…" : "Un titre clair qui donne envie de lire…"} onChange={e => set("title", e.target.value)} className={`field ${fields.title ? "field-invalid" : ""}`} {...errorProps("title")} />
-              <p className="mt-1 text-right text-xs text-neutral-500">{values.title.length}/200</p>{fieldError("title")}
+              <p className="mt-1 text-right text-xs text-muted">{values.title.length}/200</p>{fieldError("title")}
             </div>
             <div>
               <label htmlFor="body" className="label">{values.kind === "news" ? "Texte ou résumé" : values.kind === "question" ? "Le contexte de votre question" : "Votre retour d’expérience"}</label>
               <MentionTextarea id="body" rows={9} maxLength={10000} value={values.body} placeholder={guide.body} onValueChange={body => set("body", body)} className={`field ${fields.body ? "field-invalid" : ""}`} {...errorProps("body")} />
-              <p className="mt-1 text-right text-xs text-neutral-500">{values.body.length.toLocaleString("fr")}/10 000</p>{fieldError("body")}
+              <p className="mt-1 text-right text-xs text-muted">{values.body.length.toLocaleString("fr")}/10 000</p>{fieldError("body")}
             </div>
             {!editing && <PhotoPicker images={values.images ?? []} onChange={images => set("images", images)} />}
             <fieldset id="post-themes" tabIndex={-1}>
-              <legend className="label">Quels thèmes ? <span className="font-normal text-neutral-500">1 à 3</span></legend>
+              <legend className="label">Quels thèmes ? <span className="font-normal text-muted">1 à 3</span></legend>
               <ThemePicker themes={themes} selected={values.themeIds} onChange={ids => set("themeIds", ids)} max={3} invalid={Boolean(fields.themeIds)} describedBy={fields.themeIds ? "themeIds-error" : undefined} />
               {fieldError("themeIds")}
             </fieldset>
           </section>
           <section className="card space-y-5 p-5 sm:p-6" aria-label="Sources et liens">
             <fieldset>
-              <legend className="label">Sources <span className="font-normal text-neutral-500">· facultatif{values.kind === "news" ? ", mais un lien vers l’article d’origine aide les autres à vérifier" : ""}</span></legend>
-              <p className="mb-3 text-sm text-neutral-600">{values.kind === "news" ? "Donnez à chacun la possibilité de retrouver l’information d’origine." : "Ajoutez les références qui aident à comprendre votre contribution."}</p>
+              <legend className="label">Sources <span className="font-normal text-muted">· facultatif{values.kind === "news" ? ", mais un lien vers l’article d’origine aide les autres à vérifier" : ""}</span></legend>
+              <p className="mb-3 text-sm text-soft">{values.kind === "news" ? "Donnez à chacun la possibilité de retrouver l’information d’origine." : "Ajoutez les références qui aident à comprendre votre contribution."}</p>
               <div className="space-y-2">{sources.map((source, index) => <div key={index} className="flex gap-2">
                 <input id={`source-${index}`} type="url" inputMode="url" placeholder="https://" aria-label={`Source ${index + 1}`} value={source} onChange={e => set("sources", sources.map((s, i) => i === index ? e.target.value : s))} className={`field min-w-0 ${fields.sources ? "field-invalid" : ""}`} {...errorProps("sources")} />
                 {sources.length > 1 && <button type="button" className="btn-secondary px-3" aria-label={`Retirer la source ${index + 1}`} onClick={() => set("sources", sources.filter((_, i) => i !== index))}>✕</button>}
@@ -244,7 +244,7 @@ export function PostForm({ themes, initial, postId, authorName = "Vous", userKey
           </section>
         </>}
         <div className="card flex flex-wrap items-center justify-between gap-3 p-4">
-          <p className="text-sm text-neutral-600">{preview ? "L’envoi se fait uniquement avec le bouton ci-dessous." : "Vous pourrez tout relire avant l’envoi."}</p>
+          <p className="text-sm text-soft">{preview ? "L’envoi se fait uniquement avec le bouton ci-dessous." : "Vous pourrez tout relire avant l’envoi."}</p>
           <div className="flex flex-wrap gap-2">
             <button type="button" disabled={busy} className="btn-secondary" onClick={() => router.back()}>Annuler</button>
             <button type="submit" disabled={busy} className="btn-primary">{busy ? "Enregistrement…" : preview ? editing ? "Enregistrer les modifications" : "Publier maintenant" : "Voir l’aperçu →"}</button>
@@ -252,14 +252,14 @@ export function PostForm({ themes, initial, postId, authorName = "Vous", userKey
         </div>
       </form>
       <aside className="space-y-4 lg:sticky lg:top-28" aria-label="Conseils de rédaction">
-        <section className="rounded-2xl bg-accent-soft p-5">
+        <section className="rounded-card bg-accent-soft p-5">
           <h2 className="font-bold text-accent">Pour une discussion utile</h2>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-700">{guide.tip}</p>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-700">Choisissez les thèmes qui aideront les bonnes personnes à vous trouver.</p>
+          <p className="mt-3 text-sm leading-relaxed text-soft">{guide.tip}</p>
+          <p className="mt-3 text-sm leading-relaxed text-soft">Choisissez les thèmes qui aideront les bonnes personnes à vous trouver.</p>
         </section>
         <section className="card p-5">
           <h2 className="font-bold">Et après ?</h2>
-          <p className="mt-2 text-sm leading-relaxed text-neutral-600">Votre contribution rejoint le fil. Les membres peuvent commenter, et vous pouvez créer un salon pour poursuivre la discussion.</p>
+          <p className="mt-2 text-sm leading-relaxed text-soft">Votre contribution rejoint le fil. Les membres peuvent commenter, et vous pouvez créer un salon pour poursuivre la discussion.</p>
           <Link href="/regles" target="_blank" rel="noopener noreferrer" className="btn-link mt-3 inline-block">Les règles de la communauté ↗</Link>
         </section>
       </aside>

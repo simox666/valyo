@@ -23,7 +23,7 @@ export function ThemePicker({
         return (
           <label
             key={theme.id}
-            className={`inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold ${
+            className={`inline-flex cursor-pointer items-center gap-2 rounded-card border px-3 py-2 text-sm font-semibold ${
               checked ? "border-accent bg-accent-soft text-accent" : invalid ? "border-red-500 bg-white" : "border-line bg-white"
             } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
           >

@@ -86,8 +86,8 @@ export default async function RoomPage({ params }: { params: Params }) {
       <header className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-5">
         <div className="min-w-0">
           <div className="mb-2 flex flex-wrap gap-2"><span className="chip bg-accent-soft text-accent">{card.visibility === "private" ? "Sur invitation" : "Salon public"}</span>{card.themeName && <span className="chip">{card.themeName}</span>}{card.archived && <span className="chip">Archivé · lecture seule</span>}</div>
-          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{card.name}</h1>
-          <p className="mt-2 text-sm text-neutral-500">{card.members} membre{card.members > 1 ? "s" : ""} · {card.recentMessages} message{card.recentMessages > 1 ? "s" : ""} sur 7 jours</p>
+          <h1 className="text-2xl font-bold sm:text-3xl">{card.name}</h1>
+          <p className="mt-2 text-sm text-muted">{card.members} membre{card.members > 1 ? "s" : ""} · {card.recentMessages} message{card.recentMessages > 1 ? "s" : ""} sur 7 jours</p>
         </div>
         {(view.canRead || preview) && <Link href={canWriteRoom(access) ? `#compose-${card.id}` : "#chat"} className="btn-secondary">{canWriteRoom(access) ? "Écrire un message ↓" : "Lire la discussion ↓"}</Link>}
       </header>
@@ -121,7 +121,7 @@ export default async function RoomPage({ params }: { params: Params }) {
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
         {view.canRead && user ? (
           <section className="card min-w-0 overflow-hidden" aria-labelledby="chat">
-            <div className="border-b border-line px-4 py-3 sm:px-5"><h2 id="chat" className="text-base font-extrabold">Discussion</h2></div>
+            <div className="border-b border-line px-4 py-3 sm:px-5"><h2 id="chat" className="text-base font-bold">Discussion</h2></div>
             <div className="p-3 sm:p-5" id="compose-message">
               <ChatSection roomId={card.id} viewer={{ id: user.id, status: user.status, onboarded: user.onboarded }} canWrite={canWriteRoom(access)} canModerate={view.canModerate} />
             </div>
@@ -153,9 +153,9 @@ export default async function RoomPage({ params }: { params: Params }) {
           </section>
         ) : (
           <section className="card flex min-h-80 flex-col items-center justify-center px-6 py-10 text-center" aria-labelledby="rejoindre-discussion">
-            <span aria-hidden className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-soft text-3xl text-accent">↔</span>
-            <h2 id="rejoindre-discussion" className="text-2xl font-extrabold">{card.archived ? "Cette discussion est archivée." : isMember ? "Discussion indisponible" : "Prenez part à la conversation."}</h2>
-            <p className="mb-6 mt-3 max-w-md text-sm leading-relaxed text-neutral-600">{card.archived ? "Les membres conservent l’accès à l’historique. Le salon n’accepte plus d’adhésions ni de messages." : isMember ? "Votre compte ne permet plus de consulter ce chat pour le moment." : "Rejoignez le salon pour lire les échanges, poser vos questions et partager votre point de vue."}</p>
+            <span aria-hidden className="mb-4 flex h-16 w-16 items-center justify-center rounded-card bg-accent-soft text-3xl text-accent">↔</span>
+            <h2 id="rejoindre-discussion" className="text-2xl font-bold">{card.archived ? "Cette discussion est archivée." : isMember ? "Discussion indisponible" : "Prenez part à la conversation."}</h2>
+            <p className="mb-6 mt-3 max-w-md text-sm leading-relaxed text-soft">{card.archived ? "Les membres conservent l’accès à l’historique. Le salon n’accepte plus d’adhésions ni de messages." : isMember ? "Votre compte ne permet plus de consulter ce chat pour le moment." : "Rejoignez le salon pour lire les échanges, poser vos questions et partager votre point de vue."}</p>
             {canJoinRoom(access) ? <JoinButton roomId={card.id} openChat /> : !user && !card.archived ? <Link href={`/connexion?next=${encodeURIComponent(`/s/${card.id}#chat`)}`} className="btn-primary">Se connecter pour rejoindre</Link> : user && !user.onboarded && !card.archived ? <Link href={`/bienvenue?next=${encodeURIComponent(`/s/${card.id}#chat`)}`} className="btn-primary">Terminer mon inscription</Link> : <Link href="/salons" className="btn-secondary">Découvrir d’autres salons</Link>}
           </section>
         )}
@@ -164,22 +164,22 @@ export default async function RoomPage({ params }: { params: Params }) {
             <RoomMeetups roomId={card.id} initial={meetups} canManage={Boolean(view.canModerate && isMember)} />
           )}
           <section className="card p-5">
-            <h2 className="text-sm font-extrabold">À propos</h2>
-            <p className="mt-2 text-sm leading-relaxed text-neutral-600">{card.description || "Un espace pour échanger autour d’un même sujet, à votre rythme."}</p>
-            {card.lastMessageAt && <p className="mt-3 text-xs text-neutral-500">Dernier échange <LocalTime iso={card.lastMessageAt} /></p>}
+            <h2 className="text-sm font-bold">À propos</h2>
+            <p className="mt-2 text-sm leading-relaxed text-soft">{card.description || "Un espace pour échanger autour d’un même sujet, à votre rythme."}</p>
+            {card.lastMessageAt && <p className="mt-3 text-xs text-muted">Dernier échange <LocalTime iso={card.lastMessageAt} /></p>}
           </section>
           {view.canRead && user && <details className="card p-5">
-            <summary className="cursor-pointer text-sm font-extrabold">Suivi et gestion du salon</summary>
-            <p className="mb-3 mt-3 text-xs text-neutral-500">Suivez ce salon pour recevoir ses notifications.</p>
+            <summary className="cursor-pointer text-sm font-bold">Suivi et gestion du salon</summary>
+            <p className="mb-3 mt-3 text-xs text-muted">Suivez ce salon pour recevoir ses notifications.</p>
             <MemberBar roomId={card.id} roomName={card.name} following={view.following} isOwner={view.canManage} archived={card.archived} />
             {view.canModerate && !card.archived && <div className="mt-4"><InviteButton roomId={card.id} /></div>}
           </details>}
           {members && view.canRead && <details className="card p-5" open>
-            <summary className="cursor-pointer text-sm font-extrabold">Membres ({members.length})</summary>
+            <summary className="cursor-pointer text-sm font-bold">Membres ({members.length})</summary>
             <ul className="mt-3 max-h-80 divide-y divide-line overflow-y-auto">
               {members.map(m => <li key={m.userId} className="py-3">
-                <div className="flex items-center gap-2.5"><span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-chip text-xs font-bold text-accent">{m.displayName.trim().slice(0, 1).toLocaleUpperCase("fr")}</span><div className="min-w-0">{m.handle ? <Link href={`/m/${m.handle}`} className="text-sm font-semibold hover:underline">{m.displayName}</Link> : <span className="text-sm text-neutral-500">{m.displayName}</span>}{roleLabel[m.role] && <p className="text-xs text-neutral-500">{roleLabel[m.role]}</p>}</div></div>
-                {view.canModerate && m.userId !== user?.id && <details className="mt-2"><summary className="cursor-pointer text-xs text-neutral-500">Actions de modération</summary><div className="mt-2"><MemberActions roomId={card.id} userId={m.userId} role={m.role} viewerIsOwner={view.canManage} /></div></details>}
+                <div className="flex items-center gap-2.5"><span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-chip text-xs font-bold text-accent">{m.displayName.trim().slice(0, 1).toLocaleUpperCase("fr")}</span><div className="min-w-0">{m.handle ? <Link href={`/m/${m.handle}`} className="text-sm font-semibold hover:underline">{m.displayName}</Link> : <span className="text-sm text-muted">{m.displayName}</span>}{roleLabel[m.role] && <p className="text-xs text-muted">{roleLabel[m.role]}</p>}</div></div>
+                {view.canModerate && m.userId !== user?.id && <details className="mt-2"><summary className="cursor-pointer text-xs text-muted">Actions de modération</summary><div className="mt-2"><MemberActions roomId={card.id} userId={m.userId} role={m.role} viewerIsOwner={view.canManage} /></div></details>}
               </li>)}
             </ul>
           </details>}

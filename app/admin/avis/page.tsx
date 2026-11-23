@@ -17,11 +17,11 @@ export default async function AdminFeedbackPage() {
   return (
     <div className="wide-page space-y-6">
       <header>
-        <h1 className="text-2xl font-extrabold tracking-tight">Avis des testeurs</h1>
-        <p className="mt-1 text-neutral-600">{fresh} nouveau{fresh > 1 ? "x" : ""} · {items.length} au total</p>
+        <h1 className="text-2xl font-bold">Avis des testeurs</h1>
+        <p className="mt-1 text-soft">{fresh} nouveau{fresh > 1 ? "x" : ""} · {items.length} au total</p>
       </header>
       {items.length === 0 ? (
-        <p className="card p-5 text-neutral-600">Aucun avis pour l’instant. Le lien « Votre avis » est dans le pied de page et le menu Compte.</p>
+        <p className="card p-5 text-soft">Aucun avis pour l’instant. Le lien « Votre avis » est dans le pied de page et le menu Compte.</p>
       ) : (
         <ul className="space-y-3">
           {items.map((f) => (
@@ -30,7 +30,7 @@ export default async function AdminFeedbackPage() {
                 <p className="flex flex-wrap items-center gap-2 text-sm">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${f.kind === "bug" ? "bg-red-100 text-red-800" : f.kind === "idee" ? "bg-accent-soft text-accent" : "bg-chip"}`}>{FEEDBACK_LABELS[f.kind]}</span>
                   {f.handle ? <Link href={`/m/${f.handle}`} className="font-semibold hover:underline">{f.name}</Link> : <span>{f.name}</span>}
-                  <span className="text-neutral-500"><LocalTime iso={f.createdAt} mode="full" /></span>
+                  <span className="text-muted"><LocalTime iso={f.createdAt} mode="full" /></span>
                   {f.page && <Link href={f.page} className="btn-link text-xs">{f.page}</Link>}
                 </p>
                 <FeedbackStatusButton id={f.id} status={f.status} />

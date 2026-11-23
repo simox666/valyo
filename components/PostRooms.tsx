@@ -15,8 +15,8 @@ export async function PostRooms({ postId, viewerId, canCreate }: { postId: strin
         {room.archived && <span className="chip">Archivé</span>}
         {room.themeName && <span className="chip">{room.themeName}</span>}
       </div>
-      <p className="mt-2 text-xs text-neutral-600">{room.members} membre{room.members > 1 ? "s" : ""} · {room.recentMessages} message{room.recentMessages > 1 ? "s" : ""} sur 7 jours</p>
-      {room.lastMessageAt && <p className="mt-1 text-xs text-neutral-500">Dernier message <LocalTime iso={room.lastMessageAt} /></p>}
+      <p className="mt-2 text-xs text-soft">{room.members} membre{room.members > 1 ? "s" : ""} · {room.recentMessages} message{room.recentMessages > 1 ? "s" : ""} sur 7 jours</p>
+      {room.lastMessageAt && <p className="mt-1 text-xs text-muted">Dernier message <LocalTime iso={room.lastMessageAt} /></p>}
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {room.isMember ? <Link href={destination} className="btn-primary">Ouvrir la discussion</Link> : <>
           {/* Salon public : sa discussion se lit sans en être membre, même sans compte. */}
@@ -29,12 +29,12 @@ export async function PostRooms({ postId, viewerId, canCreate }: { postId: strin
   const createPath = `/salons/nouveau?post=${postId}`;
   return <section className="card p-5" aria-labelledby="salons-associes">
     <p className="label-mono">Pour aller plus loin</p>
-    <h2 id="salons-associes" className="mt-1 text-lg font-extrabold">Discuter dans un salon</h2>
-    <p className="mt-2 text-sm text-neutral-600">Une discussion de groupe pour approfondir cette publication.</p>
+    <h2 id="salons-associes" className="mt-1 text-lg font-bold">Discuter dans un salon</h2>
+    <p className="mt-2 text-sm text-soft">Une discussion de groupe pour approfondir cette publication.</p>
     {rooms.length ? <>
       <ul className="divide-y divide-line">{rooms.slice(0, 3).map(roomRow)}</ul>
       {rooms.length > 3 && <details className="mb-3"><summary className="cursor-pointer text-sm font-semibold text-accent">Voir les {rooms.length - 3} autres salons associés</summary><ul className="divide-y divide-line">{rooms.slice(3).map(roomRow)}</ul></details>}
-    </> : <p className="my-4 text-sm text-neutral-600">Aucun salon ne discute encore de cette publication.</p>}
+    </> : <p className="my-4 text-sm text-soft">Aucun salon ne discute encore de cette publication.</p>}
     {(canCreate || !viewerId) && <Link href={canCreate ? createPath : `/connexion?next=${encodeURIComponent(createPath)}`} className={rooms.length ? "btn-secondary" : "btn-primary"}>{rooms.length ? "Ouvrir un autre salon" : "Ouvrir un salon sur ce sujet"}</Link>}
   </section>;
 }

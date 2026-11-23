@@ -102,7 +102,7 @@ export function QuickComposer({ user, themes, myThemeIds }: { user: { name: stri
       </div>
 
       {open && (
-        <div className="mt-2 space-y-3 border-t border-[#ECECE5] pt-3">
+        <div className="mt-2 space-y-3 border-t border-hairline pt-3">
           <p className="text-xs text-muted">La première ligne sert de titre ; la suite, de texte. {title && title.length < 5 && <span className="text-accent">Le titre doit faire au moins 5 caractères.</span>}</p>
 
           <div className="flex flex-wrap items-center gap-1.5" role="radiogroup" aria-label="Type de publication">
@@ -159,7 +159,7 @@ export function QuickComposer({ user, themes, myThemeIds }: { user: { name: stri
             <Link href="/publier" className="inline-flex h-9 items-center rounded-md px-2 text-sm text-soft hover:bg-chip hover:text-ink">Plus d’options</Link>
             <span className="ml-auto flex items-center gap-2">
               <button type="button" onClick={() => { setOpen(false); area.current?.blur(); }} className="h-9 rounded-md px-2.5 text-sm text-muted hover:text-ink">Annuler</button>
-              <button type="button" disabled={!ready || busy} onClick={() => void publish()} className="inline-flex h-9 items-center rounded-md bg-accent px-4 text-sm font-semibold text-white hover:bg-[#9A3412] disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" disabled={!ready || busy} onClick={() => void publish()} className="inline-flex h-9 items-center rounded-md bg-accent px-4 text-sm font-semibold text-white hover:bg-accent-dark disabled:cursor-not-allowed disabled:opacity-50">
                 {busy ? "Publication…" : "Publier"}
               </button>
             </span>

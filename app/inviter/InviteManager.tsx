@@ -39,19 +39,19 @@ export function CreateInvitation({ remaining }: { remaining: number | null }) {
     <div className="space-y-3">
       <form onSubmit={create} className="flex flex-wrap items-end gap-2">
         <label className="min-w-0 flex-1">
-          <span className="label">Pour qui ? <span className="font-normal text-neutral-500">(note privée, facultative)</span></span>
+          <span className="label">Pour qui ? <span className="font-normal text-muted">(note privée, facultative)</span></span>
           <input value={note} onChange={(e) => setNote(e.target.value)} maxLength={120} placeholder="Ex. : Léa, collègue curieuse d’IA" className="field" />
         </label>
         <button type="submit" disabled={busy || remaining === 0} className="btn-primary">
           {busy ? "Création…" : "Créer un lien d’invitation"}
         </button>
       </form>
-      {remaining !== null && <p className="text-xs text-neutral-500">{remaining} invitation{remaining > 1 ? "s" : ""} restante{remaining > 1 ? "s" : ""}.</p>}
+      {remaining !== null && <p className="text-xs text-muted">{remaining} invitation{remaining > 1 ? "s" : ""} restante{remaining > 1 ? "s" : ""}.</p>}
       {error && <p role="alert" className="error-text">{error}</p>}
       {link && (
-        <div role="status" className="rounded-xl border border-accent/30 bg-accent-soft p-4">
+        <div role="status" className="rounded-card border border-accent/30 bg-accent-soft p-4">
           <p className="font-bold text-accent">Lien prêt — à envoyer maintenant</p>
-          <p className="mt-1 text-xs text-neutral-600">Pour votre sécurité, il ne sera plus réaffiché. Valable 14 jours, pour une seule personne.</p>
+          <p className="mt-1 text-xs text-soft">Pour votre sécurité, il ne sera plus réaffiché. Valable 14 jours, pour une seule personne.</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <code className="min-w-0 flex-1 break-all rounded-lg bg-white px-3 py-2 text-sm">{link}</code>
             <button type="button" onClick={copy} className="btn-secondary">{copied ? "Copié ✓" : "Copier"}</button>

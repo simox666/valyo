@@ -9,7 +9,7 @@ export function PostGallery({ images, full = false }: { images: PostImage[]; ful
     return (
       <div className="space-y-2">
         {images.map((img) => (
-          <a key={img.id} href={src(img.id)} target="_blank" rel="noopener" className="block overflow-hidden rounded-xl bg-chip">
+          <a key={img.id} href={src(img.id)} target="_blank" rel="noopener" className="block overflow-hidden rounded-card bg-chip">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={src(img.id)} alt="" width={img.width} height={img.height} loading="lazy" className="mx-auto max-h-[80vh] w-auto object-contain" />
           </a>
