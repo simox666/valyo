@@ -1,0 +1,181 @@
+{
+  "genereLe": "2026-11-18T01:58:56.085Z",
+  "protocole": "docs/protocole-premier-essai-claude.md",
+  "configuration": {
+    "provider": "claude",
+    "model": "claude-opus-5-5",
+    "prices": {
+      "inputPerMTokMicros": 2000000,
+      "outputPerMTokMicros": 10000000
+    },
+    "currency": "USD",
+    "plafondMicros": "20000000",
+    "mode": "draft",
+    "paused": true
+  },
+  "essai": {
+    "phase": "vide",
+    "motifArret": null,
+    "lotsCrees": 2,
+    "lotsMaximum": 3,
+    "requetesSoumises": 2,
+    "commenceLe": "2026-11-18T01:53:46.379Z",
+    "termineLe": "2026-11-18T01:58:15.285Z"
+  },
+  "budget": {
+    "plafondMicros": "20000000",
+    "rapprocheMicros": "23044",
+    "reserveMicros": "0",
+    "incertains": 0,
+    "devise": "USD"
+  },
+  "documents": [
+    {
+      "title": "Quand une doctorante découvre un nouveau compartiment indispensable à la croissance de l’ovocyte",
+      "url": "https://theconversation.com/quand-une-doctorante-decouvre-un-nouveau-compartiment-indispensable-a-la-croissance-de-lovocyte-292287",
+      "published_at": "2026-11-18T01:53:46.379Z",
+      "chars": 6000
+    }
+  ],
+  "taches": [
+    {
+      "kind": "prepare_recap",
+      "idempotency_key": "prepare:essai-borne",
+      "state": "done",
+      "attempts": 1,
+      "max_attempts": 3,
+      "error": null,
+      "created_at": "2026-11-18T01:53:46.379Z",
+      "updated_at": "2026-11-18T01:53:46.887Z"
+    },
+    {
+      "kind": "triage",
+      "idempotency_key": "triage:0f9323b4-415e-4022-94a5-5c39591b0feb",
+      "state": "done",
+      "attempts": 1,
+      "max_attempts": 5,
+      "error": null,
+      "created_at": "2026-11-18T01:53:46.887Z",
+      "updated_at": "2026-11-18T01:56:17.863Z"
+    },
+    {
+      "kind": "draft",
+      "idempotency_key": "draft:0f9323b4-415e-4022-94a5-5c39591b0feb:3c9e77c6-66c2-40c1-86a1-0af90e785059",
+      "state": "done",
+      "attempts": 1,
+      "max_attempts": 5,
+      "error": null,
+      "created_at": "2026-11-18T01:56:17.863Z",
+      "updated_at": "2026-11-18T01:58:15.269Z"
+    }
+  ],
+  "lots": [
+    {
+      "id": "8e6dc700-7a9a-40c6-a5ef-48db90eebb66",
+      "state": "ended",
+      "model": "claude-opus-5-5",
+      "currency": "USD",
+      "prices": {
+        "inputPerMTokMicros": 2000000,
+        "outputPerMTokMicros": 10000000
+      },
+      "estimate_micros": 82674,
+      "usage": {
+        "inputTokens": 1212,
+        "outputTokens": 70
+      },
+      "reconcile_attempts": 0,
+      "reconcile_error": null,
+      "error": null,
+      "created_at": "2026-11-18T01:53:59.276Z",
+      "submitted_at": "2026-11-18T01:54:00.486Z",
+      "ended_at": "2026-11-18T01:56:17.889Z",
+      "reconciled_at": "2026-11-18T01:56:17.889Z",
+      "nbRequetes": 1
+    },
+    {
+      "id": "8b2a9b5b-2e46-4bc7-a6cf-bbadaf509c45",
+      "state": "ended",
+      "model": "claude-opus-5-5",
+      "currency": "USD",
+      "prices": {
+        "inputPerMTokMicros": 2000000,
+        "outputPerMTokMicros": 10000000
+      },
+      "estimate_micros": 87490,
+      "usage": {
+        "inputTokens": 3505,
+        "outputTokens": 1291
+      },
+      "reconcile_attempts": 0,
+      "reconcile_error": null,
+      "error": null,
+      "created_at": "2026-11-18T01:56:18.399Z",
+      "submitted_at": "2026-11-18T01:56:19.281Z",
+      "ended_at": "2026-11-18T01:58:15.282Z",
+      "reconciled_at": "2026-11-18T01:58:15.282Z",
+      "nbRequetes": 1
+    }
+  ],
+  "depenses": [
+    {
+      "batch_id": "8e6dc700-7a9a-40c6-a5ef-48db90eebb66",
+      "period": "2026-11",
+      "currency": "USD",
+      "reserved_micros": 2080000,
+      "actual_micros": 3124,
+      "state": "settled",
+      "created_at": "2026-11-18T01:53:59.276Z",
+      "settled_at": "2026-11-18T01:56:17.889Z"
+    },
+    {
+      "batch_id": "8b2a9b5b-2e46-4bc7-a6cf-bbadaf509c45",
+      "period": "2026-11",
+      "currency": "USD",
+      "reserved_micros": 2080000,
+      "actual_micros": 19920,
+      "state": "settled",
+      "created_at": "2026-11-18T01:56:18.399Z",
+      "settled_at": "2026-11-18T01:58:15.282Z"
+    }
+  ],
+  "sujets": [
+    {
+      "id": "3c9e77c6-66c2-40c1-86a1-0af90e785059",
+      "status": "review_required",
+      "block_reason": "statut_incertain",
+      "triage_score": "68",
+      "scientific_status": "unknown",
+      "draft": {
+        "refus": "Statut de l'information incertain"
+      }
+    }
+  ],
+  "elementsAssembles": [],
+  "journal": [
+    {
+      "entity": "config",
+      "reason": "Configuration de l'essai borné (base dédiée, politique de fixture sans créneau)",
+      "actor_label": "commande d'essai (npm run essai)",
+      "created_at": "2026-11-18T01:53:46.379Z"
+    },
+    {
+      "entity": "trial",
+      "reason": "Essai borné préparé : un sujet synthétique, trois étapes au plus, aucune soumission encore",
+      "actor_label": "commande d'essai (npm run essai)",
+      "created_at": "2026-11-18T01:53:46.379Z"
+    },
+    {
+      "entity": "recap",
+      "reason": "Aucune nouvelle retenue",
+      "actor_label": "worker",
+      "created_at": "2026-11-18T01:58:15.269Z"
+    },
+    {
+      "entity": "config",
+      "reason": "Essai borné terminé : agent remis en pause",
+      "actor_label": "essai",
+      "created_at": "2026-11-18T01:58:15.285Z"
+    }
+  ]
+}

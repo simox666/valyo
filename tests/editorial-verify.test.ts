@@ -88,3 +88,29 @@ test("brouillon fidèle : accepté avec ses preuves, marqué comme vérification
     assert.equal(verdict.evidence.statements.length, statementsFor(honest).length);
   }
 });
+
+// Recette D4 du 18 novembre 2026 (décision du porteur) : les articles d'ANALYSE sont
+// une catégorie légitime — acceptés sans passage justificatif de statut (comme les
+// annonces), tout en gardant la vérification de fidélité phrase par phrase.
+test("statut « analyse » : accepté sans passage justificatif, fidélité toujours exigée", () => {
+  const analysis: ValidatedDraft = { ...honest, scientificStatus: "analysis" };
+  const verdict = checkVerification(verifyFor(analysis), analysis, docs, { simulated: true });
+  assert.equal(verdict.ok, true, "une analyse fidèle ne part pas en examen pour son statut");
+  if (verdict.ok) assert.equal(verdict.evidence.status.value, "analysis");
+
+  const unfaithful = { ...analysis, title: "Une découverte qui transforme toute la médecine mondiale" };
+  const rejected = checkVerification(allSupported(unfaithful, QUOTE), unfaithful, docs, { simulated: true });
+  assert.equal(rejected.ok, false, "le statut analyse n'affaiblit pas la vérification de fidélité");
+});
+
+test("statut « analyse » : la validation structurelle du rédacteur l'accepte", () => {
+  const output = {
+    title: "Où en est vraiment la robotique autonome",
+    summary: QUOTE,
+    scientificStatus: "analysis",
+    sources: ["https://labo.example/articles/robot"],
+    claims: [{ text: QUOTE, documentId: "d1", quote: QUOTE }],
+  };
+  const structural = validateDraft(output, docs);
+  assert.equal(structural.ok, true);
+});

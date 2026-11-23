@@ -35,6 +35,7 @@ export function DeleteAccount() {
       <ul className="list-disc space-y-1 pl-5 text-neutral-700">
         <li>vous êtes déconnecté de tous vos appareils ;</li>
         <li>votre profil, votre adresse e-mail, votre pseudonyme et vos abonnements sont effacés ;</li>
+        <li>vos messages privés, vos notifications et votre historique de présence sont effacés aussi ;</li>
         <li>
           vos publications et commentaires restent visibles pour la continuité des discussions, mais sont attribués à « Membre supprimé », sans lien
           vers vous. Supprimez-les d’abord si vous ne voulez pas qu’ils restent.

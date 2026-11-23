@@ -88,6 +88,27 @@ export async function updateRoom(
   });
 }
 
+/**
+ * Suppression DÉFINITIVE par la personne propriétaire (décision du porteur, 19 novembre
+ * 2026) : le salon et tout son contenu (messages, membres, invitations, sanctions,
+ * événements, rencontres) disparaissent pour tout le monde, par cascade. Les
+ * signalements sont conservés mais détachés du salon (historique de modération).
+ * Confirmation forte : le nom exact du salon doit être retapé.
+ */
+export async function deleteRoom(db: Db, viewer: RoomViewer, roomId: string, confirmName: string): Promise<Outcome> {
+  return db.transaction(async (q) => {
+    const access = await loadAccess(q, roomId, viewer, { forWrite: true });
+    if (!access.room) return refuse("introuvable", "Salon introuvable.");
+    if (!canManageRoom(access)) return refuse("droit", "Seule la personne propriétaire supprime le salon.");
+    if (confirmName.trim() !== String(access.room.name).trim()) {
+      return refuse("confirmation", "Tapez le nom exact du salon pour confirmer la suppression.");
+    }
+    await q(`UPDATE reports SET room_id = NULL WHERE room_id = $1`, [roomId]);
+    await q(`DELETE FROM rooms WHERE id = $1`, [roomId]);
+    return { ok: true };
+  });
+}
+
 // ───────────────────────────── Adhésion et départ ─────────────────────────────
 
 export async function joinRoom(db: Db, viewer: RoomViewer, roomId: string): Promise<Outcome> {

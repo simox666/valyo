@@ -423,6 +423,8 @@ export async function createAppealToken(q: Query, email: string): Promise<{ toke
   const [user] = await q<{ id: string; status: string }>(`SELECT id, status FROM users WHERE lower(email) = lower($1)`, [email.trim()]);
   if (!user || user.status !== "banned") return null;
   const token = randomBytes(24).toString("base64url");
+  // Rétention (RGPD) : 7 jours de marge pour la limite de fréquence (lib/limits.ts), puis purge.
+  await q(`DELETE FROM appeal_tokens WHERE expires_at < now() - interval '7 days'`);
   await q(`INSERT INTO appeal_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, now() + make_interval(mins => $3))`, [
     user.id,
     hashAppealToken(token),

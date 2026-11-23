@@ -95,7 +95,7 @@ export function OnboardingForm({ next, themes }: { next: string; themes: { id: s
             aria-describedby={fields.acceptRules ? "rules-error" : undefined}
           />
           <span>
-            J’accepte les{" "}
+            J’ai 15 ans ou plus et j’accepte les{" "}
             <Link href="/regles" target="_blank" className="btn-link">
               règles de la communauté
             </Link>

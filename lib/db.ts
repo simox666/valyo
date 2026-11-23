@@ -25,6 +25,12 @@ declare global {
 async function createPgEngine(url: string): Promise<Engine> {
   const { Pool } = await import("pg");
   const pool = new Pool({ connectionString: url, max: 5 });
+  // Sans écouteur, une connexion inactive coupée (redémarrage ou maintenance de
+  // PostgreSQL) émet un événement `error` non géré qui tue tout le processus.
+  // On journalise : la requête suivante prendra une connexion saine du pool.
+  pool.on("error", (error) => {
+    console.error("[db] connexion du pool perdue (sans gravité : elle sera remplacée) :", error.message);
+  });
   const engine: Engine = {
     query: async <T extends Row>(text: string, params?: unknown[]) =>
       (await pool.query(text, params as unknown[])).rows as T[],

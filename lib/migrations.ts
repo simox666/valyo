@@ -925,4 +925,15 @@ export const MIGRATIONS: Migration[] = [
       `CREATE INDEX member_follows_followee ON member_follows (followee_id)`,
     ],
   },
+  {
+    id: "030_statut_analyse",
+    statements: [
+      // Recette D4 du 18 novembre 2026, décision du porteur : les articles d'ANALYSE
+      // (fond, synthèse, point de vue argumenté) sont une catégorie légitime, pas un
+      // « statut incertain ». Nouveau statut 'analysis' de bout en bout.
+      `ALTER TABLE editorial_subjects DROP CONSTRAINT editorial_subjects_scientific_status_check`,
+      `ALTER TABLE editorial_subjects ADD CONSTRAINT editorial_subjects_scientific_status_check
+        CHECK (scientific_status IN ('announcement', 'preprint', 'published', 'unknown', 'analysis'))`,
+    ],
+  },
 ];

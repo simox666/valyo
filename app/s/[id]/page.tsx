@@ -171,7 +171,7 @@ export default async function RoomPage({ params }: { params: Params }) {
           {view.canRead && user && <details className="card p-5">
             <summary className="cursor-pointer text-sm font-extrabold">Suivi et gestion du salon</summary>
             <p className="mb-3 mt-3 text-xs text-neutral-500">Suivez ce salon pour recevoir ses notifications.</p>
-            <MemberBar roomId={card.id} following={view.following} isOwner={view.canManage} archived={card.archived} />
+            <MemberBar roomId={card.id} roomName={card.name} following={view.following} isOwner={view.canManage} archived={card.archived} />
             {view.canModerate && !card.archived && <div className="mt-4"><InviteButton roomId={card.id} /></div>}
           </details>}
           {members && view.canRead && <details className="card p-5" open>

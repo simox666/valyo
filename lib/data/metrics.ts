@@ -22,8 +22,11 @@ declare global {
 
 /** Au plus une écriture par membre et par jour UTC ; ne lève jamais d'erreur. */
 export function recordActivity(userId: string): Promise<void> {
-  globalThis.__valyoRecordActivity ??= createActivityRecorder((id, day) =>
-    query(`INSERT INTO user_activity_days (user_id, day) VALUES ($1, $2::date) ON CONFLICT DO NOTHING`, [id, day]),
-  );
+  globalThis.__valyoRecordActivity ??= createActivityRecorder(async (id, day) => {
+    await query(`INSERT INTO user_activity_days (user_id, day) VALUES ($1, $2::date) ON CONFLICT DO NOTHING`, [id, day]);
+    // Rétention (RGPD) : données comportementales limitées à 24 mois. Au plus une purge
+    // par membre et par jour (le cache de createActivityRecorder borne les appels).
+    await query(`DELETE FROM user_activity_days WHERE day < $1::date - 730`, [day]);
+  });
   return globalThis.__valyoRecordActivity(userId);
 }

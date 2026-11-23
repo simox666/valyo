@@ -33,6 +33,7 @@ export default function RulesPage() {
         </li>
       </ol>
       <p>Les contenus qui ne respectent pas ces règles peuvent être retirés, et les comptes concernés suspendus.</p>
+      <p>L’inscription est réservée aux personnes de 15 ans et plus.</p>
     </article>
   );
 }

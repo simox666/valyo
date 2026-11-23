@@ -29,18 +29,19 @@ export const REVIEW_REASON_LABELS: Record<ReviewReason, string> = {
   date_manquante: "Date absente ou incohérente",
   resume_non_etaye: "Résumé ou source non étayés par le document consulté",
   contradiction: "Sources contradictoires sur un point clé",
-  statut_incertain: "Statut (annonce, prépublication, résultat publié) incertain",
+  statut_incertain: "Statut (annonce, prépublication, résultat publié, analyse) incertain",
   doublon_incertain: "Regroupement douteux avec une publication existante",
   instructions_suspectes: "Le document contient des instructions destinées à un agent",
 };
 
-export type ScientificStatus = "announcement" | "preprint" | "published" | "unknown";
+export type ScientificStatus = "announcement" | "preprint" | "published" | "unknown" | "analysis";
 
 export const SCIENTIFIC_STATUS_LABELS: Record<ScientificStatus, string> = {
   announcement: "Annonce",
   preprint: "Prépublication non relue",
   published: "Résultat publié",
   unknown: "Statut inconnu",
+  analysis: "Analyse",
 };
 
 export type SourceType = "primary" | "scientific" | "press";

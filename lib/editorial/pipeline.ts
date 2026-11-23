@@ -715,7 +715,7 @@ async function markAmbiguousAfterRead(deps: Deps, batchId: string, message: stri
 
 const triageSchema = z.object({
   decisions: z.array(
-    z.object({ subjectId: z.string(), keep: z.boolean(), score: z.number(), scientificStatus: z.enum(["announcement", "preprint", "published", "unknown"]) }),
+    z.object({ subjectId: z.string(), keep: z.boolean(), score: z.number(), scientificStatus: z.enum(["announcement", "preprint", "published", "unknown", "analysis"]) }),
   ),
 });
 

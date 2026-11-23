@@ -135,7 +135,7 @@ export function simulatedVerify(input: VerifyInput): VerifyOutput {
   });
   const cue = STATUS_CUES[input.scientificStatus];
   let status: VerifyOutput["status"] = { supported: false };
-  if (input.scientificStatus === "announcement") status = { supported: true };
+  if (input.scientificStatus === "announcement" || input.scientificStatus === "analysis") status = { supported: true };
   else if (cue) {
     const hit = docSentences.find((x) => cue.test(x.s));
     if (hit) status = { supported: true, documentId: hit.documentId, quote: hit.s };

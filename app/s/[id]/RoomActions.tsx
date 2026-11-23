@@ -38,8 +38,11 @@ export function JoinButton({ roomId, openChat = false }: { roomId: string; openC
   );
 }
 
-export function MemberBar({ roomId, following, isOwner, archived }: { roomId: string; following: boolean; isOwner: boolean; archived: boolean }) {
+export function MemberBar({ roomId, roomName, following, isOwner, archived }: { roomId: string; roomName: string; following: boolean; isOwner: boolean; archived: boolean }) {
+  const router = useRouter();
   const { busy, error, call } = useCall();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmName, setConfirmName] = useState("");
   return (
     <div className="flex flex-wrap items-center gap-3">
       <button type="button" disabled={busy} onClick={() => call("POST", `/api/rooms/${roomId}/follow`, { following: !following })} className="btn-secondary px-3 py-1.5">
@@ -61,6 +64,40 @@ export function MemberBar({ roomId, following, isOwner, archived }: { roomId: st
         >
           Archiver
         </button>
+      )}
+      {isOwner && !confirmOpen && (
+        <button type="button" disabled={busy} className="btn-link" onClick={() => setConfirmOpen(true)}>
+          Supprimer…
+        </button>
+      )}
+      {isOwner && confirmOpen && (
+        <span className="inline-flex flex-wrap items-center gap-2">
+          <label htmlFor="confirm-suppression-salon" className="text-sm text-neutral-700">
+            Définitif pour tout le monde, messages compris. Tapez le nom du salon :
+          </label>
+          <input
+            id="confirm-suppression-salon"
+            value={confirmName}
+            onChange={(e) => setConfirmName(e.target.value)}
+            placeholder={roomName}
+            autoComplete="off"
+            className="field w-48 px-2 py-1 text-sm"
+          />
+          <button
+            type="button"
+            className="btn-danger px-3 py-1.5"
+            disabled={busy || confirmName.trim() !== roomName.trim()}
+            onClick={async () => {
+              const result = await call("DELETE", `/api/rooms/${roomId}`, { confirm: confirmName });
+              if (result.ok) router.push("/salons");
+            }}
+          >
+            Supprimer définitivement
+          </button>
+          <button type="button" className="btn-link" onClick={() => setConfirmOpen(false)}>
+            Annuler
+          </button>
+        </span>
       )}
       <Feedback error={error} />
     </div>

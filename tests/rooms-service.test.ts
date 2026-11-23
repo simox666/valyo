@@ -19,6 +19,7 @@ import {
   cleanupRoomsForDeletedAccount,
   createInvitation,
   createRoom,
+  deleteRoom,
   joinRoom,
   leaveRoom,
   liftBan,
@@ -286,4 +287,41 @@ test("suivre un salon est distinct d'y adhérer", async () => {
   assert.equal(m.following, false, "rejoindre ne suit pas automatiquement (sauf créateur)");
   assert.ok((await setFollowing(db, member, roomId, true)).ok);
   assert.equal((await setFollowing(db, outsider, roomId, true)).ok, false, "suivre exige l'adhésion");
+});
+
+test("suppression d'un salon : propriétaire seul, nom exact exigé, tout disparaît, signalements détachés", async () => {
+  const { db } = await createTestDb();
+  const owner = await addUser(db);
+  const member = await addUser(db);
+  const roomId = await makeRoom(db, owner);
+  assert.ok((await joinRoom(db, member, roomId)).ok);
+  await db.query(`INSERT INTO room_messages (room_id, author_id, client_id, body) VALUES ($1, $2, 'c1', 'bonjour')`, [roomId, member.id]);
+  await db.query(
+    `INSERT INTO reports (reporter_id, target_kind, target_id, room_id, reason) VALUES ($1, 'message', $2, $3, 'spam')`,
+    [owner.id, roomId, roomId],
+  );
+  const [room] = await db.query<{ name: string }>(`SELECT name FROM rooms WHERE id = $1`, [roomId]);
+
+  // Refus : membre ordinaire, puis mauvais nom.
+  const byMember = await deleteRoom(db, member, roomId, room.name);
+  assert.equal(byMember.ok, false);
+  if (!byMember.ok) assert.equal(byMember.code, "droit");
+  const wrongName = await deleteRoom(db, owner, roomId, "Pas le bon nom");
+  assert.equal(wrongName.ok, false);
+  if (!wrongName.ok) assert.equal(wrongName.code, "confirmation");
+
+  // Suppression réelle : salon, messages et membres disparaissent ; le signalement reste, détaché.
+  assert.deepEqual(await deleteRoom(db, owner, roomId, ` ${room.name} `), { ok: true }, "le nom est comparé sans espaces parasites");
+  const count = async (sql: string) => (await db.query<{ n: number }>(sql, [roomId]))[0].n;
+  assert.equal(await count(`SELECT count(*)::int AS n FROM rooms WHERE id = $1`), 0);
+  assert.equal(await count(`SELECT count(*)::int AS n FROM room_messages WHERE room_id = $1`), 0);
+  assert.equal(await count(`SELECT count(*)::int AS n FROM room_members WHERE room_id = $1`), 0);
+  const [report] = await db.query<{ room_id: string | null }>(`SELECT room_id FROM reports`);
+  assert.equal(report.room_id, null, "le signalement survit, détaché du salon supprimé");
+
+  // Un salon archivé reste supprimable par sa personne propriétaire.
+  const second = await makeRoom(db, owner);
+  assert.ok((await updateRoom(db, owner, second, { archive: true })).ok);
+  const [name2] = await db.query<{ name: string }>(`SELECT name FROM rooms WHERE id = $1`, [second]);
+  assert.deepEqual(await deleteRoom(db, owner, second, name2.name), { ok: true });
 });

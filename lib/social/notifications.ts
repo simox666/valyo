@@ -125,6 +125,9 @@ export async function unreadNotificationCount(q: Query, userId: string): Promise
 export async function markNotificationsRead(q: Query, userId: string, ids: string[] | "all") {
   if (ids === "all") await q(`UPDATE notifications SET read_at = now() WHERE user_id = $1 AND read_at IS NULL`, [userId]);
   else await q(`UPDATE notifications SET read_at = now() WHERE user_id = $1 AND id = ANY($2::uuid[]) AND read_at IS NULL`, [userId, ids]);
+  // Rétention (RGPD) : au-delà de 12 mois, une notification ne sert plus personne. Purge
+  // opportuniste et bornée, à un moment où le membre interagit déjà avec ses notifications.
+  await q(`DELETE FROM notifications WHERE id IN (SELECT id FROM notifications WHERE updated_at < now() - interval '12 months' LIMIT 200)`);
 }
 
 /** Marque non lu (contrôle de relecture). */

@@ -46,8 +46,9 @@ N'invente jamais un fait, un chiffre, une date, une citation, une source ou un l
 const SYSTEM: Record<ProviderRequest["kind"], string> = {
   triage: `${SHARED_RULES}
 Tâche : trier des nouvelles candidates pour un récapitulatif. Pour chacune, décide si elle mérite d'être retenue
-(intérêt réel, nouveauté, pas de promotion commerciale), attribue un score de 0 à 100, et indique son statut :
+(intérêt réel, nouveauté ou profondeur, pas de promotion commerciale), attribue un score de 0 à 100, et indique son statut :
 "announcement" (annonce ou communiqué), "preprint" (prépublication non relue), "published" (résultat publié et relu),
+"analysis" (article d'analyse, de synthèse ou de point de vue argumenté, sans fait nouveau annoncé — bienvenu : il nourrit la discussion),
 ou "unknown" si tu ne peux pas le déterminer à partir de ce qui est fourni.`,
   draft: `${SHARED_RULES}
 Tâche : rédiger en français un titre accessible et un résumé original et fidèle (2 à 4 phrases) de l'annonce décrite par les documents.
@@ -64,7 +65,7 @@ de mémoire, pas de comparaison avec des faits extérieurs. Signale contradictio
 Tâche : vérifier indépendamment des énoncés rédigés par un autre modèle. Pour chaque énoncé, dis s'il est entièrement étayé
 par les documents ; s'il l'est, donne l'identifiant du document et le passage exact (cité mot pour mot) qui l'étaye.
 Un énoncé qui exagère, généralise, ajoute un chiffre ou un statut absent des documents n'est PAS étayé.
-Vérifie aussi que le statut proposé (annonce, prépublication, résultat publié) est justifié par un passage des documents.`,
+Vérifie aussi que le statut proposé (annonce, prépublication, résultat publié, analyse) correspond bien à la nature des documents.`,
 };
 
 const str = { type: "string" } as const;
@@ -84,7 +85,7 @@ const SCHEMAS: Record<ProviderRequest["kind"], Record<string, unknown>> = {
             subjectId: str,
             keep: { type: "boolean" },
             score: { type: "number" },
-            scientificStatus: { type: "string", enum: ["announcement", "preprint", "published", "unknown"] },
+            scientificStatus: { type: "string", enum: ["announcement", "preprint", "published", "unknown", "analysis"] },
           },
         },
       },
@@ -97,7 +98,7 @@ const SCHEMAS: Record<ProviderRequest["kind"], Record<string, unknown>> = {
     properties: {
       title: str,
       summary: str,
-      scientificStatus: { type: "string", enum: ["announcement", "preprint", "published", "unknown"] },
+      scientificStatus: { type: "string", enum: ["announcement", "preprint", "published", "unknown", "analysis"] },
       sources: { type: "array", items: str },
       claims: {
         type: "array",

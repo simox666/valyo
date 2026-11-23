@@ -51,6 +51,9 @@ export function safeNextPath(next: unknown): string {
 /** `q` permet d'écrire dans la transaction de la limite de fréquence (lib/limits.ts). */
 export async function createLoginToken(email: string, nextPath: string, q: QueryFn = query, invitationId: string | null = null): Promise<string> {
   const token = newToken();
+  // Rétention (RGPD) : les jetons expirés gardent une adresse e-mail en clair sans utilité.
+  // 7 jours de marge pour la limite de fréquence (lib/limits.ts compte sur une fenêtre bien plus courte).
+  await q(`DELETE FROM login_tokens WHERE expires_at < now() - interval '7 days'`);
   await q(
     `INSERT INTO login_tokens (token_hash, email, next_path, expires_at, invitation_id)
      VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5)`,
@@ -76,6 +79,7 @@ export async function createSession(userId: string): Promise<{ token: string; ma
     await lockCommunity(q);
     const [user] = await q(`SELECT status FROM users WHERE id = $1 FOR NO KEY UPDATE`, [userId]);
     if (!user || user.status === "banned" || user.status === "deleted") return null;
+    await q(`DELETE FROM sessions WHERE expires_at < now()`); // rétention : les sessions expirées ne servent plus à rien
     await q(`INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + make_interval(days => $3))`, [hashToken(token), userId, SESSION_DAYS]);
     return { token, maxAge: SESSION_DAYS * 24 * 60 * 60 };
   });

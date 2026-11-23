@@ -2,7 +2,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { fail, readJson, requireContributor } from "@/lib/http";
 import { outcomeJson, viewerOf } from "@/lib/rooms/http.ts";
-import { updateRoom } from "@/lib/rooms/service.ts";
+import { deleteRoom, updateRoom } from "@/lib/rooms/service.ts";
 
 const bodySchema = z.object({
   name: z.string().trim().min(3).max(60).optional(),
@@ -20,4 +20,17 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   const parsed = bodySchema.safeParse(await readJson(request));
   if (!parsed.success) return fail("Requête invalide.", 400);
   return outcomeJson(await updateRoom(db, viewerOf(guard.user), id, parsed.data));
+}
+
+const deleteSchema = z.object({ confirm: z.string().trim().min(1).max(60) });
+
+/** Suppression définitive par la personne propriétaire : confirmation par le nom exact du salon. */
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
+  const guard = await requireContributor(request);
+  if (guard.response) return guard.response;
+  const { id } = await context.params;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return fail("Salon introuvable.", 404);
+  const parsed = deleteSchema.safeParse(await readJson(request));
+  if (!parsed.success) return fail("Tapez le nom exact du salon pour confirmer la suppression.", 400);
+  return outcomeJson(await deleteRoom(db, viewerOf(guard.user), id, parsed.data.confirm));
 }

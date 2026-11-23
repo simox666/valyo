@@ -1,7 +1,7 @@
 import "server-only";
-import { activeContributor, lockCommunity } from "../community-locks.ts";
+import { activeContributor } from "../community-locks.ts";
 import { query, queryOne, transaction, type QueryFn } from "../db";
-import { cleanupRoomsForDeletedAccount, ownedActiveRooms } from "../rooms/service.ts";
+import { eraseAccount, type DeleteAccountResult } from "../social/account.ts";
 
 export interface Member {
   id: string;
@@ -114,32 +114,11 @@ export async function setFollowedThemes(userId: string, themeIds: string[]) {
   });
 }
 
-/**
- * Suppression du compte (F02) : sessions fermées, profil retiré, suivis
- * supprimés. Publications et commentaires restent pour la continuité des
- * discussions, attribués à « Membre supprimé » sans lien vers l'ancien profil.
- */
-export type DeleteAccountResult = { ok: true } | { ok: false; rooms: { id: string; name: string }[] };
+/** Suppression du compte (F02) : effacement réel, détaillé et testé dans lib/social/account.ts. */
+export type { DeleteAccountResult };
 
 export async function deleteAccount(userId: string): Promise<DeleteAccountResult> {
-  return transaction(async (q) => {
-    await lockCommunity(q, true);
-    // F02 / D5 §4.1 : pas de suppression tant qu'un salon actif est possédé (transférer ou archiver d'abord).
-    const owned = await ownedActiveRooms(q, userId);
-    if (owned.length > 0) return { ok: false as const, rooms: owned };
-    await cleanupRoomsForDeletedAccount(q, userId);
-    await q(`DELETE FROM sessions WHERE user_id = $1`, [userId]);
-    await q(`DELETE FROM theme_follows WHERE user_id = $1`, [userId]);
-    await q(`DELETE FROM member_follows WHERE follower_id = $1 OR followee_id = $1`, [userId]);
-    await q(`DELETE FROM editorial_dev_requests WHERE member_id = $1`, [userId]);
-    await q(
-      `UPDATE users SET email = NULL, handle = NULL, display_name = NULL, bio = '', headline = '', specialties = '{}', links = '{}',
-         ask_me = '', looking_for = '', avatar_image_id = NULL, banner_image_id = NULL, status = 'deleted', deleted_at = now()
-       WHERE id = $1`,
-      [userId],
-    );
-    return { ok: true as const };
-  });
+  return transaction((q) => eraseAccount(q, userId));
 }
 
 export async function findOrCreateUserByEmail(email: string): Promise<{ id: string; status: string }> {

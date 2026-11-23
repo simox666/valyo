@@ -18,7 +18,7 @@ import type { ReviewReason, ScientificStatus } from "./types.ts";
 const draftSchema = z.object({
   title: z.string().trim().min(5).max(200),
   summary: z.string().trim().min(20).max(1200),
-  scientificStatus: z.enum(["announcement", "preprint", "published", "unknown"]),
+  scientificStatus: z.enum(["announcement", "preprint", "published", "unknown", "analysis"]),
   sources: z.array(z.string()).min(1).max(10),
   claims: z
     .array(z.object({ text: z.string().trim().min(10).max(600), documentId: z.string(), quote: z.string().trim().min(20).max(800) }))
@@ -158,7 +158,9 @@ export function checkVerification(
 
   if (!v.status.supported) return { ok: false, reason: "statut_incertain", detail: `Statut « ${draft.scientificStatus} » non étayé`, simulated };
   let statusEvidence: VerificationEvidence["status"] = { value: draft.scientificStatus, documentId: null, quote: null };
-  if (draft.scientificStatus !== "announcement") {
+  // « announcement » et « analysis » se constatent à la nature du document : pas de passage
+  // justificatif exigible (contrairement à « prépublication » ou « publié », qui citent une revue).
+  if (draft.scientificStatus !== "announcement" && draft.scientificStatus !== "analysis") {
     const doc = v.status.documentId ? docs.get(v.status.documentId) : undefined;
     if (!doc || !v.status.quote || !squash(doc.text).includes(squash(v.status.quote))) {
       return { ok: false, reason: "statut_incertain", detail: "Statut sans passage justificatif dans les documents", simulated };
