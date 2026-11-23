@@ -13,6 +13,7 @@ import { PostGallery } from "./PostGallery";
 import { Icon } from "./Icon";
 import { RelayButton } from "./RelayButton";
 import { ThemeTile } from "./ThemeTile";
+import { naturalVoiceEnabled } from "@/lib/lecture-audio.ts";
 import type { FollowedRelay, RelaySummary } from "@/lib/social/relays.ts";
 
 // Carte du fil, direction « Carnet de labo » : qui (une personne avec son avatar, ou la source
@@ -156,6 +157,7 @@ export function PostCard({
 
       <CardActions
         postId={post.id}
+        naturalVoice={naturalVoiceEnabled()}
         postTitle={post.title}
         commentCount={post.commentCount}
         roomCount={rooms.length}

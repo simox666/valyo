@@ -45,13 +45,13 @@ function useSynthesis(postId: string, initial: SynthesisState) {
 
 const needsRun = (s: SynthesisState) => s.status === "none" || s.status === "failed" || s.status === "pending";
 
-function SynthesisView({ postId, s, access, roomHref }: { postId: string; s: ReturnType<typeof useSynthesis>; access: Access; roomHref: string }) {
+function SynthesisView({ postId, s, access, roomHref, naturalVoice }: { postId: string; s: ReturnType<typeof useSynthesis>; access: Access; roomHref: string; naturalVoice?: boolean }) {
   const { state, busy, error } = s;
   return (
     <div className="rounded-lg border-l-2 border-accent bg-cream p-4 text-[15px] leading-relaxed ring-1 ring-hairline sm:p-5" aria-live="polite">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="label-mono text-accent">Synthèse IA de l’article</p>
-        {state.status === "ready" && <ListenButton text={synthesisSpeech(state.content)} lang="fr" />}
+        {state.status === "ready" && <ListenButton text={synthesisSpeech(state.content)} lang="fr" src={naturalVoice ? `/api/posts/${postId}/lecture?type=synthese` : undefined} />}
       </div>
       {state.status === "ready" ? (
         <div className="mt-2 space-y-3">
@@ -137,7 +137,10 @@ export function CardActions({
   share,
   sourceLink,
   postTitle,
+  naturalVoice,
 }: {
+  /** Voix naturelle disponible (clé du service configurée) : la synthèse est lue par le serveur. */
+  naturalVoice?: boolean;
   postId: string;
   postTitle?: string;
   commentCount: number;
@@ -172,7 +175,7 @@ export function CardActions({
       )}
       {open && (
         <div className="mt-3">
-          <SynthesisView postId={postId} s={s} access={access} roomHref={roomHref} />
+          <SynthesisView postId={postId} s={s} access={access} roomHref={roomHref} naturalVoice={naturalVoice} />
         </div>
       )}
       <div className="mt-4 flex flex-wrap items-center gap-0.5 border-t border-hairline pt-2">
@@ -192,7 +195,7 @@ export function CardActions({
 }
 
 /** Bloc de synthèse de la page de lecture : même bouton que dans le fil, lien source après. */
-export function DevelopSection({ postId, initial, access, roomHref, sourceLink }: { postId: string; initial: SynthesisState; access: Access; roomHref: string; sourceLink?: React.ReactNode }) {
+export function DevelopSection({ postId, initial, access, roomHref, sourceLink, naturalVoice }: { postId: string; initial: SynthesisState; access: Access; roomHref: string; sourceLink?: React.ReactNode; naturalVoice?: boolean }) {
   const s = useSynthesis(postId, initial);
   const [open, setOpen] = useState(initial.status === "ready");
   function toggle() {
@@ -206,7 +209,7 @@ export function DevelopSection({ postId, initial, access, roomHref, sourceLink }
         <SynthesisButton open={open} onClick={toggle} />
         {sourceLink}
       </div>
-      {open && <SynthesisView postId={postId} s={s} access={access} roomHref={roomHref} />}
+      {open && <SynthesisView postId={postId} s={s} access={access} roomHref={roomHref} naturalVoice={naturalVoice} />}
     </div>
   );
 }

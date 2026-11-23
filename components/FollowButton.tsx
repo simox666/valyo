@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api, loginUrl } from "@/lib/client";
 
 export function FollowButton({
@@ -20,6 +20,9 @@ export function FollowButton({
   const router = useRouter();
   const pathname = usePathname();
   const [following, setFollowing] = useState(initialFollowing);
+  // Le même bouton sert d'un thème (ou d'un membre) à l'autre quand on navigue : il doit reprendre
+  // l'état de la nouvelle cible, pas garder « Suivi » de la précédente.
+  useEffect(() => { setFollowing(initialFollowing); setError(null); }, [initialFollowing, keyValue, target]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

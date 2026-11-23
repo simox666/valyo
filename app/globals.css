@@ -132,7 +132,8 @@
 }
 
 /* Changement de thème en cours : le fil s'estompe tout de suite (components/ThemeNav.tsx). */
-body[data-nav-pending] #fil-liste {
+body[data-nav-pending] #fil-liste,
+body[data-nav-pending] #fil-theme {
   opacity: 0.4;
   pointer-events: none;
 }

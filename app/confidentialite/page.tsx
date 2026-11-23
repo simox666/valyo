@@ -86,6 +86,11 @@ export default function PrivacyPage() {
           presse publics à résumer.
         </li>
         <li>
+          <strong>OpenAI</strong> (lecture audio par une voix naturelle, États-Unis) : ne reçoit <em>aucune</em> donnée de membre —
+          uniquement le texte d’articles de presse publics et de leurs synthèses, pour en fabriquer le son. Les publications écrites par
+          les membres sont lues par la voix de votre propre appareil, sans rien envoyer.
+        </li>
+        <li>
           <strong>Le service de notification de votre navigateur</strong> (Apple, Google ou Mozilla), si vous activez les notifications
           push : il achemine jusqu’à votre appareil un message chiffré indiquant qui vous a écrit ou répondu et où. Le contenu des messages
           privés n’y figure jamais.

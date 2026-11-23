@@ -182,12 +182,12 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
       )}
 
       {theme && (
-        <section className="card flex flex-wrap items-center justify-between gap-3 p-4">
+        <section id="fil-theme" className="card flex flex-wrap items-center justify-between gap-3 p-4 transition-opacity duration-150">
           <div>
             <h2 className="text-lg font-bold">{theme.name}</h2>
             <p className="text-sm text-soft">{theme.description}</p>
           </div>
-          <FollowButton target="theme" keyValue={theme.slug} initialFollowing={following} signedIn={signedIn} label="ce thème" />
+          <FollowButton key={theme.slug} target="theme" keyValue={theme.slug} initialFollowing={following} signedIn={signedIn} label="ce thème" />
         </section>
       )}
 

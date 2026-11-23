@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ListenButton } from "@/components/ListenButton";
+import { naturalVoiceEnabled } from "@/lib/lecture-audio.ts";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
@@ -166,7 +167,7 @@ export default async function PostPage({ params }: { params: Params }) {
         </div>
         <h1 className="text-[23px] font-bold leading-tight sm:text-3xl">{post.title}</h1>
         {!recapItems?.length && mainBody.trim().length > 80 && (
-          <div className="mt-3"><ListenButton label="Écouter l’article" text={`${post.title}. ${mainBody}`} /></div>
+          <div className="mt-3"><ListenButton label="Écouter l’article" text={`${post.title}. ${mainBody}`} src={naturalVoiceEnabled() && post.sourceName ? `/api/posts/${post.id}/lecture?type=article` : undefined} /></div>
         )}
         {post.imageUrl && (
           <div className="-mx-5 mt-4 aspect-[2/1] overflow-hidden bg-chip sm:-mx-6">
@@ -191,6 +192,7 @@ export default async function PostPage({ params }: { params: Params }) {
           <div className="mt-4">
             <DevelopSection
               postId={post.id}
+              naturalVoice={naturalVoiceEnabled()}
               initial={synthesisMap.get(post.id) ?? { status: "none" }}
               access={{ signedIn: Boolean(user?.onboarded), canDevelop: Boolean(viewer?.canContribute) }}
               roomHref={roomHref}

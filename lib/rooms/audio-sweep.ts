@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "../db";
 import { sweepAudio } from "./audio.ts";
+import { sweepLecture } from "../lecture-audio.ts";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -12,6 +13,7 @@ export function startAudioSweep(): void {
   if (globalThis.__valyoAudioSweep) return;
   globalThis.__valyoAudioSweep = setInterval(() => {
     sweepAudio(db.query).catch((error) => console.error("[audio] nettoyage en échec :", (error as Error).message));
+    sweepLecture(db.query).catch((error) => console.error("[lecture] nettoyage en échec :", (error as Error).message));
   }, 15 * 60 * 1000);
   globalThis.__valyoAudioSweep.unref?.();
 }

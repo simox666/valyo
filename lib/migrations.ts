@@ -1005,4 +1005,23 @@ export const MIGRATIONS: Migration[] = [
       `ALTER TABLE room_messages ADD COLUMN audio_id UUID REFERENCES room_audio(id) ON DELETE SET NULL`,
     ],
   },
+  {
+    id: "034_lecture_audio",
+    statements: [
+      // Lecture audio des publications par une voix naturelle (23 novembre 2026) : un fichier par
+      // publication et par type, fabriqué au premier clic puis conservé (dossier lecture/ du volume).
+      // `chars` sert au plafond quotidien ; `text_hash` fait refaire le son si le texte change.
+      `CREATE TABLE post_audio (
+        id UUID PRIMARY KEY,
+        post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+        kind TEXT NOT NULL CHECK (kind IN ('article', 'synthese')),
+        text_hash TEXT NOT NULL,
+        bytes INTEGER NOT NULL CHECK (bytes > 0),
+        chars INTEGER NOT NULL CHECK (chars > 0),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (post_id, kind)
+      )`,
+      `CREATE INDEX post_audio_created ON post_audio (created_at)`,
+    ],
+  },
 ];
