@@ -32,8 +32,10 @@ export function vapid(): Promise<Vapid> {
   return globalThis.__valyoVapid;
 }
 
-async function deliver(messages: PushMessage[]): Promise<void> {
-  if (!messages.length) return;
+/** Envoie ces messages aux appareils abonnés de leurs destinataires ; rend le nombre d'envois acceptés et refusés. */
+export async function deliver(messages: PushMessage[]): Promise<{ sent: number; failed: number }> {
+  const tally = { sent: 0, failed: 0 };
+  if (!messages.length) return tally;
   const keys = await vapid();
   const subject = process.env.VAPID_SUBJECT || process.env.APP_URL || "https://www.valyo.si";
   const subs = await subscriptionsOf(db.query, [...new Set(messages.map((m) => m.userId))]);
@@ -45,7 +47,9 @@ async function deliver(messages: PushMessage[]): Promise<void> {
           JSON.stringify({ title: message.title, body: message.body, url: message.url, tag: message.tag }),
           { vapidDetails: { subject, publicKey: keys.publicKey, privateKey: keys.privateKey }, TTL: 3600, urgency: "normal", timeout: 10000 },
         );
+        tally.sent++;
       } catch (error) {
+        tally.failed++;
         const status = (error as { statusCode?: number }).statusCode;
         // 404/410 : l'appareil s'est désabonné (application supprimée, autorisation retirée).
         if (status === 404 || status === 410) await removeSubscription(db.query, s.endpoint).catch(() => {});
@@ -53,6 +57,7 @@ async function deliver(messages: PushMessage[]): Promise<void> {
       }
     }),
   ));
+  return tally;
 }
 
 /** Un passage : réserve ce qui est en attente, puis envoie. */

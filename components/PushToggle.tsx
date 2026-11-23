@@ -31,6 +31,7 @@ export function PushToggle() {
   const [state, setState] = useState<State>("loading");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [testNote, setTestNote] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -70,6 +71,22 @@ export function PushToggle() {
     }
   }
 
+  async function test() {
+    setBusy(true);
+    setError("");
+    setTestNote("");
+    try {
+      const response = await fetch("/api/push/test", { method: "POST" });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) setTestNote(`Notification de test envoyée à ${data.sent} appareil${data.sent > 1 ? "s" : ""}. Elle arrive en quelques secondes.`);
+      else setError(data.error ?? "Le test n’a pas abouti.");
+    } catch {
+      setError("Connexion impossible. Réessayez.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function disable() {
     setBusy(true);
     await unsubscribeThisDevice();
@@ -84,7 +101,11 @@ export function PushToggle() {
       {state === "on" && (
         <>
           <p className="mt-2 text-sm leading-relaxed text-soft">Activées : réponses, mentions, messages privés et salons suivis vous parviennent même site fermé.</p>
-          <button type="button" disabled={busy} onClick={disable} className="btn-secondary mt-3">Désactiver</button>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" disabled={busy} onClick={test} className="btn-primary">Envoyer un test</button>
+            <button type="button" disabled={busy} onClick={disable} className="btn-secondary">Désactiver</button>
+          </div>
+          {testNote && <p role="status" className="mt-2 text-sm text-accent">{testNote}</p>}
         </>
       )}
       {state === "off" && (
