@@ -5,10 +5,10 @@ import { GamesClient } from "./GamesClient";
 
 export const metadata: Metadata = {
   title: "Jeux",
-  description: "Quiz et vrai ou faux sur les thèmes de Valyo : IA, espace, sciences, climat…",
+  description: "Défi du jour, quiz, vrai ou faux, ordres de grandeur et frises chronologiques sur les thèmes de Valyo.",
 };
 
-/** Jeux liés aux thèmes : accessibles à tous, sans compte ; rien n'est enregistré. */
+/** Jeux liés aux thèmes : accessibles à tous, sans compte ; rien n'est enregistré côté serveur. */
 export default async function GamesPage({ searchParams }: { searchParams: Promise<{ theme?: string }> }) {
   const playable = themesWithGames();
   const themes = (await listActiveThemes())
@@ -16,6 +16,11 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
     .map((t) => ({ slug: t.slug, name: t.name }));
   const asked = (await searchParams).theme;
   const initialTheme = asked && themes.some((t) => t.slug === asked) ? asked : null;
+
+  // Le jour du défi est celui de Paris, fixé ici : serveur et navigateur tirent les mêmes questions.
+  const now = new Date();
+  const day = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
+  const dayLabel = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", day: "numeric", month: "long" }).format(now);
 
   return (
     <div className="mx-auto max-w-[760px] space-y-5">
@@ -27,7 +32,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
           explication — de quoi briller ensuite dans les salons.
         </p>
       </header>
-      <GamesClient themes={themes} initialTheme={initialTheme} />
+      <GamesClient themes={themes} initialTheme={initialTheme} day={day} dayLabel={dayLabel} />
     </div>
   );
 }
