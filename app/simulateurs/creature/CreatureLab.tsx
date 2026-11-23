@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ShareButton } from "@/components/ShareButton";
-import { PRESETS, RANGES, creatureFor, describeGravity, describePressure, describeTemperature, type Planet } from "@/lib/simulateurs/creature.ts";
+import { PRESETS, RANGES, creatureFor, describeGravity, describeLight, describePressure, describeTemperature, describeWater, type Planet } from "@/lib/simulateurs/creature.ts";
 import { CreatureSketch } from "./CreatureSketch";
 
 const fr = (n: number, digits = 1) => n.toLocaleString("fr-FR", { maximumFractionDigits: digits });
-const LOCOMOTION = { marche: "Marche", vol: "Vole", flotte: "Flotte dans l’air", fouit: "Vit sous la surface" } as const;
+const LOCOMOTION = { marche: "Marche", vol: "Vole", flotte: "Flotte dans l’air", fouit: "Vit sous la surface", nage: "Nage" } as const;
 
 function Slider({ id, label, value, unit, hint, range, onChange }: {
   id: string; label: string; value: string; unit: string; hint: string;
@@ -28,11 +28,11 @@ function Slider({ id, label, value, unit, hint, range, onChange }: {
 export function CreatureLab({ initial }: { initial: Planet }) {
   const [planet, setPlanet] = useState<Planet>(initial);
   const creature = useMemo(() => creatureFor(planet), [planet]);
-  const path = `/simulateurs/creature?g=${planet.g}&t=${planet.t}&p=${planet.p}`;
+  const path = `/simulateurs/creature?g=${planet.g}&t=${planet.t}&p=${planet.p}&l=${planet.l}&w=${planet.w}`;
   // L'adresse suit les réglages : un lien partagé redonne exactement la même créature.
   useEffect(() => { window.history.replaceState(null, "", path); }, [path]);
   const set = (key: keyof Planet) => (v: number) => setPlanet((prev) => ({ ...prev, [key]: v }));
-  const same = (a: Planet, b: Planet) => a.g === b.g && a.t === b.t && a.p === b.p;
+  const same = (a: Planet, b: Planet) => a.g === b.g && a.t === b.t && a.p === b.p && a.l === b.l && a.w === b.w;
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] md:items-start">
@@ -53,6 +53,8 @@ export function CreatureLab({ initial }: { initial: Planet }) {
         <Slider id="gravite" label="Gravité" value={fr(planet.g)} unit="g" hint={describeGravity(planet.g)} range={{ ...RANGES.g, current: planet.g }} onChange={set("g")} />
         <Slider id="temperature" label="Température" value={String(planet.t).replace("-", "−")} unit="°C" hint={describeTemperature(planet.t)} range={{ ...RANGES.t, current: planet.t }} onChange={set("t")} />
         <Slider id="atmosphere" label="Atmosphère" value={fr(planet.p)} unit="bar" hint={describePressure(planet.p)} range={{ ...RANGES.p, current: planet.p }} onChange={set("p")} />
+        <Slider id="lumiere" label="Lumière de l’étoile" value={`× ${fr(planet.l)}`} unit="" hint={describeLight(planet.l)} range={{ ...RANGES.l, current: planet.l }} onChange={set("l")} />
+        <Slider id="mers" label="Mers" value={String(planet.w)} unit="%" hint={describeWater(planet.w, planet.t)} range={{ ...RANGES.w, current: planet.w }} onChange={set("w")} />
       </section>
 
       <div className="space-y-5">

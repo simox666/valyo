@@ -1,5 +1,5 @@
-// Simulateur « La créature d'une autre planète » : à partir de la gravité, de la température
-// et de la pression atmosphérique, on déduit une silhouette plausible et on explique chaque trait.
+// Simulateur « La créature d'une autre planète » : à partir de la gravité, de la température,
+// de la pression atmosphérique, de la lumière de l'étoile et de la part de mers, on déduit une silhouette plausible et on explique chaque trait.
 // Tout est calculé, sans hasard : les mêmes réglages donnent toujours la même créature.
 // C'est de la spéculation raisonnée (aucune vie extraterrestre n'est connue), pas une prédiction.
 
@@ -10,25 +10,32 @@ export type Planet = {
   t: number;
   /** Pression atmosphérique au sol, en bars. */
   p: number;
+  /** Lumière reçue de l'étoile, en multiples de celle que reçoit la Terre. */
+  l: number;
+  /** Part de la surface couverte de liquide (mers, lacs), en %. */
+  w: number;
 };
 
 export const RANGES = {
   g: { min: 0.1, max: 3, step: 0.1 },
   t: { min: -180, max: 200, step: 5 },
   p: { min: 0, max: 5, step: 0.1 },
+  l: { min: 0, max: 2, step: 0.1 },
+  w: { min: 0, max: 100, step: 5 },
 } as const;
 
-export const EARTH: Planet = { g: 1, t: 15, p: 1 };
+export const EARTH: Planet = { g: 1, t: 15, p: 1, l: 1, w: 70 };
 
 export const PRESETS: { name: string; planet: Planet }[] = [
   { name: "Terre", planet: EARTH },
-  { name: "Mars", planet: { g: 0.4, t: -60, p: 0 } },
-  { name: "Titan", planet: { g: 0.1, t: -180, p: 1.5 } },
-  { name: "Super-Terre chaude", planet: { g: 2.2, t: 80, p: 3 } },
-  { name: "Monde brumeux", planet: { g: 0.5, t: 30, p: 4.5 } },
+  { name: "Mars", planet: { g: 0.4, t: -60, p: 0, l: 0.4, w: 0 } },
+  { name: "Titan", planet: { g: 0.1, t: -180, p: 1.5, l: 0, w: 20 } },
+  { name: "Super-Terre chaude", planet: { g: 2.2, t: 80, p: 3, l: 1.6, w: 10 } },
+  { name: "Monde brumeux", planet: { g: 0.5, t: 30, p: 4.5, l: 0.3, w: 60 } },
+  { name: "Monde-océan", planet: { g: 1.2, t: 10, p: 1.5, l: 0.8, w: 100 } },
 ];
 
-export type Locomotion = "marche" | "vol" | "flotte" | "fouit";
+export type Locomotion = "marche" | "vol" | "flotte" | "fouit" | "nage";
 export type Cover = "fourrure" | "peau" | "ecailles" | "carapace";
 
 export type Trait = { label: string; value: string; why: string };
@@ -56,6 +63,11 @@ export type Creature = {
   nostrils: number;
   ears: number;
   coverDensity: number;
+  /** Antennes (0 à 1) quand la vue ne sert à rien ; points lumineux ; pieds palmés ; bosse de réserve d'eau. */
+  antennae: number;
+  glow: boolean;
+  webbed: boolean;
+  hump: boolean;
   fill: string;
   traits: Trait[];
   /** Avertissement quand la vie en surface est très improbable. */
@@ -69,12 +81,18 @@ const snap = (x: number, r: { min: number; max: number; step: number }) => {
 };
 
 /** Ramène des valeurs quelconques (adresse partagée, saisie) dans les bornes des curseurs. */
-export function clampPlanet(raw: { g?: unknown; t?: unknown; p?: unknown }): Planet {
+export function clampPlanet(raw: { g?: unknown; t?: unknown; p?: unknown; l?: unknown; w?: unknown }): Planet {
   const num = (v: unknown, fallback: number) => {
     const n = typeof v === "number" ? v : typeof v === "string" && v.trim() !== "" ? Number(v) : NaN;
     return Number.isFinite(n) ? n : fallback;
   };
-  return { g: snap(num(raw.g, EARTH.g), RANGES.g), t: snap(num(raw.t, EARTH.t), RANGES.t), p: snap(num(raw.p, EARTH.p), RANGES.p) };
+  return {
+    g: snap(num(raw.g, EARTH.g), RANGES.g),
+    t: snap(num(raw.t, EARTH.t), RANGES.t),
+    p: snap(num(raw.p, EARTH.p), RANGES.p),
+    l: snap(num(raw.l, EARTH.l), RANGES.l),
+    w: snap(num(raw.w, EARTH.w), RANGES.w),
+  };
 }
 
 const fr = (n: number, digits = 1) => n.toLocaleString("fr-FR", { maximumFractionDigits: digits });
@@ -105,32 +123,67 @@ export function describePressure(p: number) {
   return "air très dense, presque un brouillard qui porte";
 }
 
+export function describeLight(l: number) {
+  if (l <= 0.05) return "nuit permanente, comme sur une planète sans étoile";
+  if (l < 0.3) return "pénombre : étoile lointaine ou naine rouge";
+  if (l < 0.8) return "lumière douce, comme sur Mars";
+  if (l <= 1.2) return "comme sur Terre";
+  return "lumière écrasante";
+}
+export function describeWater(w: number, t: number) {
+  const what = t < -90 ? "de méthane liquide" : t < 0 ? "d’eau sous la glace" : "d’eau";
+  if (w < 15) return "monde aride, presque sans mers";
+  if (w < 75) return `des continents et des mers ${what}`;
+  if (w < 90) return `surtout des mers ${what}, quelques îles`;
+  return `monde-océan ${what}`;
+}
+
+/** Mélange une couleur avec du blanc (k > 0) ou du noir (k < 0). */
+function shade(hex: string, k: number) {
+  const target = k > 0 ? 255 : 0;
+  const a = Math.abs(k);
+  return "#" + [1, 3, 5].map((i) => Math.round(parseInt(hex.slice(i, i + 2), 16) * (1 - a) + target * a).toString(16).padStart(2, "0")).join("").toUpperCase();
+}
+
 export function creatureFor(input: Planet): Creature {
-  const { g, t, p } = clampPlanet(input);
+  const { g, t, p, l, w } = clampPlanet(input);
   const stock = clamp((g - RANGES.g.min) / (RANGES.g.max - RANGES.g.min));
   const airless = p < 0.05;
   // Portance : plus l'air est dense et la gravité faible, plus il est facile de quitter le sol.
   const lift = airless ? 0 : p / g;
   const scorching = t > 120;
 
-  const locomotion: Locomotion = airless || (scorching && lift < 8) ? "fouit" : lift >= 8 ? "flotte" : lift >= 2.5 ? "vol" : "marche";
+  // Au-delà de 110 °C les mers s'évaporent : elles ne comptent plus.
+  const seas = t > 110 ? 0 : w;
+  const ocean = !airless && seas >= 90;
+  const locomotion: Locomotion =
+    airless || (scorching && lift < 8) ? "fouit" : ocean ? "nage" : lift >= 8 ? "flotte" : lift >= 2.5 ? "vol" : "marche";
+  const webbed = locomotion === "marche" && seas >= 75;
+  const hump = locomotion === "marche" && !airless && seas < 15;
+  // Lumière qui atteint vraiment l'animal : une atmosphère épaisse ou l'eau en filtrent une partie.
+  const dark = l <= 0.05;
+  const lightAtBody = l * (airless ? 1 : clamp(1 - p / 8, 0.35, 1)) * (locomotion === "nage" ? 0.5 : 1);
+  const glow = !airless && l < 0.3;
 
   const cover: Cover = t < -20 ? "fourrure" : t <= 45 ? "peau" : t <= 110 ? "ecailles" : "carapace";
   const coverDensity = cover === "fourrure" ? clamp((-20 - t) / 100, 0.3, 1) : cover === "peau" ? 0.3 : cover === "ecailles" ? clamp((t - 45) / 65, 0.4, 1) : 1;
-  const fill = t < -90 ? "#7F8FB0" : t < -20 ? "#DCE5EC" : t <= 45 ? "#BECBA4" : t <= 110 ? "#DDAA72" : "#9A5A48";
+  const baseFill = t < -90 ? "#7F8FB0" : t < -20 ? "#DCE5EC" : t <= 45 ? (locomotion === "nage" ? "#9CC3CF" : "#BECBA4") : t <= 110 ? "#DDAA72" : "#9A5A48";
+  // Beaucoup de lumière : pigments sombres qui protègent ; presque pas : inutile de se colorer.
+  const fill = l > 1.4 ? shade(baseFill, -0.3) : l < 0.3 ? shade(baseFill, 0.45) : baseFill;
 
-  const legs = locomotion === "flotte" ? 0 : locomotion === "vol" ? 2 : locomotion === "fouit" ? 6 : g < 0.5 ? 2 : g < 1.2 ? 4 : g < 2 ? 6 : 8;
+  const legs = locomotion === "flotte" || locomotion === "nage" ? 0 : locomotion === "vol" ? 2 : locomotion === "fouit" ? 6 : g < 0.5 ? 2 : g < 1.2 ? 4 : g < 2 ? 6 : 8;
   const legLength = locomotion === "fouit" ? 0.12 : locomotion === "vol" ? 0.2 : 0.75 - 0.55 * stock;
   const legWidth = 0.15 + 0.6 * stock;
   const cold = clamp(-t / 150);
-  const bodyW = locomotion === "fouit" ? 0.9 : 0.55 + 0.35 * stock;
+  const bodyW = locomotion === "fouit" || locomotion === "nage" ? 0.9 : 0.55 + 0.35 * stock;
   const bodyH = clamp(0.5 - 0.2 * stock + 0.08 * cold, 0.25, 0.6);
   const neck = locomotion === "marche" ? 0.7 * (1 - stock) : locomotion === "vol" ? 0.25 : 0.1;
-  const tail = locomotion === "marche" ? 1 - stock : locomotion === "vol" ? 0.5 : 0;
+  const tail = locomotion === "marche" ? 1 - stock : locomotion === "vol" ? 0.5 : locomotion === "nage" ? 1 : 0;
   // Plus l'air porte, plus l'aile peut être petite.
   const wings = locomotion === "vol" ? clamp(1.15 - lift / 8, 0.35, 1) : 0;
   const sacs = locomotion === "flotte" ? (lift >= 20 ? 2 : 3) : 0;
-  const eyes = airless ? 0.15 : clamp(0.3 + (p / RANGES.p.max) * 0.6);
+  const eyes = dark ? 0 : airless ? 0.15 : clamp(0.95 - 0.6 * lightAtBody, 0.12, 1);
+  const antennae = dark ? 1 : 0;
   const nostrils = airless ? 0 : clamp(1 - p / 0.6);
   const ears = cover === "carapace" ? 0 : clamp((t - 30) / 90);
 
@@ -141,21 +194,26 @@ export function creatureFor(input: Planet): Creature {
   if (t > 40) height *= 1 - Math.min(0.3, (t - 40) / 300);
   if (locomotion === "vol" || locomotion === "fouit") height *= 0.5;
   if (locomotion === "flotte") height *= 1.5;
+  // Dans l'eau, la poussée d'Archimède porte le corps : la gravité limite beaucoup moins la taille.
+  if (locomotion === "nage") height = (1.7 / Math.pow(g, 0.2)) * 1.8 * (t < 0 ? 1.3 : 1);
   const heightM = Number(clamp(height, 0.2, 9).toFixed(height < 1 ? 2 : 1));
-  const density = locomotion === "flotte" ? 0.05 : locomotion === "vol" ? 0.35 : 0.6 + 0.9 * stock;
+  const density = locomotion === "flotte" ? 0.05 : locomotion === "vol" ? 0.35 : locomotion === "nage" ? 2.2 : 0.6 + 0.9 * stock;
   // Un corps bas et large pèse bien plus que sa seule hauteur ne le laisse penser.
   const girth = locomotion === "marche" || locomotion === "fouit" ? clamp(bodyW / bodyH / 1.3, 0.8, 2.5) : 1;
   const mass = 65 * Math.pow(heightM / 1.7, 3) * density * girth;
   const massKg = mass < 10 ? Number(mass.toFixed(1)) : Math.round(mass);
 
   const genus =
-    locomotion === "vol" ? "Aeropteryx" : locomotion === "flotte" ? "Pneumonatans" : locomotion === "fouit" ? "Subterranis"
+    locomotion === "vol" ? "Aeropteryx" : locomotion === "flotte" ? "Pneumonatans" : locomotion === "fouit" ? "Subterranis" : locomotion === "nage" ? "Thalassonatans"
     : g >= 2 ? "Gravipes" : g >= 1.2 ? "Robustipes" : g >= 0.5 ? "Ambulator" : "Longicrus";
   const species = t < -90 ? "methanicus" : t < -20 ? "glacialis" : t <= 45 ? "temperatus" : t <= 110 ? "ardens" : "ignifer";
   const base =
-    locomotion === "vol" ? "Planeur" : locomotion === "flotte" ? "Flotteur à sacs" : locomotion === "fouit" ? "Fouisseur"
+    locomotion === "vol" ? "Planeur" : locomotion === "flotte" ? "Flotteur à sacs" : locomotion === "fouit" ? "Fouisseur" : locomotion === "nage" ? "Nageur"
     : g >= 2 ? "Rampeur trapu" : g >= 1.2 ? "Marcheur massif" : g >= 0.5 ? "Coureur" : "Échassier géant";
-  const climate = t < -90 ? "des mers de méthane" : t < -20 ? "des glaces" : t <= 45 ? "des plaines tempérées" : t <= 110 ? "des déserts brûlants" : "des fournaises";
+  const climate =
+    locomotion === "nage"
+      ? t < -90 ? "des mers de méthane" : t < 0 ? "des océans sous la glace" : t <= 45 ? "des océans tempérés" : "des mers chaudes"
+      : t < -90 ? "des mers de méthane" : t < -20 ? "des glaces" : t <= 45 ? (webbed ? "des archipels" : hump ? "des steppes arides" : "des plaines tempérées") : t <= 110 ? "des déserts brûlants" : "des fournaises";
 
   const traits: Trait[] = [];
   traits.push(
@@ -167,6 +225,8 @@ export function creatureFor(input: Planet): Creature {
           : { label: "Silhouette", value: `corps élancé, ${legs} longues pattes fines`, why: `Avec ${fr(g)} g, le squelette porte très peu : on peut grandir en hauteur, sur des membres fins, et se déplacer par grands bonds.` }
       : locomotion === "vol"
         ? { label: "Silhouette", value: "corps léger, deux pattes courtes pour se poser", why: `Tout ce qui pèse coûte de l’énergie en vol : le corps est réduit, les pattes ne servent qu’à l’atterrissage.` }
+        : locomotion === "nage"
+          ? { label: "Silhouette", value: "corps fuselé, nageoires, queue en éventail", why: `Dans l’eau, la poussée d’Archimède porte le corps : la gravité (${fr(g)} g) compte peu, ce qui permet de devenir grand. Seule la forme compte, pour fendre le liquide.` }
         : locomotion === "flotte"
           ? { label: "Silhouette", value: "petit corps suspendu, tentacules pendants", why: `Inutile de se tenir debout quand on ne touche jamais le sol : les membres deviennent des tentacules pour attraper la nourriture en passant.` }
           : { label: "Silhouette", value: "corps aplati, six pattes courtes à griffes", why: `Une vie sous la surface demande de creuser et de se faufiler : un corps plat et des griffes puissantes.` },
@@ -174,6 +234,8 @@ export function creatureFor(input: Planet): Creature {
   traits.push(
     locomotion === "vol"
       ? { label: "Déplacement", value: wings > 0.7 ? "vol, grandes ailes membraneuses" : "vol, ailes courtes", why: `L’air à ${fr(p)} bar est assez dense, pour une gravité de ${fr(g)} g, pour porter un animal : ${wings > 0.7 ? "il faut encore une grande surface d’aile" : "de petites ailes suffisent"}.` }
+      : locomotion === "nage"
+        ? { label: "Déplacement", value: t < 0 && t >= -90 ? "nage sous la banquise" : "nage", why: t < 0 && t >= -90 ? `La surface est gelée, mais un océan peut rester liquide sous la glace, comme on le soupçonne sur Europe, une lune de Jupiter.` : `Avec ${w} % de la surface sous les mers, la vie n’a presque nulle part où poser le pied.` }
       : locomotion === "flotte"
         ? { label: "Déplacement", value: `flotte grâce à ${sacs} sacs de gaz léger`, why: `Un air très dense (${fr(p)} bar) et une gravité faible (${fr(g)} g) : un sac rempli d’un gaz plus léger que l’air suffit à tenir en l’air, comme un dirigeable.` }
         : locomotion === "fouit"
@@ -201,12 +263,21 @@ export function creatureFor(input: Planet): Creature {
           : { label: "Revêtement", value: "carapace épaisse et réfléchissante", why: `Au-delà de 110 °C, il faut renvoyer la chaleur et sceller le corps pour ne pas se dessécher.` },
   );
   traits.push(
-    airless
-      ? { label: "Yeux", value: "minuscules, protégés", why: `Sous terre, la vue sert peu : d’autres sens (vibrations, chimie) prennent le relais.` }
-      : eyes > 0.6
-        ? { label: "Yeux", value: "très grands", why: `Une atmosphère épaisse filtre la lumière : de grands yeux captent le peu qui atteint le sol.` }
-        : { label: "Yeux", value: "de taille moyenne", why: `La lumière traverse bien une atmosphère de cette épaisseur.` },
+    dark
+      ? { label: "Sens", value: "aveugle, longues antennes", why: `Sans lumière, des yeux ne servent à rien : le toucher, les vibrations et l’odorat prennent le relais, comme chez les animaux des grottes.` }
+      : airless
+        ? { label: "Yeux", value: "minuscules, protégés", why: `Sous terre, la vue sert peu : d’autres sens (vibrations, chimie) prennent le relais.` }
+        : eyes > 0.6
+          ? { label: "Yeux", value: "très grands", why: `Peu de lumière atteint l’animal (étoile faible${p > 2 ? ", atmosphère épaisse" : ""}${locomotion === "nage" ? ", eau qui l’absorbe" : ""}) : de grands yeux en captent le plus possible.` }
+          : eyes < 0.3
+            ? { label: "Yeux", value: "petits, enfoncés sous une arcade", why: `Sous une lumière ${fr(l)} fois plus forte que sur Terre, il faut protéger la rétine plutôt que capter davantage.` }
+            : { label: "Yeux", value: "de taille moyenne", why: `La lumière qui atteint le sol est comparable à celle de la Terre.` },
   );
+  if (glow) traits.push({ label: "Signaux", value: "points lumineux le long du corps", why: `Dans l’obscurité, produire sa propre lumière sert à se reconnaître ou à attirer des proies, comme dans les abysses terrestres.` });
+  else if (l > 1.4) traits.push({ label: "Couleur", value: "pigments sombres", why: `Une lumière intense abîme les cellules : des pigments foncés l’absorbent avant qu’elle ne fasse des dégâts.` });
+  if (webbed) traits.push({ label: "Pattes", value: "pieds palmés", why: `Avec ${w} % de mers, il faut passer d’une île à l’autre : la palmure sert autant à nager qu’à marcher sur la vase.` });
+  if (hump) traits.push({ label: "Réserves", value: "bosse de graisse sur le dos", why: `L’eau est rare : la graisse stockée en fournit en étant brûlée, comme chez le dromadaire.` });
+  if (t > 110 && w > 0) traits.push({ label: "Mers", value: "évaporées", why: `À ${t} °C, aucune mer ne tient en surface : le réglage des mers ne change rien ici.` });
   traits.push(
     t < -90
       ? { label: "Métabolisme", value: "très lent, à base de méthane liquide", why: `L’eau est de la roche à cette température ; un autre liquide, comme le méthane sur Titan, devrait jouer son rôle. Les réactions y seraient très lentes.` }
@@ -227,7 +298,7 @@ export function creatureFor(input: Planet): Creature {
 
   return {
     name: `${genus} ${species}`,
-    common: `${base} ${climate}`,
+    common: `${base}${dark ? " aveugle" : ""} ${climate}`,
     heightM,
     massKg,
     locomotion,
@@ -245,6 +316,10 @@ export function creatureFor(input: Planet): Creature {
     nostrils,
     ears,
     coverDensity,
+    antennae,
+    glow,
+    webbed,
+    hump,
     fill,
     traits,
     caveat,

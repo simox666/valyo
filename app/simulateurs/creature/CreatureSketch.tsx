@@ -23,9 +23,10 @@ export function CreatureSketch({ creature: c }: { creature: Creature }) {
   const legPx = 20 + 110 * c.legLength;
   const airborne = c.locomotion === "vol" || c.locomotion === "flotte";
   const cx = 205;
-  const cy = c.locomotion === "flotte" ? 150 : c.locomotion === "vol" ? 128 : GROUND - legPx - ry * 0.75;
-  const bodyRx = c.locomotion === "flotte" ? rx * 0.55 : rx;
-  const bodyRy = c.locomotion === "flotte" ? ry * 0.7 : ry;
+  const swims = c.locomotion === "nage";
+  const cy = c.locomotion === "flotte" ? 150 : c.locomotion === "vol" ? 128 : swims ? 168 : GROUND - legPx - ry * 0.75;
+  const bodyRx = c.locomotion === "flotte" ? rx * 0.55 : swims ? 100 : rx;
+  const bodyRy = c.locomotion === "flotte" ? ry * 0.7 : swims ? 38 : ry;
 
   // Tête et cou.
   const neckLen = 12 + 70 * c.neck;
@@ -73,8 +74,8 @@ export function CreatureSketch({ creature: c }: { creature: Creature }) {
   const spots = c.cover === "peau" ? [[-0.45, -0.25, 7], [-0.1, -0.4, 5], [0.25, -0.2, 6], [-0.25, 0.15, 4]] : [];
 
   // Échelle : silhouette humaine de 1,70 m à côté.
-  const top = c.locomotion === "flotte" ? cy - bodyRy - 75 : Math.min(head.y - headR, cy - bodyRy);
-  const bottom = airborne ? Math.max(footY, cy + bodyRy + (c.locomotion === "flotte" ? 70 : 0)) : GROUND;
+  const top = c.locomotion === "flotte" ? cy - bodyRy - 75 : swims ? cy - 150 : Math.min(head.y - headR, cy - bodyRy);
+  const bottom = swims ? cy + 150 : airborne ? Math.max(footY, cy + bodyRy + (c.locomotion === "flotte" ? 70 : 0)) : GROUND;
   const pxPerM = (bottom - top) / c.heightM;
   // L'humain ne dépasse jamais 150 px : pour une petite créature, c'est elle qu'on réduit.
   const wanted = 1.7 * pxPerM;
@@ -101,6 +102,12 @@ export function CreatureSketch({ creature: c }: { creature: Creature }) {
         </>
       )}
 
+      {swims && (
+        <g stroke="currentColor" fill="none" opacity="0.5">
+          <path d={`M10 46 ${Array.from({ length: 19 }, () => "q5 -6 10 0 t10 0").join(" ")}`} strokeWidth="1.5" />
+          <circle cx="330" cy="92" r="4" /><circle cx="342" cy="72" r="2.5" /><circle cx="322" cy="66" r="1.8" />
+        </g>
+      )}
       {/* Silhouette humaine pour l'échelle */}
       <g stroke="currentColor" strokeWidth={Math.min(4, Math.max(1.2, u * 0.45))} strokeLinecap="round" fill="none" opacity="0.55">
         <circle cx={hx} cy={GROUND - human + u} r={u} fill="currentColor" stroke="none" />
@@ -110,6 +117,15 @@ export function CreatureSketch({ creature: c }: { creature: Creature }) {
 
       <g transform={`translate(${cx + 20} ${GROUND}) scale(${shrink.toFixed(3)}) translate(${-cx} ${-GROUND})`}>
       {airborne && <ellipse cx={cx} cy={GROUND + 1} rx={bodyRx * 0.8} ry="5" fill="currentColor" opacity="0.15" />}
+      {/* Nageur : queue en éventail et nageoire dorsale derrière le corps */}
+      {swims && (
+        <>
+          <path d={`M${cx - bodyRx + 8} ${cy} l-46 -34 q14 34 0 68 Z`} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+          <path d={`M${cx - 30} ${cy - bodyRy + 3} q24 -44 62 -34 q-14 16 -8 36 Z`} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+        </>
+      )}
+      {/* Bosse de réserve (monde aride) */}
+      {c.hump && <path d={`M${cx - bodyRx * 0.5} ${cy - bodyRy * 0.8} q${bodyRx * 0.3} ${-bodyRy * 0.9 - 14} ${bodyRx * 0.75} 0 Z`} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />}
       {/* Sacs de gaz (flotteur) */}
       {Array.from({ length: c.sacs }, (_, i) => {
         const sx = cx + (i - (c.sacs - 1) / 2) * 62;
@@ -127,7 +143,7 @@ export function CreatureSketch({ creature: c }: { creature: Creature }) {
       {c.wings > 0 && (
         <path d={`M${cx + 6} ${cy - bodyRy * 0.6} L${cx - 20 - 95 * c.wings} ${cy - bodyRy - 55 * c.wings} Q${cx - 70 * c.wings} ${cy - 6} ${cx - bodyRx * 0.5} ${cy + 4} Z`} fill={fill} fillOpacity="0.4" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
       )}
-      {c.tail > 0.15 && <Tube d={`M${cx - bodyRx * 0.85} ${cy} q${-18 - 40 * c.tail} ${-4} ${-26 - 62 * c.tail} ${14 + 20 * c.tail}`} width={5 + 5 * c.legWidth} fill={fill} />}
+      {c.tail > 0.15 && !swims && <Tube d={`M${cx - bodyRx * 0.85} ${cy} q${-18 - 40 * c.tail} ${-4} ${-26 - 62 * c.tail} ${14 + 20 * c.tail}`} width={5 + 5 * c.legWidth} fill={fill} />}
       <g opacity="0.55">
         {legXs.map((x, i) => <Tube key={`ar-${i}`} d={leg(x + farShift, -5)} width={legW} fill={fill} />)}
       </g>
@@ -148,6 +164,23 @@ export function CreatureSketch({ creature: c }: { creature: Creature }) {
       </g>
       {fur && <path d={fur} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />}
 
+      {/* Points lumineux (monde sombre) */}
+      {c.glow && [-0.6, -0.3, 0, 0.3, 0.6].map((k) => (
+        <g key={`l-${k}`}>
+          <circle cx={cx + k * bodyRx} cy={cy + bodyRy * 0.25} r="7" fill="#F4875A" opacity="0.3" />
+          <circle cx={cx + k * bodyRx} cy={cy + bodyRy * 0.25} r="3" fill="#F4875A" stroke="currentColor" strokeWidth="0.8" />
+        </g>
+      ))}
+      {/* Nageoire pectorale */}
+      {swims && <path d={`M${cx + bodyRx * 0.25} ${cy + bodyRy * 0.3} q-10 40 -52 46 q18 -22 14 -46 Z`} fill={fill} stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />}
+
+      {/* Antennes (monde sans lumière) */}
+      {c.antennae > 0 && [-1, 1].map((s) => (
+        <g key={`a-${s}`}>
+          <path d={`M${head.x + s * 5} ${head.y - headR + 2} q${s * 10 + 14} -30 ${s * 16 + 38} -34`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <circle cx={head.x + s * 21 + 38} cy={head.y - headR - 32} r="3" fill="currentColor" />
+        </g>
+      ))}
       {/* Crêtes qui évacuent la chaleur */}
       {c.ears > 0.1 &&
         [-1, 1].map((s) => (
@@ -167,12 +200,18 @@ export function CreatureSketch({ creature: c }: { creature: Creature }) {
           <circle cx={head.x + headR * 0.85 + 2 + 3 * c.nostrils} cy={head.y + 8 + 2 * c.nostrils} r={1 + 2.2 * c.nostrils} fill="currentColor" />
         </>
       ) : null}
-      {/* Œil */}
-      <circle cx={head.x + 3} cy={head.y - 5} r={eyeR} fill="#fff" stroke="currentColor" strokeWidth="1.6" />
-      <circle cx={head.x + 3 + eyeR * 0.25} cy={head.y - 5} r={Math.max(1.2, eyeR * 0.5)} fill="#1B2430" />
+      {/* Œil (absent quand il n'y a aucune lumière) */}
+      {c.eyes > 0 && (
+        <>
+          <circle cx={head.x + 3} cy={head.y - 5} r={eyeR} fill="#fff" stroke="currentColor" strokeWidth="1.6" />
+          <circle cx={head.x + 3 + eyeR * 0.25} cy={head.y - 5} r={Math.max(1.2, eyeR * 0.5)} fill="#1B2430" />
+          {c.eyes < 0.3 && <path d={`M${head.x - 5} ${head.y - 11} q9 -6 17 0`} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />}
+        </>
+      )}
 
       {/* Pattes avant, aile avant */}
       {legXs.map((x, i) => <Tube key={`av-${i}`} d={leg(x, 5)} width={legW} fill={fill} />)}
+      {c.webbed && legXs.map((x, i) => <path key={`p-${i}`} d={`M${x - 3} ${GROUND - legW / 2 - 8} l${legW + 24} ${legW / 2 + 7} h${-legW - 26} Z`} fill={fill} stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />)}
       {c.locomotion === "fouit" && legXs.map((x, i) => <path key={`g-${i}`} d={`M${x + legW * 0.7} ${GROUND - 2} l5 3 M${x + legW * 0.7} ${GROUND - 5} l6 0`} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />)}
       {c.wings > 0 && (
         <>

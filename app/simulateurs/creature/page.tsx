@@ -5,12 +5,12 @@ import { CreatureLab } from "./CreatureLab";
 
 export const metadata: Metadata = {
   title: "Simulateur : la créature d’une autre planète",
-  description: "Réglez la gravité, la température et l’atmosphère d’une planète : Valyo dessine la créature qui pourrait y vivre et explique chaque trait.",
-  // Les réglages vivent dans l'adresse (?g=&t=&p=) : une seule adresse canonique.
+  description: "Réglez la gravité, la température, l’atmosphère, la lumière et les mers d’une planète : Valyo dessine la créature qui pourrait y vivre et explique chaque trait.",
+  // Les réglages vivent dans l'adresse (?g=&t=&p=&l=&w=) : une seule adresse canonique.
   alternates: { canonical: "/simulateurs/creature" },
 };
 
-export default async function CreaturePage({ searchParams }: { searchParams: Promise<{ g?: string; t?: string; p?: string }> }) {
+export default async function CreaturePage({ searchParams }: { searchParams: Promise<{ g?: string; t?: string; p?: string; l?: string; w?: string }> }) {
   const initial = clampPlanet(await searchParams);
   return (
     <div className="space-y-5">
@@ -18,7 +18,7 @@ export default async function CreaturePage({ searchParams }: { searchParams: Pro
         <p className="label-mono text-accent">Simulateur</p>
         <h1 className="mt-1 text-2xl font-bold">La créature d’une autre planète</h1>
         <p className="mt-1 text-soft">
-          Réglez la gravité, la température et l’atmosphère : le croquis montre l’animal qui pourrait y vivre, et pourquoi il aurait cette allure.
+          Réglez la gravité, la température, l’atmosphère, la lumière et les mers : le croquis montre l’animal qui pourrait y vivre, et pourquoi il aurait cette allure.
         </p>
       </header>
       <CreatureLab initial={initial} />
