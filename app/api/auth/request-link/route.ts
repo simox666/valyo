@@ -5,6 +5,11 @@ import { sendLoginLink } from "@/lib/email";
 import { fail, json, readJson, sameOrigin } from "@/lib/http";
 import { limitMessage, runLimited } from "@/lib/limits";
 import { signupDecision } from "@/lib/social/invitations.ts";
+import { clientIp, createIpLimiter } from "@/lib/ip-limit.ts";
+
+// Inscriptions ouvertes : sans cette limite, un robot pourrait faire envoyer des e-mails de connexion
+// à des milliers d'adresses depuis le même poste (la limite par adresse e-mail ne l'arrête pas).
+const perIp = createIpLimiter(Math.max(1, Number.parseInt(process.env.LIMIT_LOGIN_LINKS_PER_IP_PER_HOUR ?? "", 10) || 10), 60 * 60 * 1000);
 
 const bodySchema = z.object({
   email: z.email("Adresse e-mail invalide.").max(254),
@@ -17,6 +22,8 @@ export async function POST(request: Request) {
   if (!sameOrigin(request)) return fail("Requête refusée.", 403);
   const parsed = bodySchema.safeParse(await readJson(request));
   if (!parsed.success) return fail("Adresse e-mail invalide.", 400, { fields: { email: "Adresse e-mail invalide." } });
+
+  if (!perIp.allow(clientIp(request))) return fail("Trop de demandes de lien depuis votre connexion. Réessayez dans une heure.", 429);
 
   const email = parsed.data.email.trim();
   const limited = await runLimited(transaction, "loginLink", email, async (q) => {
