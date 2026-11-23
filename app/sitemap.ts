@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { SIMULATORS } from "@/lib/simulateurs/catalogue.ts";
 import { query } from "@/lib/db";
 
 // Plan du site (audit SEO du 17 novembre) : pages stables, thèmes, publications publiées,
@@ -33,7 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     at("/"),
     at("/salons"),
     at("/jeux"),
-    at("/simulateurs/creature"),
+    at("/simulateurs"),
+    ...SIMULATORS.map((sim) => at(`/simulateurs/${sim.slug}`)),
     at("/recap"),
     at("/regles"),
     at("/confidentialite"),

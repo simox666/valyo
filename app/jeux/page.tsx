@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SIMULATORS } from "@/lib/simulateurs/catalogue.ts";
 import { Avatar } from "@/components/Avatar";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -54,13 +55,13 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
       </header>
       <GamesClient themes={themes} initialTheme={initialTheme} day={day} dayLabel={dayLabel} isMember={Boolean(member)} serverDaily={played} />
 
-      <Link href="/simulateurs/creature" className="card flex items-center justify-between gap-4 p-5 hover:ring-accent sm:p-6">
+      <Link href="/simulateurs" className="card flex items-center justify-between gap-4 p-5 hover:ring-accent sm:p-6">
         <span className="min-w-0">
-          <span className="label-mono block text-accent">Simulateur · nouveau</span>
-          <span className="mt-1 block font-display text-lg font-bold">La créature d’une autre planète</span>
-          <span className="mt-1 block text-sm text-soft">Réglez gravité, température et atmosphère : découvrez l’animal qui pourrait y vivre.</span>
+          <span className="label-mono block text-accent">Simulateurs · {SIMULATORS.length} à essayer</span>
+          <span className="mt-1 block font-display text-lg font-bold">Manipuler pour comprendre</span>
+          <span className="mt-1 block text-sm text-soft">Mise en orbite, épidémie, climat, réseau de neurones, créature d’une autre planète…</span>
         </span>
-        <span aria-hidden className="shrink-0 text-sm font-semibold text-accent">Essayer →</span>
+        <span aria-hidden className="shrink-0 text-sm font-semibold text-accent">Voir →</span>
       </Link>
 
       <section id="classement" className="card p-5 sm:p-6">

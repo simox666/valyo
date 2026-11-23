@@ -25,7 +25,7 @@ export default async function CreaturePage({ searchParams }: { searchParams: Pro
       <p className="text-xs leading-relaxed text-muted">
         Spéculation raisonnée : aucune vie extraterrestre n’est connue à ce jour. Les règles appliquées viennent de la biologie terrestre
         (poids et squelette, perte de chaleur, portance de l’air) et sont volontairement simplifiées.{" "}
-        <Link href="/jeux" className="font-semibold text-accent hover:underline">Retour aux jeux</Link>
+        <Link href="/simulateurs" className="font-semibold text-accent hover:underline">Tous les simulateurs</Link>
       </p>
     </div>
   );
