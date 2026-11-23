@@ -42,6 +42,11 @@ export default function PrivacyPage() {
           entre membres, où votre pseudonyme apparaît. Sans compte, rien n’est enregistré chez nous. Base : exécution du service.
         </li>
         <li>
+          <strong>L’abonnement aux notifications push</strong>, uniquement si vous les activez sur un appareil : l’adresse technique que le
+          service de notification de votre navigateur (Apple, Google ou Mozilla) attribue à cet appareil. Elle est supprimée quand vous
+          désactivez les notifications, à la déconnexion et à la suppression du compte. Base : votre consentement.
+        </li>
+        <li>
           <strong>Un jour de présence</strong> par membre (la date, rien d’autre : ni pages vues, ni durée), pour mesurer la santé de la
           communauté. Conservé 24 mois. Base : intérêt légitime.
         </li>
@@ -78,6 +83,11 @@ export default function PrivacyPage() {
         <li>
           <strong>Anthropic</strong> (synthèses d’actualités par IA) : ne reçoit <em>aucune</em> donnée de membre — uniquement des articles de
           presse publics à résumer.
+        </li>
+        <li>
+          <strong>Le service de notification de votre navigateur</strong> (Apple, Google ou Mozilla), si vous activez les notifications
+          push : il achemine jusqu’à votre appareil un message chiffré indiquant qui vous a écrit ou répondu et où. Le contenu des messages
+          privés n’y figure jamais.
         </li>
       </ul>
       <p>Vos données ne sont ni vendues ni partagées avec qui que ce soit d’autre.</p>

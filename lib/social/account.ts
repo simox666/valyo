@@ -30,6 +30,7 @@ export async function eraseAccount(q: Query, userId: string): Promise<DeleteAcco
   await q(`DELETE FROM appeal_tokens WHERE user_id = $1`, [userId]);
   await q(`DELETE FROM user_activity_days WHERE user_id = $1`, [userId]);
   await q(`DELETE FROM game_scores WHERE user_id = $1`, [userId]);
+  await q(`DELETE FROM push_subscriptions WHERE user_id = $1`, [userId]);
   await q(`DELETE FROM editorial_dev_requests WHERE member_id = $1`, [userId]);
   await q(`UPDATE feedback SET user_id = NULL WHERE user_id = $1`, [userId]);
   await q(

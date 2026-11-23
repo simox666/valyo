@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { listNotifications, unreadNotificationCount } from "@/lib/social/notifications.ts";
 import { MarkAllReadButton } from "./MarkReadButton";
 import { NotificationInbox } from "./NotificationInbox";
+import { PushToggle } from "@/components/PushToggle";
 
 export const metadata: Metadata = { title: "Notifications", robots: { index: false } };
 
@@ -23,6 +24,7 @@ export default async function NotificationsPage() {
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <NotificationInbox initialNotifications={notifications} canMark={canMark} />
       <aside className="space-y-4">
+        {canMark && <PushToggle />}
         <section className="rounded-2xl bg-accent-soft p-5"><h2 className="font-extrabold">Gardez le fil.</h2><p className="mt-2 text-sm leading-relaxed text-neutral-700">Dans un salon, ouvrez « Suivi et gestion » puis activez le suivi pour recevoir les nouveaux échanges ici.</p><Link href="/salons#mes-salons" className="btn-link mt-4 block">Retrouver mes salons →</Link></section>
         <section className="card p-5"><h2 className="font-bold">Votre compte</h2><div className="mt-3 flex flex-col gap-3"><Link href="/parametres" className="btn-link">Paramètres et thèmes suivis</Link><Link href="/sanctions" className="btn-link">Sanctions et contestations</Link></div></section>
       </aside>

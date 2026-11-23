@@ -956,4 +956,34 @@ export const MIGRATIONS: Migration[] = [
       `CREATE INDEX game_scores_day ON game_scores (day)`,
     ],
   },
+  {
+    id: "032_notifications_push",
+    statements: [
+      // Notifications push (23 novembre 2026). Un abonnement par appareil ; les clés VAPID
+      // du serveur sont générées une fois et gardées ici si l'environnement n'en fournit pas.
+      `CREATE TABLE push_subscriptions (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        endpoint TEXT NOT NULL UNIQUE CHECK (char_length(endpoint) <= 1000),
+        p256dh TEXT NOT NULL,
+        auth TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )`,
+      `CREATE INDEX push_subscriptions_user ON push_subscriptions (user_id)`,
+      `CREATE TABLE push_keys (
+        id BOOLEAN PRIMARY KEY DEFAULT true CHECK (id),
+        public_key TEXT NOT NULL,
+        private_key TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )`,
+      // File d'envoi : une notification ou un message privé « pas encore poussé » a pushed_at nul.
+      // Tout l'existant est marqué comme déjà traité : aucun envoi rétroactif à l'activation.
+      `ALTER TABLE notifications ADD COLUMN pushed_at TIMESTAMPTZ`,
+      `UPDATE notifications SET pushed_at = now()`,
+      `CREATE INDEX notifications_to_push ON notifications (created_at) WHERE pushed_at IS NULL`,
+      `ALTER TABLE direct_messages ADD COLUMN pushed_at TIMESTAMPTZ`,
+      `UPDATE direct_messages SET pushed_at = now()`,
+      `CREATE INDEX direct_messages_to_push ON direct_messages (created_at) WHERE pushed_at IS NULL`,
+    ],
+  },
 ];
