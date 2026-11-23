@@ -5,11 +5,19 @@ import { guessLang, speechChunks } from "@/lib/lecture.ts";
 
 const EVENT = "valyo:lecture";
 
+// Les appareils proposent souvent plusieurs voix pour une même langue, de qualité très inégale :
+// on préfère les voix « naturelles », « premium » ou « améliorées », puis celles de Google ou Siri.
+function quality(voice: SpeechSynthesisVoice) {
+  const name = voice.name.toLowerCase();
+  return (/natural|neural/.test(name) ? 50 : 0) + (/premium/.test(name) ? 40 : 0) + (/enhanced|améliorée|amelioree/.test(name) ? 30 : 0)
+    + (/siri/.test(name) ? 25 : 0) + (/google/.test(name) ? 20 : 0) + (/compact|espeak/.test(name) ? -30 : 0) + (voice.default ? 2 : 0);
+}
 function pickVoice(code: string): SpeechSynthesisVoice | null {
   const prefix = code.slice(0, 2).toLowerCase();
-  const voices = window.speechSynthesis.getVoices().filter((v) => v.lang.replace("_", "-").toLowerCase().startsWith(prefix));
-  const exact = voices.filter((v) => v.lang.replace("_", "-").toLowerCase() === code.toLowerCase());
-  return exact.find((v) => v.default) ?? exact[0] ?? voices[0] ?? null;
+  const tag = (v: SpeechSynthesisVoice) => v.lang.replace("_", "-").toLowerCase();
+  const voices = window.speechSynthesis.getVoices().filter((v) => tag(v).startsWith(prefix));
+  const score = (v: SpeechSynthesisVoice) => quality(v) + (tag(v) === code.toLowerCase() ? 5 : 0);
+  return voices.sort((x, y) => score(y) - score(x))[0] ?? null;
 }
 
 /**

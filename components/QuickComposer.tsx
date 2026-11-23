@@ -92,7 +92,7 @@ export function QuickComposer({ user, themes, myThemeIds }: { user: { name: stri
             onFocus={() => { setOpen(true); setDone(null); }}
             onValueChange={setText}
             onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); void publish(); } }}
-            placeholder="Partager une découverte, une question, un lien…"
+            placeholder="Partagez une découverte…"
             className="block w-full resize-none bg-transparent py-1.5 text-[15px] leading-relaxed placeholder:text-muted focus:outline-none"
           />
           {done && !open && (
