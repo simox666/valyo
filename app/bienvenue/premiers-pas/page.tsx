@@ -79,7 +79,7 @@ export default async function FirstStepsPage({ searchParams }: { searchParams: P
           </div>
         </section>
       ) : (
-        <div className="grid items-start gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
           <section className="card p-5 sm:p-6 lg:col-span-2" aria-labelledby="pp-questions">
             <p className="label-mono text-accent">1 · Le plus simple</p>
             <h2 id="pp-questions" className="mt-1 text-lg font-bold">Des questions attendent une réponse</h2>

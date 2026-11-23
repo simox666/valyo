@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
 
+const v = (name: string) => `rgb(var(--c-${name}) / <alpha-value>)`;
+
 const config: Config = {
   content: [
     "./app/**/*.{ts,tsx}",
@@ -8,26 +10,31 @@ const config: Config = {
   theme: {
     extend: {
       // Direction « Carnet de labo » (maquette G) : papier millimétré, encre bleu nuit, accent orange.
+      // Les teintes vivent dans app/globals.css (variables --c-*), avec une version claire et une version sombre.
       colors: {
-        ink: "#1B2430",
-        paper: "#F7F7F3",
-        accent: "#C2410C",
-        "accent-soft": "#FBEEE6",
-        line: "#DEDED6",
-        "line-strong": "#C9C9C0",
-        hairline: "#ECECE5",
-        "accent-dark": "#9A3412",
-        "accent-line": "#F3D9C8",
-        cream: "#FBF7F2",
-        body: "#2E3742",
-        "on-ink": "#C9CED6",
-        success: "#15803D",
-        "success-soft": "#F0FAF2",
-        "success-line": "#BBE3C4",
-        chip: "#EEEEE8",
-        muted: "#5F6873",
-        soft: "#46505C",
+        ink: v("ink"),
+        paper: v("paper"),
+        accent: v("accent"),
+        "accent-soft": v("accent-soft"),
+        "accent-dark": v("accent-dark"),
+        "accent-line": v("accent-line"),
+        line: v("line"),
+        "line-strong": v("line-strong"),
+        hairline: v("hairline"),
+        chip: v("chip"),
+        muted: v("muted"),
+        soft: v("soft"),
+        body: v("body"),
+        cream: v("cream"),
+        "on-ink": v("on-ink"),
+        success: v("success"),
+        "success-soft": v("success-soft"),
+        "success-line": v("success-line"),
+        red: { 50: v("red-50"), 100: v("red-100"), 200: v("red-200"), 700: v("red-700"), 800: v("red-800") },
+        amber: { 50: v("amber-50"), 100: v("amber-100"), 300: v("amber-300"), 800: v("amber-800"), 900: v("amber-900") },
       },
+      // Fonds : « blanc » est la surface des cartes ; l'encre et l'accent en aplat gardent un fond sombre/orange sous du texte blanc.
+      backgroundColor: { white: v("surface"), ink: v("ink-bg"), accent: v("accent-bg") },
       // Trois arrondis seulement : md (petits contrôles), lg (boutons, champs), card (cartes, encarts) ; full pour les pastilles.
       borderRadius: { card: "10px" },
       fontFamily: {

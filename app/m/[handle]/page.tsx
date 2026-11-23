@@ -88,7 +88,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
           // eslint-disable-next-line @next/next/no-img-element
           <img src={`/media/${member.bannerId}`} alt="" className="aspect-[3/1] max-h-44 w-full object-cover sm:aspect-[5/1]" />
         ) : (
-          <div aria-hidden className="h-24 bg-accent-soft bg-[linear-gradient(#F3D9C8_1px,transparent_1px),linear-gradient(90deg,#F3D9C8_1px,transparent_1px)] bg-[size:16px_16px] sm:h-32" />
+          <div aria-hidden className="h-24 bg-accent-soft bg-[linear-gradient(rgb(var(--c-accent-line))_1px,transparent_1px),linear-gradient(90deg,rgb(var(--c-accent-line))_1px,transparent_1px)] bg-[size:16px_16px] sm:h-32" />
         )}
         <div className="px-5 pb-5 sm:px-7">
           <div className="-mt-12 flex flex-wrap items-end justify-between gap-4">
@@ -274,7 +274,7 @@ export default async function ProfilePage({ params, searchParams }: { params: Pa
         </div>
       )}
 
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
         <section aria-labelledby="publications-titre" className="min-w-0 space-y-6">
           {pinned && (
             <div>

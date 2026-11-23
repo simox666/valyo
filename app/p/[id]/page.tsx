@@ -134,7 +134,7 @@ export default async function PostPage({ params }: { params: Params }) {
   return (
     <div className="wide-page space-y-4">
       {structured.length > 0 && <JsonLd data={structured} />}
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] xl:grid-cols-[minmax(0,1fr)_17.5rem] xl:gap-8">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] xl:grid-cols-[minmax(0,1fr)_17.5rem] xl:gap-8">
       {/* Même colonne que le fil : le contenu ne change pas de place d'une page à l'autre. */}
       <div className="mx-auto w-full min-w-0 max-w-[760px] space-y-4 2xl:max-w-[840px]">
       <Link href="/" className="btn-link">← Fil</Link>

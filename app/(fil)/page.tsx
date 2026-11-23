@@ -96,7 +96,7 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
         publisher: PUBLISHER,
       }} />
 
-      <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_17.5rem]">
+      <div className="grid grid-cols-1 items-start gap-8 xl:grid-cols-[minmax(0,1fr)_17.5rem]">
       <div className="mx-auto w-full min-w-0 max-w-[760px] space-y-[18px] 2xl:max-w-[840px]">
       {/* La définition du site, visible de tous dès l'ouverture (les visiteurs ont en plus l'encart ci-dessous). */}
       {signedIn && (

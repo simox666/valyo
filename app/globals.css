@@ -2,13 +2,123 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Palette : une version claire, une version sombre. Le sombre suit le réglage de l'appareil,
+   sauf choix explicite (data-theme posé sur <html> par le réglage « Apparence »). */
+:root {
+  color-scheme: light;
+  --c-ink: 27 36 48;
+  --c-paper: 247 247 243;
+  --c-surface: 255 255 255;
+  --c-ink-bg: 27 36 48;
+  --c-accent: 194 65 12;
+  --c-accent-bg: 194 65 12;
+  --c-accent-soft: 251 238 230;
+  --c-accent-dark: 154 52 18;
+  --c-accent-line: 243 217 200;
+  --c-line: 222 222 214;
+  --c-line-strong: 201 201 192;
+  --c-hairline: 236 236 229;
+  --c-chip: 238 238 232;
+  --c-muted: 95 104 115;
+  --c-soft: 70 80 92;
+  --c-body: 46 55 66;
+  --c-cream: 251 247 242;
+  --c-on-ink: 201 206 214;
+  --c-success: 21 128 61;
+  --c-success-soft: 240 250 242;
+  --c-success-line: 187 227 196;
+  --c-grid: 236 236 229;
+  --c-red-50: 254 242 242;
+  --c-red-100: 254 226 226;
+  --c-red-200: 254 202 202;
+  --c-red-700: 185 28 28;
+  --c-red-800: 153 27 27;
+  --c-amber-50: 255 251 235;
+  --c-amber-100: 254 243 199;
+  --c-amber-300: 252 211 77;
+  --c-amber-800: 146 64 14;
+  --c-amber-900: 120 53 15;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --c-ink: 232 236 241;
+    --c-paper: 16 20 26;
+    --c-surface: 24 29 37;
+    --c-ink-bg: 42 52 66;
+    --c-accent: 244 135 90;
+    --c-accent-bg: 194 65 12;
+    --c-accent-soft: 58 35 24;
+    --c-accent-dark: 154 52 18;
+    --c-accent-line: 92 52 34;
+    --c-line: 48 56 68;
+    --c-line-strong: 74 84 98;
+    --c-hairline: 38 45 55;
+    --c-chip: 36 43 53;
+    --c-muted: 148 158 171;
+    --c-soft: 182 190 201;
+    --c-body: 208 214 221;
+    --c-cream: 33 29 26;
+    --c-on-ink: 201 206 214;
+    --c-success: 74 222 128;
+    --c-success-soft: 18 48 29;
+    --c-success-line: 34 84 50;
+    --c-grid: 24 29 36;
+    --c-red-50: 58 24 24;
+    --c-red-100: 74 28 28;
+    --c-red-200: 120 44 44;
+    --c-red-700: 252 165 165;
+    --c-red-800: 254 202 202;
+    --c-amber-50: 51 39 14;
+    --c-amber-100: 66 50 16;
+    --c-amber-300: 133 100 28;
+    --c-amber-800: 252 211 77;
+    --c-amber-900: 253 230 138;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-ink: 232 236 241;
+  --c-paper: 16 20 26;
+  --c-surface: 24 29 37;
+  --c-ink-bg: 42 52 66;
+  --c-accent: 244 135 90;
+  --c-accent-bg: 194 65 12;
+  --c-accent-soft: 58 35 24;
+  --c-accent-dark: 154 52 18;
+  --c-accent-line: 92 52 34;
+  --c-line: 48 56 68;
+  --c-line-strong: 74 84 98;
+  --c-hairline: 38 45 55;
+  --c-chip: 36 43 53;
+  --c-muted: 148 158 171;
+  --c-soft: 182 190 201;
+  --c-body: 208 214 221;
+  --c-cream: 33 29 26;
+  --c-on-ink: 201 206 214;
+  --c-success: 74 222 128;
+  --c-success-soft: 18 48 29;
+  --c-success-line: 34 84 50;
+  --c-grid: 24 29 36;
+  --c-red-50: 58 24 24;
+  --c-red-100: 74 28 28;
+  --c-red-200: 120 44 44;
+  --c-red-700: 252 165 165;
+  --c-red-800: 254 202 202;
+  --c-amber-50: 51 39 14;
+  --c-amber-100: 66 50 16;
+  --c-amber-300: 133 100 28;
+  --c-amber-800: 252 211 77;
+  --c-amber-900: 253 230 138;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
   }
   body {
     overflow-wrap: anywhere;
-    background-image: linear-gradient(#ECECE5 1px, transparent 1px), linear-gradient(90deg, #ECECE5 1px, transparent 1px);
+    background-image: linear-gradient(rgb(var(--c-grid)) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--c-grid)) 1px, transparent 1px);
     background-size: 24px 24px;
   }
   h1, h2, h3 {
@@ -16,7 +126,7 @@
     letter-spacing: -0.015em;
   }
   :focus-visible {
-    outline: 2px solid #c2410c;
+    outline: 2px solid rgb(var(--c-accent));
     outline-offset: 2px;
   }
 }

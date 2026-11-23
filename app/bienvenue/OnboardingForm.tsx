@@ -90,7 +90,7 @@ export function OnboardingForm({ next, themes }: { next: string; themes: { id: s
             type="checkbox"
             checked={acceptRules}
             onChange={(e) => setAcceptRules(e.target.checked)}
-            className="mt-1 h-5 w-5 accent-[#1C4F3C]"
+            className="mt-1 h-5 w-5 accent-accent"
             aria-invalid={Boolean(fields.acceptRules)}
             aria-describedby={fields.acceptRules ? "rules-error" : undefined}
           />

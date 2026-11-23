@@ -61,7 +61,7 @@ export default async function ThemePage({ params, searchParams }: { params: Para
         </div>
       </header>
 
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
         <section aria-labelledby="theme-publications" className="min-w-0">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <h2 id="theme-publications" className="text-xl font-bold">Publications récentes</h2>

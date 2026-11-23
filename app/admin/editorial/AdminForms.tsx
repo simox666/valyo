@@ -81,7 +81,7 @@ export function ConfigForm({ initial }: { initial: ConfigValues }) {
   return (
     <form onSubmit={save} className="space-y-4" noValidate>
       <label className="flex items-center gap-3 font-semibold">
-        <input type="checkbox" className="h-5 w-5 accent-[#1C4F3C]" checked={v.paused} onChange={(e) => set("paused", e.target.checked)} />
+        <input type="checkbox" className="h-5 w-5 accent-accent" checked={v.paused} onChange={(e) => set("paused", e.target.checked)} />
         Agent en pause (aucune nouvelle soumission ni publication)
       </label>
       <div className="grid gap-4 sm:grid-cols-2">

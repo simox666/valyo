@@ -29,7 +29,7 @@ export function ThemePicker({
           >
             <input
               type="checkbox"
-              className="h-4 w-4 accent-[#1C4F3C]"
+              className="h-4 w-4 accent-accent"
               checked={checked}
               disabled={disabled}
               onChange={() => onChange(checked ? selected.filter((id) => id !== theme.id) : [...selected, theme.id])}

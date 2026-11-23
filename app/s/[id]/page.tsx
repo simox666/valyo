@@ -118,7 +118,7 @@ export default async function RoomPage({ params }: { params: Params }) {
           </div>
         </section>
       ))}
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
         {view.canRead && user ? (
           <section className="card min-w-0 overflow-hidden" aria-labelledby="chat">
             <div className="border-b border-line px-4 py-3 sm:px-5"><h2 id="chat" className="text-base font-bold">Discussion</h2></div>

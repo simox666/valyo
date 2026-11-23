@@ -21,7 +21,7 @@ export default async function NotificationsPage() {
       <div><p className="label-mono text-accent">Le fil de vos échanges</p><h1 className="mt-2 text-3xl font-bold">Notifications</h1><p className="mt-2 text-sm text-soft">{unread ? `${unread} notification${unread > 1 ? "s" : ""} non lue${unread > 1 ? "s" : ""}. Retrouvez les conversations qui vous concernent.` : "Vos réponses, vos salons et les informations de votre compte."}</p></div>
       {unread > 0 && canMark && <MarkAllReadButton />}
     </header>
-    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <NotificationInbox initialNotifications={notifications} canMark={canMark} />
       <aside className="space-y-4">
         {canMark && <PushToggle />}

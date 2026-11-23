@@ -4,6 +4,7 @@ import Link from "next/link";
 import localFont from "next/font/local";
 import { Header } from "@/components/Header";
 import { IconSprite } from "@/components/Icon";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 
 // Polices embarquées : le build de déploiement ne dépend pas de Google Fonts.
@@ -31,11 +32,24 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1 };
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F7F7F3" },
+    { media: "(prefers-color-scheme: dark)", color: "#10141A" },
+  ],
+};
+
+// Applique le choix « Apparence » avant le premier affichage (pas d'éclair clair en mode sombre).
+const THEME_SCRIPT = `try{var t=localStorage.getItem("valyo:apparence");if(t==="clair"||t==="sombre")document.documentElement.setAttribute("data-theme",t==="sombre"?"dark":"light")}catch(e){}`;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className={`${inter.variable} ${interTight.variable} ${martian.variable} min-h-screen bg-paper font-sans text-ink antialiased`}>
         <IconSprite />
         <a href="#contenu" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-20 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2">
@@ -58,6 +72,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <Link href="/avis" className="hover:underline">Votre avis (bêta)</Link>
                 <Link href="/confidentialite" className="hover:underline">Confidentialité</Link>
               </nav>
+              <ThemeToggle />
             </footer>
           </div>
         </div>

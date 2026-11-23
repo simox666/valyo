@@ -83,7 +83,7 @@ export default async function RecapPage() {
           </ul>
         </section>
       ) : (
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
           <section className="card min-w-0 p-5 sm:p-6" aria-labelledby="exemple-recap">
             <p className="inline-block rounded-full bg-amber-100 px-3 py-1 label-mono text-amber-900">Exemple fictif — aperçu du format</p>
             <h2 id="exemple-recap" className="mt-3 text-2xl font-bold">À quoi ressemblera un récapitulatif</h2>

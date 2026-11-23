@@ -203,7 +203,7 @@ export function PostForm({ themes, initial, postId, authorName = "Vous", userKey
           {!editing ? <fieldset>
             <legend className="mb-3 text-lg font-bold">Que souhaitez-vous partager ?</legend>
             <div className="grid gap-3 sm:grid-cols-3">{POST_KINDS.map(kind => <label key={kind} className={`min-w-0 cursor-pointer rounded-card border p-4 transition ${values.kind === kind ? "border-accent bg-accent-soft ring-1 ring-accent" : "border-line bg-white hover:border-accent/50"}`}>
-              <span className="mb-3 flex items-center justify-between"><span aria-hidden className="text-2xl font-bold text-accent">{KIND_GUIDE[kind].icon}</span><input type="radio" name="kind" value={kind} checked={values.kind === kind} onChange={() => set("kind", kind)} className="h-4 w-4 accent-[#1C4F3C]" /></span>
+              <span className="mb-3 flex items-center justify-between"><span aria-hidden className="text-2xl font-bold text-accent">{KIND_GUIDE[kind].icon}</span><input type="radio" name="kind" value={kind} checked={values.kind === kind} onChange={() => set("kind", kind)} className="h-4 w-4 accent-accent" /></span>
               <span className="block font-bold">{KIND_LABELS[kind]}</span><span className="mt-1 block text-sm text-soft">{KIND_GUIDE[kind].help}</span>
             </label>)}</div>
           </fieldset> : <p className="text-sm text-soft">Type : <span className="chip">{KIND_LABELS[values.kind]}</span> · Le type d’une publication reste inchangé.</p>}
