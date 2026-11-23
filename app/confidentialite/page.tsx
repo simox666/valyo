@@ -34,8 +34,9 @@ export default function PrivacyPage() {
           renseignez vous-même et que les autres membres voient. Base : exécution du service.
         </li>
         <li>
-          <strong>Vos contenus</strong> : publications, commentaires, réactions, messages de salon, messages privés, signalements. Base :
-          exécution du service.
+          <strong>Vos contenus</strong> : publications, commentaires, réactions, messages de salon (écrits et vocaux), messages privés,
+          signalements. Un message vocal est l’enregistrement de votre voix, tel que vous l’avez envoyé ; il n’est ni transcrit ni analysé.
+          Base : exécution du service.
         </li>
         <li>
           <strong>Vos scores aux jeux</strong>, si vous jouez en étant connecté (la date, le jeu, le score et les points), pour le classement
@@ -97,8 +98,8 @@ export default function PrivacyPage() {
         <li><strong>Rectifier</strong> : votre profil se modifie à tout moment dans les paramètres.</li>
         <li>
           <strong>Supprimer</strong> : la suppression du compte, dans les paramètres, efface immédiatement votre adresse e-mail (partout, y
-          compris des traces de connexion), votre profil, vos abonnements, vos messages privés, vos notifications et votre historique de
-          présence. Vos publications, commentaires et messages de salon restent visibles pour la continuité des discussions, attribués à
+          compris des traces de connexion), votre profil, vos abonnements, vos messages privés, vos notifications, vos messages vocaux et
+          votre historique de présence. Vos publications, commentaires et messages de salon écrits restent visibles pour la continuité des discussions, attribués à
           « Membre supprimé » sans lien vers vous — supprimez-les d’abord si vous ne voulez pas qu’ils restent. La personne propriétaire
           d’un salon peut par ailleurs supprimer celui-ci définitivement, messages compris, pour tous ses membres.
         </li>

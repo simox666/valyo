@@ -31,6 +31,10 @@ export async function eraseAccount(q: Query, userId: string): Promise<DeleteAcco
   await q(`DELETE FROM user_activity_days WHERE user_id = $1`, [userId]);
   await q(`DELETE FROM game_scores WHERE user_id = $1`, [userId]);
   await q(`DELETE FROM push_subscriptions WHERE user_id = $1`, [userId]);
+  // La voix est une donnée personnelle : les enregistrements partent avec le compte (les
+  // fichiers sont effacés du disque par le nettoyage audio, lancé juste après la suppression).
+  await q(`UPDATE room_messages SET body = 'Message vocal supprimé' WHERE author_id = $1 AND audio_id IS NOT NULL`, [userId]);
+  await q(`DELETE FROM room_audio WHERE author_id = $1`, [userId]);
   await q(`DELETE FROM editorial_dev_requests WHERE member_id = $1`, [userId]);
   await q(`UPDATE feedback SET user_id = NULL WHERE user_id = $1`, [userId]);
   await q(

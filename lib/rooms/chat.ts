@@ -26,6 +26,8 @@ export interface MessageView {
   deleted: boolean;
   /** Vrai si retiré par la modération (le motif reste côté modération). */
   removedByModeration: boolean;
+  /** Message vocal : l'enregistrement à écouter (servi par /api/rooms/<salon>/audio/<id>). */
+  audio: { id: string; durationMs: number } | null;
 }
 
 function toView(m: Row): MessageView {
@@ -41,10 +43,12 @@ function toView(m: Row): MessageView {
     editedAt: m.edited_at ? new Date(m.edited_at as string).toISOString() : null,
     deleted,
     removedByModeration: deleted && Boolean(m.deleted_by) && m.deleted_by !== m.author_id,
+    audio: !deleted && m.audio_id ? { id: m.audio_id as string, durationMs: Number(m.audio_duration_ms ?? 0) } : null,
   };
 }
 
-const MESSAGE_SELECT = `SELECT m.*, u.handle, u.display_name FROM room_messages m JOIN users u ON u.id = m.author_id`;
+const MESSAGE_SELECT = `SELECT m.*, u.handle, u.display_name, a.duration_ms AS audio_duration_ms
+  FROM room_messages m JOIN users u ON u.id = m.author_id LEFT JOIN room_audio a ON a.id = m.audio_id`;
 
 /**
  * SEULE voie d'écriture dans room_events (ACC08). Le verrou consultatif par salon,
@@ -75,7 +79,7 @@ export async function appendRoomEvent(
  * (salon, auteur, clientId) renvoie le message déjà enregistré, jamais un doublon.
  * À appeler via runLimited("roomMessage") pour la limite D6 (20/min/salon), atomique.
  */
-export async function sendMessage(q: Query, viewer: RoomViewer, roomId: string, input: { clientId: string; body: string }): Promise<Outcome<{ message: MessageView; duplicate: boolean }>> {
+export async function sendMessage(q: Query, viewer: RoomViewer, roomId: string, input: { clientId: string; body: string; audioId?: string }): Promise<Outcome<{ message: MessageView; duplicate: boolean }>> {
   const access = await loadAccess(q, roomId, viewer, { forWrite: true });
   if (!access.room || (access.room.visibility === "private" && !access.membership)) return refuse("introuvable", "Salon introuvable.");
   if (!canWriteRoom(access)) {
@@ -83,9 +87,9 @@ export async function sendMessage(q: Query, viewer: RoomViewer, roomId: string, 
     return refuse("droit", "Rejoignez le salon pour écrire.");
   }
   const inserted = await q(
-    `INSERT INTO room_messages (room_id, author_id, client_id, body) VALUES ($1, $2, $3, $4)
+    `INSERT INTO room_messages (room_id, author_id, client_id, body, audio_id) VALUES ($1, $2, $3, $4, $5)
      ON CONFLICT (room_id, author_id, client_id) DO NOTHING RETURNING *`,
-    [roomId, viewer.id, input.clientId, input.body],
+    [roomId, viewer.id, input.clientId, input.body, input.audioId ?? null],
   );
   if (!inserted[0]) {
     const [existing] = await q(`${MESSAGE_SELECT} WHERE m.room_id = $1 AND m.author_id = $2 AND m.client_id = $3`, [roomId, viewer.id, input.clientId]);
@@ -127,7 +131,7 @@ export async function editMessage(q: Query, viewer: RoomViewer, roomId: string, 
   const access = await loadAccess(q, roomId, viewer, { forWrite: true });
   if (!access.room || !canWriteRoom(access)) return refuse("droit", "Modification impossible dans ce salon.");
   const rows = await q(
-    `UPDATE room_messages SET body = $4, edited_at = now() WHERE id = $2 AND room_id = $1 AND author_id = $3 AND deleted_at IS NULL RETURNING id`,
+    `UPDATE room_messages SET body = $4, edited_at = now() WHERE id = $2 AND room_id = $1 AND author_id = $3 AND deleted_at IS NULL AND audio_id IS NULL RETURNING id`,
     [roomId, messageId, viewer.id, body],
   );
   if (!rows.length) return refuse("introuvable", "Message introuvable, supprimé, ou écrit par quelqu'un d'autre.");
@@ -153,6 +157,9 @@ export async function deleteMessage(q: Query, viewer: RoomViewer, roomId: string
     viewer.id,
     isAuthor ? null : reason!.trim(),
   ]);
+  // Un message vocal supprimé ou retiré n'est plus écoutable par personne : l'enregistrement
+  // disparaît avec lui (la ligne ici, le fichier au prochain passage du nettoyage).
+  await q(`DELETE FROM room_audio WHERE id IN (SELECT audio_id FROM room_messages WHERE id = $1 AND audio_id IS NOT NULL)`, [messageId]);
   await appendRoomEvent(q, roomId, "delete", { messageId, payload: { moderation: !isAuthor } });
   return { ok: true };
 }
@@ -185,10 +192,11 @@ export interface RoomEvent {
 /** Événements après un curseur (C23). Utilisé par le flux SSE et par sa reprise. */
 export async function eventsSince(q: Query, roomId: string, cursor: number, limit = 200): Promise<RoomEvent[]> {
   const rows = await q(
-    `SELECT e.seq AS event_seq, e.kind, e.target_user_id, m.*, u.handle, u.display_name
+    `SELECT e.seq AS event_seq, e.kind, e.target_user_id, m.*, u.handle, u.display_name, a.duration_ms AS audio_duration_ms
      FROM room_events e
      LEFT JOIN room_messages m ON m.id = e.message_id
      LEFT JOIN users u ON u.id = m.author_id
+     LEFT JOIN room_audio a ON a.id = m.audio_id
      WHERE e.room_id = $1 AND e.seq > $2 ORDER BY e.seq LIMIT $3`,
     [roomId, cursor, limit],
   );

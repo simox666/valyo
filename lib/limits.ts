@@ -6,7 +6,7 @@
 // (pg_advisory_xact_lock). Deux requêtes simultanées pour la même cible sont
 // donc sérialisées : la seconde voit l'écriture de la première.
 
-export type LimitAction = "loginLink" | "post" | "comment" | "roomCreate" | "roomInvite" | "roomMessage" | "report" | "directMessage";
+export type LimitAction = "loginLink" | "post" | "comment" | "roomCreate" | "roomInvite" | "roomMessage" | "report" | "directMessage" | "roomAudio";
 
 export interface LimitRule {
   max: number;
@@ -25,6 +25,8 @@ const DEFAULTS: Record<LimitAction, { env: string; max: number; windowMinutes: n
   roomMessage: { env: "LIMIT_ROOM_MESSAGES_PER_MINUTE", max: 20, windowMinutes: 1 },
   report: { env: "LIMIT_REPORTS_PER_DAY", max: 20, windowMinutes: 24 * 60 },
   directMessage: { env: "LIMIT_DIRECT_MESSAGES_PER_HOUR", max: 120, windowMinutes: 60 },
+  // Messages vocaux : 40 par jour et par membre, tous salons confondus (ils occupent du disque).
+  roomAudio: { env: "LIMIT_ROOM_AUDIO_PER_DAY", max: 40, windowMinutes: 24 * 60 },
 };
 
 export function limitRule(action: LimitAction): LimitRule {
@@ -49,6 +51,7 @@ const COUNT_SQL: Record<LimitAction, string> = {
       AND created_at > now() - make_interval(mins => $2)`,
   report: `SELECT count(*)::int AS n FROM reports WHERE reporter_id = $1::uuid AND created_at > now() - make_interval(mins => $2)`,
   directMessage: `SELECT count(*)::int AS n FROM direct_messages WHERE sender_id = $1::uuid AND created_at > now() - make_interval(mins => $2)`,
+  roomAudio: `SELECT count(*)::int AS n FROM room_audio WHERE author_id = $1::uuid AND created_at > now() - make_interval(mins => $2)`,
 };
 
 type Row = Record<string, unknown>;
@@ -82,6 +85,7 @@ export function limitMessage(action: LimitAction, rule: LimitRule): string {
     roomMessage: "messages dans ce salon",
     report: "signalements",
     directMessage: "messages privés",
+    roomAudio: "messages vocaux",
   }[action];
   const window = rule.windowMinutes >= 24 * 60 ? "par jour" : rule.windowMinutes <= 1 ? "par minute" : "par heure";
   return `Limite atteinte : ${rule.max} ${what} ${window}. Réessayez plus tard.`;

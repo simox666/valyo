@@ -8,6 +8,7 @@ import { LocalTime } from "@/components/LocalTime";
 import { MentionText } from "@/components/MentionText";
 import { MentionTextarea } from "@/components/MentionTextarea";
 import type { MessageView } from "@/lib/rooms/chat.ts";
+import { VoiceRecorder } from "./VoiceRecorder";
 
 export type ChatMessage = MessageView;
 interface Pending { clientId: string; body: string; state: "envoi" | "echec" }
@@ -19,6 +20,17 @@ function MessageBody({ body }: { body: string }) {
     const url = part.replace(/[.,!?;:]+$/, "");
     return <span key={i}><a href={url} target="_blank" rel="noopener noreferrer nofollow ugc" className="btn-link break-all">{url}</a>{part.slice(url.length)}</span>;
   })}</p>;
+}
+
+const clock = (ms: number) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}`;
+
+/** Lecteur d'un message vocal. Rien n'est téléchargé avant que l'on appuie sur lecture. */
+function VoiceMessage({ roomId, audio }: { roomId: string; audio: { id: string; durationMs: number } }) {
+  return <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+    <audio controls preload="none" src={`/api/rooms/${roomId}/audio/${audio.id}`} className="h-10 w-full max-w-xs" aria-label={`Message vocal de ${clock(audio.durationMs)}`} />
+    <span className="font-mono text-xs text-soft">Vocal · {clock(audio.durationMs)}</span>
+  </div>;
 }
 
 export function RoomChat({ roomId, initialMessages, initialCursor, initialHasMore, lastReadSeq, viewerId, canWrite, canModerate }: {
@@ -289,10 +301,10 @@ export function RoomChat({ roomId, initialMessages, initialCursor, initialHasMor
             <label className="label" htmlFor={`edit-${m.id}`}>Modifier votre message</label>
             <MentionTextarea id={`edit-${m.id}`} className="field" value={editing.body} onValueChange={(body) => setEditing({ id: m.id, body })} room={roomId} maxLength={2000} required rows={3} />
             <div className="flex flex-wrap gap-3"><button className="btn-primary" disabled={saving || !editing.body.trim()}>Enregistrer</button><button type="button" className="btn-link" onClick={() => setEditing(null)}>Annuler</button></div>
-          </form> : <MessageBody body={m.body ?? ""} />}
+          </form> : m.audio ? <VoiceMessage roomId={roomId} audio={m.audio} /> : <MessageBody body={m.body ?? ""} />}
           {/* Audit UX (P2-6) : actions au survol en ordinateur ; toujours visibles au tactile (pas de survol). */}
           {!m.deleted && writable && <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-focus-within:opacity-100 [@media(hover:hover)]:group-hover:opacity-100">
-            {m.authorId === viewerId && <button type="button" className="btn-link" onClick={() => { setEditing({ id: m.id, body: m.body ?? "" }); setNotice(null); }}>Modifier</button>}
+            {m.authorId === viewerId && !m.audio && <button type="button" className="btn-link" onClick={() => { setEditing({ id: m.id, body: m.body ?? "" }); setNotice(null); }}>Modifier</button>}
             {(m.authorId === viewerId || canModerate) && <button type="button" className="btn-link" onClick={() => removeMessage(m)}>{m.authorId === viewerId ? "Supprimer" : "Retirer (modération)"}</button>}
             {m.authorId !== viewerId && <ReportButton targetKind="message" targetId={m.id} />}
           </div>}
@@ -315,6 +327,7 @@ export function RoomChat({ roomId, initialMessages, initialCursor, initialHasMor
         if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && e.keyCode !== 229) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); }
       }} />
       <div className="flex flex-wrap items-center justify-between gap-2"><p id={`hint-${roomId}`} className="text-xs text-neutral-500">Entrée : envoyer · Maj+Entrée : nouvelle ligne · 2 000 caractères maximum{draft.length >= 1800 && ` (${draft.length}/2 000)`}</p><button type="submit" className="btn-primary" disabled={!draft.trim()}>Envoyer</button></div>
+      <VoiceRecorder roomId={roomId} onSent={upsert} onError={setNotice} />
     </form>}
   </div>;
 }

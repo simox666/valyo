@@ -986,4 +986,23 @@ export const MIGRATIONS: Migration[] = [
       `CREATE INDEX direct_messages_to_push ON direct_messages (created_at) WHERE pushed_at IS NULL`,
     ],
   },
+  {
+    id: "033_messages_vocaux",
+    statements: [
+      // Messages vocaux des salons (23 novembre 2026). Le fichier est sur disque (volume des
+      // photos, sous-dossier audio) ; la ligne porte ce qu'il faut pour le servir. Un message
+      // vocal est un message ordinaire (corps « Message vocal ») relié à son enregistrement.
+      `CREATE TABLE room_audio (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+        author_id UUID NOT NULL REFERENCES users(id),
+        mime TEXT NOT NULL CHECK (mime IN ('audio/mp4', 'audio/webm', 'audio/ogg')),
+        duration_ms INTEGER NOT NULL CHECK (duration_ms BETWEEN 1 AND 125000),
+        bytes INTEGER NOT NULL CHECK (bytes > 0),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )`,
+      `CREATE INDEX room_audio_author ON room_audio (author_id, created_at)`,
+      `ALTER TABLE room_messages ADD COLUMN audio_id UUID REFERENCES room_audio(id) ON DELETE SET NULL`,
+    ],
+  },
 ];

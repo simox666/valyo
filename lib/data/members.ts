@@ -2,6 +2,7 @@ import "server-only";
 import { activeContributor } from "../community-locks.ts";
 import { query, queryOne, transaction, type QueryFn } from "../db";
 import { eraseAccount, type DeleteAccountResult } from "../social/account.ts";
+import { sweepAudio } from "../rooms/audio.ts";
 
 export interface Member {
   id: string;
@@ -118,7 +119,10 @@ export async function setFollowedThemes(userId: string, themeIds: string[]) {
 export type { DeleteAccountResult };
 
 export async function deleteAccount(userId: string): Promise<DeleteAccountResult> {
-  return transaction((q) => eraseAccount(q, userId));
+  const result = await transaction((q) => eraseAccount(q, userId));
+  // Les enregistrements vocaux du compte viennent de perdre leur ligne : fichiers effacés tout de suite.
+  if (result.ok) await sweepAudio(query, 0).catch(() => {});
+  return result;
 }
 
 export async function findOrCreateUserByEmail(email: string): Promise<{ id: string; status: string }> {
