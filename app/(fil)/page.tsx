@@ -85,8 +85,6 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
 
   return (
     <div className="wide-page">
-      <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_17.5rem]">
-      <div className="mx-auto w-full min-w-0 max-w-[760px] space-y-[18px] 2xl:max-w-[840px]">
       <h1 className="sr-only">Valyo — l’actualité tech et sciences, et la communauté des Valyors</h1>
       <JsonLd data={{
         "@context": "https://schema.org",
@@ -98,6 +96,8 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
         publisher: PUBLISHER,
       }} />
 
+      <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_17.5rem]">
+      <div className="mx-auto w-full min-w-0 max-w-[760px] space-y-[18px] 2xl:max-w-[840px]">
       {/* La définition du site, visible de tous dès l'ouverture (les visiteurs ont en plus l'encart ci-dessous). */}
       {signedIn && (
         <p className="text-sm text-soft">
@@ -120,14 +120,16 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
           myThemeIds={myThemeIds}
         />
       ) : (
-        <section className="rounded-[10px] bg-ink p-5 text-white sm:p-6">
-          <p className="label-mono text-[#B9C1CB]">Le réseau des curieux</p>
-          <h2 className="mt-1.5 text-xl font-semibold sm:text-2xl">Les nouvelles tech et sciences, et ceux qui en parlent.</h2>
-          <p className="mt-2 text-sm text-[#C9CED6]">
-            Valyo est un réseau social consacré à l’IA, à l’espace, aux sciences et à la technologie : on y suit l’actualité sourcée, on la
-            commente et on en discute en salon. Ses membres s’appellent les <strong className="font-semibold text-white">Valyors</strong>.
+        // Compact sur mobile : le premier article doit rester visible dès l'ouverture.
+        <section className="rounded-[10px] bg-ink p-4 text-white sm:p-6">
+          <p className="label-mono hidden text-[#B9C1CB] sm:block">Le réseau des curieux</p>
+          <h2 className="text-lg font-semibold leading-snug sm:mt-1.5 sm:text-2xl">Les nouvelles tech et sciences, et ceux qui en parlent.</h2>
+          <p className="mt-1.5 text-sm text-[#C9CED6] sm:mt-2">
+            Valyo est le réseau social des passionnés d’IA, d’espace, de sciences et de technologie
+            <span className="hidden sm:inline"> : on y suit l’actualité sourcée, on la commente et on en discute en salon</span>. Ses membres
+            s’appellent les <strong className="font-semibold text-white">Valyors</strong>.
           </p>
-          <Link href="/connexion" className="mt-4 inline-flex h-10 items-center rounded-md bg-accent px-4 text-sm font-semibold text-white hover:bg-[#9A3412]">Rejoindre Valyo</Link>
+          <Link href="/connexion" className="mt-3 inline-flex h-10 items-center rounded-lg bg-accent px-4 text-sm font-semibold text-white hover:bg-[#9A3412] sm:mt-4">Rejoindre Valyo</Link>
         </section>
       )}
 
@@ -228,7 +230,7 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
                   <span className="shrink-0 whitespace-nowrap pt-0.5 font-mono text-xs text-accent">{String(i + 1).padStart(2, "0")}</span>
                   <span className="min-w-0">
                     <Link href={`/p/${t.id}`} className="line-clamp-2 text-sm font-semibold leading-snug hover:text-accent">{t.title}</Link>
-                    <span className="text-xs text-muted">{t.theme ? `${t.theme} · ` : ""}{t.comments} commentaire{t.comments > 1 ? "s" : ""}</span>
+                    <span className="block text-xs text-muted">{[t.theme, t.comments > 0 ? `${t.comments} commentaire${t.comments > 1 ? "s" : ""}` : null].filter(Boolean).join(" · ")}</span>
                   </span>
                 </li>
               ))}

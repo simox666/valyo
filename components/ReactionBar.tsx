@@ -91,7 +91,7 @@ export function ReactionBar({
 
   if (variant === "inline") {
     return (
-      <div className="flex items-center gap-0.5" role="group" aria-label="Réactions">
+      <div className="grid w-full grid-cols-3 gap-0.5 sm:flex sm:w-auto sm:items-center" role="group" aria-label="Réactions">
         {REACTIONS.filter((r) => !kinds || kinds.includes(r.kind)).map((r) => {
           const active = state.mine.includes(r.kind);
           const count = state.counts[r.kind];
@@ -103,16 +103,17 @@ export function ReactionBar({
               disabled={signedIn && !canReact}
               onClick={() => toggle(r.kind)}
               title={title(r.kind === "a_creuser" ? "À creuser : garder pour plus tard" : r.label)}
-              className={`inline-flex h-10 items-center gap-1.5 rounded-md px-2 text-sm font-medium transition ${active ? "bg-accent-soft text-accent" : "text-soft hover:bg-chip hover:text-ink"} disabled:cursor-not-allowed disabled:opacity-60`}
+              className={`inline-flex h-10 min-w-0 items-center justify-center gap-1.5 rounded-md px-1 text-xs font-medium transition sm:justify-start sm:px-2.5 sm:text-sm ${active ? "bg-accent-soft text-accent" : "text-soft hover:bg-chip hover:text-ink"} disabled:cursor-not-allowed disabled:opacity-60`}
             >
               <Icon id={r.kind} filled={active} />
+              <span className="truncate">{r.label}</span>
               {count > 0 && <span className="tabular-nums">{count}</span>}
-              <span className="sr-only">{r.label}{active ? " (votre réaction)" : ""}</span>
+              {active && <span className="sr-only"> (votre réaction)</span>}
             </button>
           );
         })}
         {note && (
-          <Link href="/a-creuser" role="status" className="ml-1 whitespace-nowrap rounded-md bg-ink px-2 py-1 text-xs font-medium text-white">Gardé dans « À creuser » →</Link>
+          <Link href="/a-creuser" role="status" className="col-span-3 whitespace-nowrap rounded-md sm:ml-1 bg-ink px-2 py-1 text-xs font-medium text-white">Gardé dans « À creuser » →</Link>
         )}
         {errorNode}
       </div>

@@ -46,9 +46,9 @@ export function RoomsPopover({ postId, postTitle, roomCount, signedIn, canCreate
   return (
     <>
       <button type="button" onClick={() => void open()} aria-haspopup="dialog"
-        className="inline-flex h-9 items-center gap-1.5 rounded-md bg-accent-soft px-2.5 text-sm font-semibold text-accent ring-1 ring-accent/25 transition hover:bg-accent hover:text-white">
+        className="inline-flex h-10 items-center gap-1.5 rounded-md px-2 text-sm font-semibold text-accent transition hover:bg-accent-soft sm:px-2.5">
         {ICON}
-        {roomCount > 0 ? <>{roomCount} <span className="hidden sm:inline">salon{roomCount > 1 ? "s" : ""}</span></> : <><span className="sm:hidden">Salon</span><span className="hidden sm:inline">Discuter en salon</span></>}
+        {roomCount > 0 ? <>{roomCount} salon{roomCount > 1 ? "s" : ""}</> : "Salon"}
       </button>
       <dialog ref={dialog} aria-labelledby={`salons-${postId}`}
         className="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-[12px] bg-white p-0 text-ink shadow-xl ring-1 ring-line backdrop:bg-ink/40">

@@ -43,7 +43,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
   ]);
 
   return (
-    <div className="mx-auto max-w-[760px] space-y-5">
+    <div className="space-y-5">
       <header>
         <p className="label-mono text-accent">Pour s’amuser</p>
         <h1 className="mt-1 text-2xl font-bold">Jeux</h1>

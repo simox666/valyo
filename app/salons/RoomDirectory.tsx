@@ -22,13 +22,13 @@ export function RoomDirectory({ publicRooms, myRooms, signedIn }: { publicRooms:
   const rooms = source.filter(room => (archives || !room.archived) && (!theme || room.themeName === theme) && normalize(`${room.name} ${room.description} ${room.themeName ?? ""}`).includes(normalize(search)));
   const unread = myRooms.reduce((n, room) => n + room.unread, 0);
   return <div className="space-y-5">
-    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4" id="mes-salons">
+    {signedIn && <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4" id="mes-salons">
       <div className="inline-flex flex-wrap gap-1 rounded-xl bg-chip p-1" role="group" aria-label="Choisir les salons à afficher">
         <button onClick={() => setView("discover")} aria-pressed={view === "discover"} className={`rounded-lg px-4 py-2 text-sm font-bold ${view === "discover" ? "bg-white text-accent shadow-sm" : "text-neutral-600"}`}>Découvrir</button>
         {signedIn && <button onClick={() => setView("mine")} aria-pressed={view === "mine"} className={`rounded-lg px-4 py-2 text-sm font-bold ${view === "mine" ? "bg-white text-accent shadow-sm" : "text-neutral-600"}`}>Mes salons <span className="ml-1 text-xs">({myRooms.length})</span></button>}
       </div>
-      {signedIn && unread > 0 && <p className="text-sm font-semibold text-accent">{unread} message{unread > 1 ? "s" : ""} à lire dans vos salons</p>}
-    </div>
+      {unread > 0 && <p className="text-sm font-semibold text-accent">{unread} message{unread > 1 ? "s" : ""} à lire dans vos salons</p>}
+    </div>}
     <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_14rem]">
       <div><label htmlFor="room-search" className="label">Trouver une discussion</label><input id="room-search" type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Un sujet, un nom de salon…" className="field" /></div>
       <div><label htmlFor="room-theme" className="label">Thème</label><select id="room-theme" value={theme} onChange={e => setTheme(e.target.value)} className="field"><option value="">Tous les thèmes</option>{themes.map(name => <option key={name}>{name}</option>)}</select></div>

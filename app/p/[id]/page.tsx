@@ -134,9 +134,10 @@ export default async function PostPage({ params }: { params: Params }) {
   return (
     <div className="wide-page space-y-4">
       {structured.length > 0 && <JsonLd data={structured} />}
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] xl:grid-cols-[minmax(0,1fr)_17.5rem] xl:gap-8">
+      {/* Même colonne que le fil : le contenu ne change pas de place d'une page à l'autre. */}
+      <div className="mx-auto w-full min-w-0 max-w-[760px] space-y-4 2xl:max-w-[840px]">
       <Link href="/" className="btn-link">← Fil</Link>
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
-      <div className="min-w-0 space-y-6">
       <article className="card p-5 sm:p-6">
         <div className="mb-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-soft">
           {post.sourceName ? (
@@ -154,17 +155,17 @@ export default async function PostPage({ params }: { params: Params }) {
               )}
             </>
           )}
-          <span aria-hidden>·</span>
-          <LocalTime iso={post.createdAt} mode="full" />
+          <span aria-hidden className="hidden sm:inline">·</span>
+          <span className="basis-full sm:basis-auto"><LocalTime iso={post.createdAt} mode="full" /></span>
           {post.editedAt && (
             <span className="italic">
               (<LocalTime iso={post.editedAt} prefix="Modifié le " mode="full" />)
             </span>
           )}
         </div>
-        <h1 className="text-2xl font-extrabold leading-tight tracking-tight sm:text-3xl">{post.title}</h1>
+        <h1 className="text-[23px] font-bold leading-tight sm:text-3xl">{post.title}</h1>
         {post.imageUrl && (
-          <div className="-mx-5 mt-4 aspect-[16/9] overflow-hidden bg-chip sm:-mx-6">
+          <div className="-mx-5 mt-4 aspect-[2/1] overflow-hidden bg-chip sm:-mx-6">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={post.imageUrl} alt="" referrerPolicy="no-referrer" className="h-full w-full object-cover" />
           </div>

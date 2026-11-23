@@ -155,7 +155,7 @@ export function GamesClient({ themes, initialTheme, day, dayLabel, isMember, ser
           <ul className="mt-3 flex flex-wrap gap-2">
             {themes.map((t) => (
               <li key={t.slug}>
-                <button type="button" onClick={() => start({ kind: "quiz", theme: t.slug })} className="chip min-h-9 px-3 text-sm hover:ring-1 hover:ring-accent">
+                <button type="button" onClick={() => start({ kind: "quiz", theme: t.slug })} className="inline-flex min-h-10 items-center rounded-lg bg-white px-3 text-sm font-medium text-ink ring-1 ring-line transition hover:ring-ink">
                   {t.name}
                 </button>
               </li>

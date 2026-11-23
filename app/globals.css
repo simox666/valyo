@@ -34,6 +34,20 @@ body[data-nav-pending] #fil-liste {
   main#contenu > :not(.wide-page) {
     @apply mx-auto max-w-3xl;
   }
+  /* Grand écran : même bord gauche que la colonne du fil (qui réserve 17,5 rem + 2 rem à sa colonne de droite). */
+  @media (min-width: 1280px) {
+    main#contenu > :not(.wide-page) {
+      max-width: 760px;
+      margin-left: max(0px, calc((100% - 19.5rem - 760px) / 2));
+      margin-right: auto;
+    }
+  }
+  @media (min-width: 1536px) {
+    main#contenu > :not(.wide-page) {
+      max-width: 840px;
+      margin-left: max(0px, calc((100% - 19.5rem - 840px) / 2));
+    }
+  }
   [id] {
     scroll-margin-top: 9rem;
   }
@@ -53,7 +67,7 @@ body[data-nav-pending] #fil-liste {
     @apply text-sm font-semibold text-accent underline-offset-2 hover:underline;
   }
   .field {
-    @apply block w-full rounded-lg border border-line bg-white px-3 py-2.5 text-base text-ink placeholder:text-neutral-400 focus:border-accent focus:outline-none;
+    @apply block w-full rounded-lg border border-line bg-white px-3 py-2.5 text-base text-ink placeholder:text-neutral-500 focus:border-accent focus:outline-none;
   }
   .field-invalid {
     @apply border-red-500;

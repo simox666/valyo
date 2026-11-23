@@ -50,7 +50,7 @@ function SynthesisView({ postId, s, access, roomHref }: { postId: string; s: Ret
       <p className="label-mono text-accent">Synthèse IA de l’article</p>
       {state.status === "ready" ? (
         <div className="mt-2 space-y-3">
-          <p className="font-semibold">{state.content.essentiel}</p>
+          <p className="font-medium text-ink">{state.content.essentiel}</p>
           {state.content.points.length > 0 && (
             <div>
               <h3 className="label-mono">À retenir</h3>
@@ -175,7 +175,7 @@ export function CardActions({
         <button type="button" onClick={() => setCommentsOpen(!commentsOpen)} aria-expanded={commentsOpen}
           className={`${ACTION} ${commentsOpen ? "bg-chip text-ink" : ""}`} aria-label={`Commentaires${count ? ` (${count})` : ""}`}>
           <Icon id="commenter" />
-          {count > 0 ? count : <span className="hidden sm:inline">Commenter</span>}
+          {count > 0 ? <>{count}<span className="sr-only sm:not-sr-only"> commentaire{count > 1 ? "s" : ""}</span></> : "Commenter"}
         </button>
         <RoomsPopover postId={postId} postTitle={postTitle ?? ""} roomCount={roomCount} signedIn={access.signedIn} canCreate={access.canDevelop} />
         {relay}

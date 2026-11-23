@@ -103,12 +103,15 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
   <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur lg:hidden">
     <div className="flex h-14 items-center gap-1.5 px-4">
       <div className="flex-1"><Logo /></div>
-      <Link href="/recherche" aria-label="Rechercher" className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden>{ICONS.search}</svg>
-      </Link>
-      <Link href="/jeux" aria-label="Jeux" aria-current={active("/jeux") ? "page" : undefined} className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{ICONS.game}</svg>
-      </Link>
+      {/* Visiteur : recherche et jeux sont dans les onglets du bas, pas ici en double. */}
+      {user?.onboarded && <>
+        <Link href="/recherche" aria-label="Rechercher" className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden>{ICONS.search}</svg>
+        </Link>
+        <Link href="/jeux" aria-label="Jeux" aria-current={active("/jeux") ? "page" : undefined} className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{ICONS.game}</svg>
+        </Link>
+      </>}
       {user?.onboarded && (
         <Link href="/messages" aria-label={`Messages${messages ? ` (${messages} non lus)` : ""}`} className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{ICONS.messages}</svg>
@@ -129,7 +132,9 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
     {user?.onboarded
       ? <TabLink href="/notifications" label="Notifs" active={active("/notifications")} badge={unread}>{ICONS.bell}</TabLink>
       : <TabLink href="/recherche" label="Chercher" active={active("/recherche")}>{ICONS.search}</TabLink>}
-    <TabLink href={profileHref} label={user?.onboarded ? "Profil" : "Connexion"} active={Boolean(user?.handle) && pathname.startsWith(`/m/${user?.handle}`)}>{ICONS.user}</TabLink>
+    {user?.onboarded
+      ? <TabLink href={profileHref} label="Profil" active={Boolean(user.handle) && pathname.startsWith(`/m/${user.handle}`)}>{ICONS.user}</TabLink>
+      : <TabLink href="/jeux" label="Jeux" active={active("/jeux")}>{ICONS.game}</TabLink>}
   </nav>
   </>;
 }
