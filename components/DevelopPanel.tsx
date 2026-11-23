@@ -1,5 +1,7 @@
 "use client";
 
+import { ListenButton } from "./ListenButton";
+import { synthesisSpeech } from "@/lib/lecture.ts";
 import Link from "next/link";
 import { useState } from "react";
 import type { SynthesisState } from "@/lib/actus/synthesis.ts";
@@ -47,7 +49,10 @@ function SynthesisView({ postId, s, access, roomHref }: { postId: string; s: Ret
   const { state, busy, error } = s;
   return (
     <div className="rounded-lg border-l-2 border-accent bg-cream p-4 text-[15px] leading-relaxed ring-1 ring-hairline sm:p-5" aria-live="polite">
-      <p className="label-mono text-accent">Synthèse IA de l’article</p>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="label-mono text-accent">Synthèse IA de l’article</p>
+        {state.status === "ready" && <ListenButton text={synthesisSpeech(state.content)} lang="fr" />}
+      </div>
       {state.status === "ready" ? (
         <div className="mt-2 space-y-3">
           <p className="font-medium text-ink">{state.content.essentiel}</p>
