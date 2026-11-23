@@ -56,6 +56,7 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
     { href: followHref, label: "Abonnés", icon: ICONS.people, show: Boolean(user?.onboarded) },
     { href: "/a-creuser", label: "À creuser", icon: ICONS.dig, show: Boolean(user?.onboarded) },
     { href: "/jeux", label: "Jeux", icon: ICONS.game, show: true },
+    { href: "/simulateurs", label: "Simulateurs", icon: ICONS.sim, show: true },
     { href: "/notifications", label: "Notifications", icon: ICONS.bell, badge: unread, show: Boolean(user?.onboarded) },
     { href: profileHref, label: "Profil", icon: ICONS.user, show: Boolean(user?.onboarded) },
   ];
@@ -108,7 +109,12 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
   <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur lg:hidden">
     <div className="flex h-14 items-center gap-1.5 px-4">
       <div className="flex-1"><Logo /></div>
-      {/* Visiteur : recherche et jeux sont dans les onglets du bas, pas ici en double. */}
+      {/* Visiteur : recherche et jeux sont dans les onglets du bas ; seuls les simulateurs ont besoin d'un accès ici. */}
+      {!user?.onboarded && (
+        <Link href="/simulateurs" aria-label="Simulateurs" aria-current={active("/simulateurs") ? "page" : undefined} className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{ICONS.sim}</svg>
+        </Link>
+      )}
       {user?.onboarded && <>
         <Link href="/recherche" aria-label="Rechercher" className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-ink ring-1 ring-line">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden>{ICONS.search}</svg>
@@ -180,6 +186,7 @@ function AccountMenu({ user, pathname }: { user: { handle: string | null; displa
         <Link href={`/m/${user.handle}/abonnements`} className="account-link">Mes abonnements</Link>
         <Link href="/a-creuser" className="account-link">Ma liste « À creuser »</Link>
         <Link href="/jeux" className="account-link">Jeux</Link>
+        <Link href="/simulateurs" className="account-link">Simulateurs</Link>
         <Link href="/inviter" className="account-link">Inviter des proches</Link>
         <Link href="/parametres" className="account-link">Paramètres</Link>
         <Link href="/avis" className="account-link">Votre avis sur la bêta</Link>
@@ -201,6 +208,7 @@ const ICONS = {
   people: <><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0" /><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.2a6.5 6.5 0 0 1 3.5 5.8" /></>,
   search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>,
   dig: <><path d="M6 3h12v18l-6-4-6 4z" /><circle cx="11.5" cy="9.5" r="2.5" /><path d="m13.5 11.5 1.5 1.5" /></>,
+  sim: <><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1" /><circle cx="15" cy="7" r="2" /><circle cx="9" cy="12" r="2" /><circle cx="17" cy="17" r="2" /></>,
   game: <><rect x="2.5" y="7" width="19" height="11" rx="4" /><path d="M7.5 10.5v4M5.5 12.5h4" /><path d="M15.5 11h.01M18 13.5h.01" /></>,
 };
 
