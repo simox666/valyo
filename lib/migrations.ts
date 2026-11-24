@@ -1033,4 +1033,24 @@ export const MIGRATIONS: Migration[] = [
       `ALTER TABLE game_scores ADD CONSTRAINT game_scores_game_check CHECK (game ~ '^(defi|vf|duel|frise|quiz(:[a-z0-9-]{1,40})?)$')`,
     ],
   },
+  {
+    id: "036_quiz_de_la_semaine",
+    statements: [
+      // Quiz de la semaine (24 novembre 2026) : questions tirées des articles de presse des sept
+      // derniers jours, écrites puis relues par l'IA. Une ligne par semaine (son lundi).
+      `CREATE TABLE weekly_quiz (
+        week DATE PRIMARY KEY,
+        status TEXT NOT NULL CHECK (status IN ('pending', 'ready', 'failed')),
+        questions JSONB,
+        attempts INTEGER NOT NULL DEFAULT 0,
+        model TEXT,
+        error TEXT,
+        cost_micros BIGINT NOT NULL DEFAULT 0,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      )`,
+      `ALTER TABLE game_scores DROP CONSTRAINT IF EXISTS game_scores_game_check`,
+      `ALTER TABLE game_scores ADD CONSTRAINT game_scores_game_check CHECK (game ~ '^(defi|vf|duel|frise|hebdo|quiz(:[a-z0-9-]{1,40})?)$')`,
+    ],
+  },
 ];

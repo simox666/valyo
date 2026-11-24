@@ -14,6 +14,8 @@ export interface PlayableQuestion {
   explain: string;
   /** Slug du thème d'origine. */
   theme: string;
+  /** Pour aller plus loin après la réponse (quiz de la semaine : l'article d'où vient la question). */
+  link?: { href: string; label: string };
 }
 
 export interface Frise {
@@ -34,7 +36,7 @@ export const VF_ROUND = 8;
 export const DUEL_ROUND = 8;
 export const FRISE_ROUND = 3;
 
-export const GAMES = ["defi", "quiz", "vf", "duel", "frise"] as const;
+export const GAMES = ["defi", "quiz", "vf", "duel", "frise", "hebdo"] as const;
 export type Game = (typeof GAMES)[number];
 
 /** Générateur déterministe (hachage de la graine puis mulberry32). */
@@ -183,7 +185,7 @@ export function previousDay(day: string): string {
  * le navigateur la joue, le serveur la rejoue pour noter les réponses. Graine vide pour
  * un quiz = ordre du fichier (première manche rendue côté serveur).
  */
-export function questionRound(game: Exclude<Game, "frise">, opts: { seed: string; theme?: string; day: string }): PlayableQuestion[] {
+export function questionRound(game: Exclude<Game, "frise" | "hebdo">, opts: { seed: string; theme?: string; day: string }): PlayableQuestion[] {
   if (game === "defi") return dailyChallenge(opts.day);
   if (game === "quiz") return themeRound(opts.theme ?? "", opts.seed ? seededRandom(`quiz-${opts.seed}`) : null);
   if (game === "vf") return trueFalseRound(VF_ROUND, seededRandom(`vf-${opts.seed}`));

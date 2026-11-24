@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { RankedItem } from "@/lib/jeux/classements.ts";
+import { weeklyRound, type WeeklyQuestion } from "@/lib/jeux/hebdo.ts";
 import {
   friseGame, friseScore, previousDay, questionRound,
   DAILY_SIZE, DUEL_ROUND, FRISE_EVENTS, FRISE_ROUND, VF_ROUND, type Frise, type Game, type PlayableQuestion,
@@ -20,7 +21,14 @@ interface ThemeOption {
   name: string;
 }
 
-type Mode = { kind: "quiz"; theme: string } | { kind: "vf" } | { kind: "duel" } | { kind: "defi" } | { kind: "frise" } | null;
+type Mode = { kind: "quiz"; theme: string } | { kind: "vf" } | { kind: "duel" } | { kind: "defi" } | { kind: "hebdo" } | { kind: "frise" } | null;
+
+/** Le quiz de la semaine en cours : son lundi, ses questions et, pour un membre, son score déjà compté. */
+export interface WeeklyQuiz {
+  week: string;
+  questions: WeeklyQuestion[];
+  played: { correct: number; total: number } | null;
+}
 
 interface DailyResult {
   day: string;
@@ -56,7 +64,7 @@ function PointsNote({ outcome, isMember }: { outcome: Outcome; isMember: boolean
   if (outcome.state === "error") return <p className="mt-3 text-sm text-muted">Les points n’ont pas pu être enregistrés cette fois.</p>;
   return outcome.counted
     ? <p className="mt-3 text-sm font-semibold text-accent">+{outcome.points} points au classement{outcome.streakBonus > 0 ? ` (dont ${outcome.streakBonus} de série)` : ""}</p>
-    : <p className="mt-3 text-sm text-muted">Partie déjà comptée aujourd’hui pour ce jeu : revenez demain pour marquer à nouveau.</p>;
+    : <p className="mt-3 text-sm text-muted">Partie déjà comptée pour ce jeu : seule la première rapporte des points.</p>;
 }
 
 function readDaily(): DailyResult | null {
@@ -82,12 +90,13 @@ function scoreMessage(score: number, total: number): string {
   return "L'occasion d'apprendre ! Suivez les thèmes sur Valyo pour creuser le sujet.";
 }
 
-function buildRound(mode: Mode, day: string, seed: string): PlayableQuestion[] {
+function buildRound(mode: Mode, day: string, seed: string, weekly: WeeklyQuiz | null): PlayableQuestion[] {
   if (!mode || mode.kind === "frise") return [];
+  if (mode.kind === "hebdo") return weekly ? weeklyRound(weekly.questions, seed) : [];
   return questionRound(mode.kind, { seed, theme: mode.kind === "quiz" ? mode.theme : undefined, day });
 }
 
-export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, isMember, serverDaily }: {
+export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, isMember, serverDaily, weekly }: {
   themes: ThemeOption[];
   initialTheme: string | null;
   /** Graine tirée par le serveur pour la manche ouverte par /jeux?theme=… : même tirage des deux côtés. */
@@ -99,13 +108,15 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
   isMember: boolean;
   /** Défi du jour déjà joué par ce membre, d'après le serveur (vaut sur tous ses appareils). */
   serverDaily: DailyResult | null;
+  /** Quiz de la semaine, s'il y en a un de prêt. */
+  weekly: WeeklyQuiz | null;
 }) {
   const router = useRouter();
   const themeNames = useMemo(() => new Map(themes.map((t) => [t.slug, t.name])), [themes]);
   const initialMode: Mode = initialTheme ? { kind: "quiz", theme: initialTheme } : null;
   const [mode, setMode] = useState<Mode>(initialMode);
   const [seed, setSeed] = useState(initialSeed);
-  const [round, setRound] = useState<PlayableQuestion[]>(() => buildRound(initialMode, day, initialSeed));
+  const [round, setRound] = useState<PlayableQuestion[]>(() => buildRound(initialMode, day, initialSeed, weekly));
   const [step, setStep] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
   const [picks, setPicks] = useState<number[]>([]);
@@ -128,7 +139,7 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
     const fresh = newSeed();
     setMode(next);
     setSeed(fresh);
-    setRound(buildRound(next, day, fresh));
+    setRound(buildRound(next, day, fresh, weekly));
     setStep(0);
     setPicked(null);
     setPicks([]);
@@ -160,6 +171,19 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
             </>
           )}
         </section>
+        {weekly && (
+          <section className="card border-l-4 border-ink p-5 sm:p-6">
+            <p className="label-mono text-accent">Quiz de la semaine</p>
+            <h2 className="mt-1 text-lg font-bold">{weekly.questions.length} questions sur l’actualité du fil</h2>
+            <p className="mt-1 text-sm text-soft">
+              Tirées des articles publiés sur Valyo ces sept derniers jours ; chaque réponse renvoie à son article. Questions écrites et relues par l’IA.
+            </p>
+            {weekly.played && <p className="mt-2 text-sm font-semibold">Votre score cette semaine : {weekly.played.correct} / {weekly.played.total}</p>}
+            <button type="button" onClick={() => start({ kind: "hebdo" })} className={`mt-3 ${weekly.played ? "btn-secondary" : "btn-primary"}`}>
+              {weekly.played ? "Rejouer pour le plaisir" : "Jouer"}
+            </button>
+          </section>
+        )}
         <section className="card p-5 sm:p-6">
           <p className="label-mono text-accent">Quiz du thème</p>
           <h2 className="mt-1 text-lg font-bold">Cinq questions sur un thème</h2>
@@ -186,6 +210,7 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
   const title = mode.kind === "vf" ? "Vrai ou faux express"
     : mode.kind === "duel" ? "Plus ou moins"
     : mode.kind === "defi" ? `Défi du jour · ${dayLabel}`
+    : mode.kind === "hebdo" ? "Quiz de la semaine"
     : `Quiz ${themeNames.get(mode.theme) ?? mode.theme}`;
   const score = marks.filter(Boolean).length;
 
@@ -221,7 +246,7 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
         writeDaily(result);
         setSaved(result);
       }
-      void report({ game: mode.kind, seed, theme: mode.kind === "quiz" ? mode.theme : undefined, day: mode.kind === "defi" ? day : undefined, picks });
+      void report({ game: mode.kind, seed, theme: mode.kind === "quiz" ? mode.theme : undefined, day: mode.kind === "defi" ? day : mode.kind === "hebdo" ? weekly?.week : undefined, picks });
     }
     setStep((s) => s + 1);
     setPicked(null);
@@ -233,7 +258,7 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
         <p className="label-mono text-accent">{title}</p>
         <p className="shrink-0 text-sm text-muted">{step + 1} / {round.length}</p>
       </div>
-      {mode.kind !== "quiz" && <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-muted">{themeNames.get(q.theme) ?? q.theme}</p>}
+      {mode.kind !== "quiz" && q.theme && <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-muted">{themeNames.get(q.theme) ?? q.theme}</p>}
       <p className="mt-2 text-lg font-bold">{q.prompt}</p>
       <ul className="mt-4 space-y-2">
         {q.choices.map((choice, i) => {
@@ -262,6 +287,7 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
           <p className="mt-4 text-sm text-soft">
             <span className={`font-bold ${picked === q.answer ? "text-accent" : ""}`}>{picked === q.answer ? "Bonne réponse !" : "Raté."}</span>{" "}
             {q.explain}
+            {q.link && <>{" "}<Link href={q.link.href} target="_blank" className="btn-link whitespace-nowrap">{q.link.label} →</Link></>}
           </p>
         )}
       </div>

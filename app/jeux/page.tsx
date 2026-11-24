@@ -5,13 +5,14 @@ import { Avatar } from "@/components/Avatar";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { listActiveThemes } from "@/lib/data/themes";
-import { DAILY_PERFECT_BONUS, DAILY_POINTS, FREE_MAX, STREAK_BONUS, STREAK_EVERY, dailyResult, dailyStats, leaderboard, parisDay, playerCount, standing, weekStart, type Ranked } from "@/lib/jeux/points.ts";
+import { loadWeeklyQuiz, weeklyResult } from "@/lib/jeux/hebdo.ts";
+import { WEEKLY_POINTS, DAILY_PERFECT_BONUS, DAILY_POINTS, FREE_MAX, STREAK_BONUS, STREAK_EVERY, dailyResult, dailyStats, leaderboard, parisDay, playerCount, standing, weekStart, type Ranked } from "@/lib/jeux/points.ts";
 import { themesWithGames } from "@/lib/jeux/questions";
 import { GamesClient } from "./GamesClient";
 
 export const metadata: Metadata = {
   title: "Jeux",
-  description: "Défi du jour, quiz, vrai ou faux, ordres de grandeur et frises chronologiques sur l’IA, l’espace, les sciences et la tech. Marquez des points et grimpez au classement.",
+  description: "Défi du jour, quiz de la semaine sur l’actualité, quiz, vrai ou faux, ordres de grandeur et frises chronologiques sur l’IA, l’espace, les sciences et la tech. Marquez des points et grimpez au classement.",
   // /jeux?theme=… ouvre le quiz d'un thème : une seule adresse canonique.
   alternates: { canonical: "/jeux" },
 };
@@ -47,6 +48,10 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
     playerCount(db.query),
     dailyStats(db.query, day),
   ]);
+  const weeklyQuestions = await loadWeeklyQuiz(db.query, monday);
+  const weekly = weeklyQuestions
+    ? { week: monday, questions: weeklyQuestions, played: member ? await weeklyResult(db.query, member.id, monday) : null }
+    : null;
   const showBoard = players >= MIN_PLAYERS_FOR_BOARD;
   // Graine de la manche ouverte par /jeux?theme=… : tirée ici, pour que le navigateur affiche les mêmes questions.
   const initialSeed = Math.random().toString(36).slice(2, 12);
@@ -61,7 +66,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
           explication — de quoi briller ensuite dans les salons.
         </p>
       </header>
-      <GamesClient themes={themes} initialTheme={initialTheme} initialSeed={initialSeed} day={day} dayLabel={dayLabel} isMember={Boolean(member)} serverDaily={played} />
+      <GamesClient themes={themes} initialTheme={initialTheme} initialSeed={initialSeed} day={day} dayLabel={dayLabel} isMember={Boolean(member)} serverDaily={played} weekly={weekly} />
 
       <Link href="/simulateurs" className="card flex items-center justify-between gap-4 p-5 hover:ring-accent sm:p-6">
         <span className="min-w-0">
@@ -78,6 +83,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
         <ul className="mt-2 space-y-1 text-sm text-soft">
           <li><strong className="text-ink">Défi du jour</strong> : {DAILY_POINTS} points par bonne réponse, +{DAILY_PERFECT_BONUS} pour un sans-faute.</li>
           <li><strong className="text-ink">Série</strong> : +{STREAK_BONUS} points tous les {STREAK_EVERY} défis joués d’affilée.</li>
+          <li><strong className="text-ink">Quiz de la semaine</strong> : {WEEKLY_POINTS} points par bonne réponse, une fois par semaine.</li>
           <li><strong className="text-ink">Autres jeux</strong> : jusqu’à {FREE_MAX} points par partie, une fois par jour pour chaque jeu et pour chaque thème de quiz.</li>
         </ul>
         {stats && (

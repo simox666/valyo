@@ -4,7 +4,7 @@
 // game_scores), ce qui borne le total quotidien et rend le rejeu sans intérêt pour tricher.
 
 import type { Query } from "../editorial/types.ts";
-import { friseGame, markAnswers, markFrises, previousDay, questionRound, type Game } from "./tirage.ts";
+import { friseGame, markAnswers, markFrises, previousDay, questionRound, type Game, type PlayableQuestion } from "./tirage.ts";
 
 /** Barème : le défi du jour pèse lourd, les jeux libres complètent, la régularité est récompensée. */
 export const DAILY_POINTS = 10;
@@ -15,7 +15,11 @@ export const FREE_MAX = 5;
 export const STREAK_EVERY = 7;
 export const STREAK_BONUS = 50;
 
+/** Quiz de la semaine : autant par bonne réponse que le défi du jour, une fois par semaine. */
+export const WEEKLY_POINTS = 10;
+
 export function pointsFor(game: Game, correct: number, total: number): number {
+  if (game === "hebdo") return correct * WEEKLY_POINTS;
   if (game === "defi") return correct * DAILY_POINTS + (correct === total ? DAILY_PERFECT_BONUS : 0);
   return Math.round((FREE_MAX * correct) / total);
 }
@@ -43,6 +47,8 @@ export interface Submission {
   theme?: string;
   /** Jour joué (défi du jour) : aujourd'hui, ou la veille si la partie a enjambé minuit. */
   day?: string;
+  /** Quiz de la semaine : ses questions, chargées par l'appelant (elles vivent en base, pas dans le code). */
+  weekly?: readonly PlayableQuestion[];
   /** Questions : l'index choisi à chaque question. Frise : pour chaque frise, les index d'événements dans l'ordre proposé. */
   picks: number[] | number[][];
 }
@@ -61,6 +67,14 @@ export function grade(submission: Submission, today: string): Graded {
       if (!Array.isArray(order) || order.length !== size || new Set(order).size !== size || order.some((k) => !Number.isInteger(k) || k < 0 || k >= size)) return invalid;
     }
     return { ok: true, day: today, marks: markFrises(frises, picks as number[][]) };
+  }
+  if (submission.game === "hebdo") {
+    // Le « jour » d'un quiz de la semaine est son lundi : il compte une fois par semaine.
+    const round = submission.weekly ?? [];
+    const week = submission.day ?? weekStart(today);
+    if (week !== weekStart(today) && week !== weekStart(previousDay(today))) return { ok: false, message: "Ce quiz n'est plus ouvert." };
+    if (round.length === 0 || submission.picks.length !== round.length || submission.picks.some((p) => !Number.isInteger(p))) return invalid;
+    return { ok: true, day: week, marks: markAnswers(round, submission.picks as number[]) };
   }
   let day = today;
   if (submission.game === "defi" && submission.day && submission.day !== today) {

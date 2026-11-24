@@ -82,7 +82,7 @@ export default function PrivacyPage() {
           pour l’acheminer.
         </li>
         <li>
-          <strong>Anthropic</strong> (synthèses d’actualités par IA) : ne reçoit <em>aucune</em> donnée de membre — uniquement des articles de
+          <strong>Anthropic</strong> (synthèses d’actualités et quiz de la semaine par IA) : ne reçoit <em>aucune</em> donnée de membre — uniquement des articles de
           presse publics à résumer.
         </li>
         <li>

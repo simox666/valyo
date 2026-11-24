@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { fail, json, readJson, requireContributor } from "@/lib/http";
-import { grade, parisDay, recordScore } from "@/lib/jeux/points.ts";
+import { loadWeeklyQuiz, weeklyRound } from "@/lib/jeux/hebdo.ts";
+import { grade, parisDay, recordScore, weekStart } from "@/lib/jeux/points.ts";
 import { GAMES } from "@/lib/jeux/tirage.ts";
 
 const pick = z.number().int().min(0).max(20);
@@ -22,7 +23,14 @@ export async function POST(request: Request) {
   if (guard.response) return guard.response;
   const parsed = bodySchema.safeParse(await readJson(request));
   if (!parsed.success) return fail("Partie invalide.", 400);
-  const graded = grade(parsed.data, parisDay());
+  const today = parisDay();
+  let weekly;
+  if (parsed.data.game === "hebdo") {
+    const questions = await loadWeeklyQuiz(db.query, parsed.data.day ?? weekStart(today));
+    if (!questions) return fail("Ce quiz n'est plus disponible.", 400);
+    weekly = weeklyRound(questions, parsed.data.seed);
+  }
+  const graded = grade({ ...parsed.data, weekly }, today);
   if (!graded.ok) return fail(graded.message, 400);
   const recorded = await recordScore(db.query, guard.user.id, parsed.data.game, graded.day, graded.marks, parsed.data.theme);
   return json({ ok: true, ...recorded });

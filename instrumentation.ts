@@ -8,5 +8,7 @@ export async function register() {
     startPushLoop();
     const { startAudioSweep } = await import("./lib/rooms/audio-sweep");
     startAudioSweep();
+    const { startWeeklyQuizLoop } = await import("./lib/jeux/hebdo-loop");
+    startWeeklyQuizLoop();
   }
 }
