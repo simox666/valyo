@@ -26,6 +26,8 @@ interface DailyResult {
   day: string;
   marks: boolean[];
   streak: number;
+  /** Réponses données (gardées dans le navigateur) : un visiteur qui se connecte ensuite voit son défi compté. */
+  picks?: number[];
 }
 
 const DAILY_KEY = "valyo:defi";
@@ -33,14 +35,14 @@ const DAILY_KEY = "valyo:defi";
 const newSeed = () => Math.random().toString(36).slice(2, 12);
 
 /** Ce que le serveur a fait de la partie : points gagnés, ou partie déjà comptée aujourd'hui. */
-type Outcome = { state: "sending" } | { state: "done"; counted: boolean; points: number } | { state: "error" } | null;
+type Outcome = { state: "sending" } | { state: "done"; counted: boolean; points: number; streakBonus: number } | { state: "error" } | null;
 
 async function sendScore(body: { game: Game; seed: string; theme?: string; day?: string; picks: number[] | number[][] }): Promise<Outcome> {
   try {
     const response = await fetch("/api/jeux", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     if (!response.ok) return { state: "error" };
     const data = await response.json();
-    return { state: "done", counted: Boolean(data.counted), points: Number(data.points) || 0 };
+    return { state: "done", counted: Boolean(data.counted), points: Number(data.points) || 0, streakBonus: Number(data.streakBonus) || 0 };
   } catch {
     return { state: "error" };
   }
@@ -53,7 +55,7 @@ function PointsNote({ outcome, isMember }: { outcome: Outcome; isMember: boolean
   if (!outcome || outcome.state === "sending") return <p className="mt-3 text-sm text-muted">Calcul des points…</p>;
   if (outcome.state === "error") return <p className="mt-3 text-sm text-muted">Les points n’ont pas pu être enregistrés cette fois.</p>;
   return outcome.counted
-    ? <p className="mt-3 text-sm font-semibold text-accent">+{outcome.points} points au classement</p>
+    ? <p className="mt-3 text-sm font-semibold text-accent">+{outcome.points} points au classement{outcome.streakBonus > 0 ? ` (dont ${outcome.streakBonus} de série)` : ""}</p>
     : <p className="mt-3 text-sm text-muted">Partie déjà comptée aujourd’hui pour ce jeu : revenez demain pour marquer à nouveau.</p>;
 }
 
@@ -61,7 +63,8 @@ function readDaily(): DailyResult | null {
   try {
     const parsed = JSON.parse(window.localStorage.getItem(DAILY_KEY) ?? "null");
     if (parsed && typeof parsed.day === "string" && Array.isArray(parsed.marks) && Number.isInteger(parsed.streak)) {
-      return { day: parsed.day, marks: parsed.marks.map(Boolean), streak: parsed.streak };
+      const picks = Array.isArray(parsed.picks) && parsed.picks.every(Number.isInteger) ? (parsed.picks as number[]) : undefined;
+      return { day: parsed.day, marks: parsed.marks.map(Boolean), streak: parsed.streak, picks };
     }
   } catch { /* Stockage indisponible (navigation privée…) : le défi reste jouable, sans mémoire. */ }
   return null;
@@ -84,9 +87,11 @@ function buildRound(mode: Mode, day: string, seed: string): PlayableQuestion[] {
   return questionRound(mode.kind, { seed, theme: mode.kind === "quiz" ? mode.theme : undefined, day });
 }
 
-export function GamesClient({ themes, initialTheme, day, dayLabel, isMember, serverDaily }: {
+export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, isMember, serverDaily }: {
   themes: ThemeOption[];
   initialTheme: string | null;
+  /** Graine tirée par le serveur pour la manche ouverte par /jeux?theme=… : même tirage des deux côtés. */
+  initialSeed: string;
   /** Date du jour à Paris (AAAA-MM-JJ), calculée par le serveur : la graine du défi. */
   day: string;
   dayLabel: string;
@@ -99,16 +104,23 @@ export function GamesClient({ themes, initialTheme, day, dayLabel, isMember, ser
   const themeNames = useMemo(() => new Map(themes.map((t) => [t.slug, t.name])), [themes]);
   const initialMode: Mode = initialTheme ? { kind: "quiz", theme: initialTheme } : null;
   const [mode, setMode] = useState<Mode>(initialMode);
-  // Première manche sans aléa (graine vide) : même HTML côté serveur et navigateur. Les relances mélangent.
-  const [seed, setSeed] = useState("");
-  const [round, setRound] = useState<PlayableQuestion[]>(() => buildRound(initialMode, day, ""));
+  const [seed, setSeed] = useState(initialSeed);
+  const [round, setRound] = useState<PlayableQuestion[]>(() => buildRound(initialMode, day, initialSeed));
   const [step, setStep] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
   const [picks, setPicks] = useState<number[]>([]);
   const [saved, setSaved] = useState<DailyResult | null>(null);
   const [outcome, setOutcome] = useState<Outcome>(null);
 
-  useEffect(() => { setSaved(readDaily()); }, []);
+  useEffect(() => {
+    const stored = readDaily();
+    setSaved(stored);
+    // Défi joué sans être connecté, puis connexion : on l'envoie tel quel, il compte une seule fois.
+    if (isMember && !serverDaily && stored?.day === day && stored.picks) {
+      void sendScore({ game: "defi", seed: "", day, picks: stored.picks }).then(() => router.refresh());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const today = serverDaily ?? (saved?.day === day ? saved : null);
   const marks = picks.map((p, i) => p === round[i]?.answer);
 
@@ -151,7 +163,7 @@ export function GamesClient({ themes, initialTheme, day, dayLabel, isMember, ser
         <section className="card p-5 sm:p-6">
           <p className="label-mono text-accent">Quiz du thème</p>
           <h2 className="mt-1 text-lg font-bold">Cinq questions sur un thème</h2>
-          <p className="mt-1 text-sm text-soft">Choisissez un thème : une explication accompagne chaque réponse.</p>
+          <p className="mt-1 text-sm text-soft">Choisissez un thème : cinq questions tirées au hasard, différentes à chaque partie, avec une explication à chaque réponse.</p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {themes.map((t) => (
               <li key={t.slug}>
@@ -164,7 +176,7 @@ export function GamesClient({ themes, initialTheme, day, dayLabel, isMember, ser
         </section>
         <div className="grid gap-5 sm:grid-cols-3">
           <GameCard label="Vrai ou faux express" title="Idées reçues" text={`${VF_ROUND} affirmations piochées dans tous les thèmes.`} onStart={() => start({ kind: "vf" })} />
-          <GameCard label="Plus ou moins" title="Ordres de grandeur" text={`${DUEL_ROUND} duels : lequel est le plus grand, le plus rapide, le plus chaud ?`} onStart={() => start({ kind: "duel" })} />
+          <GameCard label="Plus ou moins" title="Ordres de grandeur" text={`${DUEL_ROUND} duels serrés : lequel est le plus grand, le plus rapide, le plus chaud ?`} onStart={() => start({ kind: "duel" })} />
           <GameCard label="La frise" title="Dans l'ordre" text={`${FRISE_ROUND} séries de ${FRISE_EVENTS} événements à remettre du plus ancien au plus récent.`} onStart={() => start({ kind: "frise" })} />
         </div>
       </div>
@@ -205,7 +217,7 @@ export function GamesClient({ themes, initialTheme, day, dayLabel, isMember, ser
   const next = () => {
     if (step + 1 === round.length) {
       if (mode.kind === "defi") {
-        const result = { day, marks, streak: saved?.day === previousDay(day) ? saved.streak + 1 : 1 };
+        const result = { day, marks, streak: saved?.day === previousDay(day) ? saved.streak + 1 : 1, picks };
         writeDaily(result);
         setSaved(result);
       }

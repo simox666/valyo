@@ -19,6 +19,8 @@ export interface RankedSet {
   title: string;
   /** Pour les grandeurs : la question du duel, dont la bonne réponse est l'élément le plus grand. */
   question: string;
+  /** Vrai pour une échelle sans zéro naturel (températures) : « trois fois plus chaud » n'aurait pas de sens. */
+  noRatio?: boolean;
   items: RankedItem[];
 }
 
@@ -228,7 +230,7 @@ export const RANKED_SETS: RankedSet[] = [
     ],
   },
   {
-    theme: "sciences", kind: "grandeurs", title: "Températures", question: "Lequel est le plus chaud ?",
+    theme: "sciences", kind: "grandeurs", title: "Températures", question: "Lequel est le plus chaud ?", noRatio: true,
     items: [
       { label: "L'azote liquide", n: -196, display: "−196 °C" },
       { label: "La glace qui fond", n: 0, display: "0 °C" },
@@ -246,6 +248,103 @@ export const RANKED_SETS: RankedSet[] = [
       { label: "Un code à 6 chiffres", n: 1e6, display: "1 million" },
       { label: "Un mot de passe de 8 lettres minuscules", n: 26 ** 8, display: "environ 209 milliards" },
       { label: "Une clé AES de 128 bits", n: 2 ** 128, display: "environ 3,4 × 10³⁸" },
+    ],
+  },
+  {
+    theme: "espace", kind: "grandeurs", title: "Distances au Soleil", question: "Laquelle est la plus éloignée du Soleil ?",
+    items: [
+      { label: "Mercure", n: 58, display: "58 millions de km" },
+      { label: "Vénus", n: 108, display: "108 millions de km" },
+      { label: "La Terre", n: 150, display: "150 millions de km" },
+      { label: "Mars", n: 228, display: "228 millions de km" },
+      { label: "Jupiter", n: 778, display: "778 millions de km" },
+      { label: "Saturne", n: 1430, display: "1,43 milliard de km" },
+      { label: "Uranus", n: 2870, display: "2,87 milliards de km" },
+      { label: "Neptune", n: 4500, display: "4,5 milliards de km" },
+    ],
+  },
+  {
+    theme: "robotique", kind: "grandeurs", title: "Masses des rovers", question: "Quel rover est le plus lourd ?",
+    items: [
+      { label: "Sojourner (Mars, 1997)", n: 11.5, display: "11,5 kg" },
+      { label: "Spirit (Mars, 2004)", n: 185, display: "185 kg" },
+      { label: "Lunokhod 1 (Lune, 1970)", n: 756, display: "756 kg" },
+      { label: "Curiosity (Mars, 2012)", n: 899, display: "899 kg" },
+      { label: "Perseverance (Mars, 2021)", n: 1025, display: "1 025 kg" },
+    ],
+  },
+  {
+    theme: "sciences", kind: "grandeurs", title: "Points de fusion", question: "Lequel fond à la température la plus élevée ?", noRatio: true,
+    items: [
+      { label: "La glace", n: 0, display: "0 °C" },
+      { label: "L'étain", n: 232, display: "232 °C" },
+      { label: "Le plomb", n: 327, display: "327 °C" },
+      { label: "L'aluminium", n: 660, display: "660 °C" },
+      { label: "L'or", n: 1064, display: "1 064 °C" },
+      { label: "Le fer", n: 1538, display: "1 538 °C" },
+      { label: "Le tungstène", n: 3422, display: "3 422 °C" },
+    ],
+  },
+  {
+    theme: "physique", kind: "grandeurs", title: "Densités", question: "Lequel est le plus dense ?",
+    items: [
+      { label: "La glace", n: 0.92, display: "0,92 g/cm³" },
+      { label: "L'eau liquide", n: 1, display: "1 g/cm³" },
+      { label: "L'aluminium", n: 2.7, display: "2,7 g/cm³" },
+      { label: "Le fer", n: 7.9, display: "7,9 g/cm³" },
+      { label: "Le plomb", n: 11.3, display: "11,3 g/cm³" },
+      { label: "L'or", n: 19.3, display: "19,3 g/cm³" },
+      { label: "L'osmium", n: 22.6, display: "22,6 g/cm³" },
+    ],
+  },
+  {
+    theme: "biologie", kind: "grandeurs", title: "Longévités", question: "Lequel vit le plus longtemps ?",
+    items: [
+      { label: "Une souris", n: 2, display: "environ 2 ans" },
+      { label: "Un chien", n: 13, display: "environ 13 ans" },
+      { label: "Un cheval", n: 30, display: "environ 30 ans" },
+      { label: "Un éléphant", n: 65, display: "environ 65 ans" },
+      { label: "Une tortue géante", n: 150, display: "plus de 150 ans" },
+      { label: "Un requin du Groenland", n: 270, display: "au moins 270 ans" },
+    ],
+  },
+  {
+    theme: "energie", kind: "grandeurs", title: "Énergie par kilogramme", question: "Lequel contient le plus d'énergie par kilogramme ?",
+    items: [
+      { label: "Une batterie lithium-ion", n: 0.25, display: "environ 0,25 kWh/kg" },
+      { label: "Le bois sec", n: 4.5, display: "environ 4,5 kWh/kg" },
+      { label: "Le charbon", n: 8, display: "environ 8 kWh/kg" },
+      { label: "L'essence", n: 12, display: "environ 12 kWh/kg" },
+      { label: "Le gaz naturel", n: 14, display: "environ 14 kWh/kg" },
+      { label: "L'hydrogène", n: 33, display: "environ 33 kWh/kg" },
+    ],
+  },
+  {
+    theme: "climat", kind: "grandeurs", title: "Pouvoir de réchauffement", question: "À quantité égale, lequel réchauffe le plus le climat sur un siècle ?", noRatio: true,
+    items: [
+      { label: "Le dioxyde de carbone", n: 1, display: "référence : 1" },
+      { label: "Le méthane", n: 28, display: "environ 28 fois le CO₂" },
+      { label: "Le protoxyde d'azote", n: 273, display: "environ 270 fois le CO₂" },
+      { label: "L'hexafluorure de soufre (SF₆)", n: 23500, display: "plus de 20 000 fois le CO₂" },
+    ],
+  },
+  {
+    theme: "tech", kind: "grandeurs", title: "Transistors par puce", question: "Quelle puce contient le plus de transistors ?",
+    items: [
+      { label: "Intel 4004 (1971)", n: 2300, display: "2 300" },
+      { label: "Intel 8086 (1978)", n: 29000, display: "29 000" },
+      { label: "Intel 486 (1989)", n: 1.2e6, display: "1,2 million" },
+      { label: "Pentium 4 (2000)", n: 42e6, display: "42 millions" },
+      { label: "Apple M1 (2020)", n: 16e9, display: "16 milliards" },
+    ],
+  },
+  {
+    theme: "ia", kind: "grandeurs", title: "Taille des réseaux de neurones", question: "Lequel compte le plus de paramètres ?",
+    items: [
+      { label: "LeNet-5 (1998)", n: 6e4, display: "environ 60 000" },
+      { label: "AlexNet (2012)", n: 6e7, display: "environ 60 millions" },
+      { label: "GPT-2 (2019)", n: 1.5e9, display: "environ 1,5 milliard" },
+      { label: "GPT-3 (2020)", n: 175e9, display: "environ 175 milliards" },
     ],
   },
 ];

@@ -5,7 +5,7 @@ import { Avatar } from "@/components/Avatar";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { listActiveThemes } from "@/lib/data/themes";
-import { DAILY_PERFECT_BONUS, DAILY_POINTS, FREE_POINTS, dailyResult, leaderboard, parisDay, standing, weekStart, type Ranked } from "@/lib/jeux/points.ts";
+import { DAILY_PERFECT_BONUS, DAILY_POINTS, FREE_MAX, STREAK_BONUS, STREAK_EVERY, dailyResult, dailyStats, leaderboard, parisDay, playerCount, standing, weekStart, type Ranked } from "@/lib/jeux/points.ts";
 import { themesWithGames } from "@/lib/jeux/questions";
 import { GamesClient } from "./GamesClient";
 
@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   // /jeux?theme=… ouvre le quiz d'un thème : une seule adresse canonique.
   alternates: { canonical: "/jeux" },
 };
+
+/** En dessous de ce nombre de joueurs, le classement n'est pas affiché : une liste d'un ou deux noms donne l'image d'un site désert. */
+const MIN_PLAYERS_FOR_BOARD = 5;
 
 /**
  * Jeux liés aux thèmes : jouables par tous, sans compte. Un membre connecté marque des
@@ -35,13 +38,18 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
 
   const user = await getCurrentUser();
   const member = user?.onboarded && user.status === "active" ? user : null;
-  const [week, allTime, myWeek, myAllTime, played] = await Promise.all([
+  const [week, allTime, myWeek, myAllTime, played, players, stats] = await Promise.all([
     leaderboard(db.query, monday),
     leaderboard(db.query, null),
     member ? standing(db.query, member.id, monday) : null,
     member ? standing(db.query, member.id, null) : null,
     member ? dailyResult(db.query, member.id, day) : null,
+    playerCount(db.query),
+    dailyStats(db.query, day),
   ]);
+  const showBoard = players >= MIN_PLAYERS_FOR_BOARD;
+  // Graine de la manche ouverte par /jeux?theme=… : tirée ici, pour que le navigateur affiche les mêmes questions.
+  const initialSeed = Math.random().toString(36).slice(2, 12);
 
   return (
     <div className="space-y-5">
@@ -53,7 +61,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
           explication — de quoi briller ensuite dans les salons.
         </p>
       </header>
-      <GamesClient themes={themes} initialTheme={initialTheme} day={day} dayLabel={dayLabel} isMember={Boolean(member)} serverDaily={played} />
+      <GamesClient themes={themes} initialTheme={initialTheme} initialSeed={initialSeed} day={day} dayLabel={dayLabel} isMember={Boolean(member)} serverDaily={played} />
 
       <Link href="/simulateurs" className="card flex items-center justify-between gap-4 p-5 hover:ring-accent sm:p-6">
         <span className="min-w-0">
@@ -66,20 +74,32 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
 
       <section id="classement" className="card p-5 sm:p-6">
         <p className="label-mono text-accent">Classement des Valyors</p>
-        <h2 className="mt-1 text-lg font-bold">Qui mène la danse ?</h2>
-        <p className="mt-1 text-sm text-soft">
-          Défi du jour : {DAILY_POINTS} points par bonne réponse, +{DAILY_PERFECT_BONUS} pour un sans-faute. Autres jeux : {FREE_POINTS} points
-          par bonne réponse. Seule la première partie du jour de chaque jeu compte.
-        </p>
+        <h2 className="mt-1 text-lg font-bold">{showBoard ? "Qui mène la danse ?" : "Comment marquer des points"}</h2>
+        <ul className="mt-2 space-y-1 text-sm text-soft">
+          <li><strong className="text-ink">Défi du jour</strong> : {DAILY_POINTS} points par bonne réponse, +{DAILY_PERFECT_BONUS} pour un sans-faute.</li>
+          <li><strong className="text-ink">Série</strong> : +{STREAK_BONUS} points tous les {STREAK_EVERY} défis joués d’affilée.</li>
+          <li><strong className="text-ink">Autres jeux</strong> : jusqu’à {FREE_MAX} points par partie, une fois par jour pour chaque jeu et pour chaque thème de quiz.</li>
+        </ul>
+        {stats && (
+          <p className="mt-3 text-sm">
+            Défi du {dayLabel} : {stats.players} {stats.players > 1 ? "Valyors ont joué" : "Valyor a joué"}, score moyen {stats.average.toFixed(1).replace(".", ",")} / 7.
+          </p>
+        )}
         {!member && (
           <p className="mt-3 rounded-lg bg-chip px-3 py-2 text-sm">
             <Link href="/connexion?next=/jeux" className="btn-link">Connectez-vous</Link> pour marquer des points et entrer au classement.
           </p>
         )}
-        <div className="mt-4 grid gap-6 sm:grid-cols-2">
-          <Board title="Cette semaine" rows={week} mine={myWeek} me={member?.handle ?? null} empty="Personne n’a encore marqué cette semaine : à vous d’ouvrir le score." />
-          <Board title="Depuis toujours" rows={allTime} mine={myAllTime} me={member?.handle ?? null} empty="Le classement démarre avec la première partie." />
-        </div>
+        {showBoard ? (
+          <div className="mt-4 grid gap-6 sm:grid-cols-2">
+            <Board title="Cette semaine" rows={week} mine={myWeek} me={member?.handle ?? null} empty="Personne n’a encore marqué cette semaine : à vous d’ouvrir le score." />
+            <Board title="Depuis toujours" rows={allTime} mine={myAllTime} me={member?.handle ?? null} empty="Le classement démarre avec la première partie." />
+          </div>
+        ) : (
+          <p className="mt-3 text-sm text-muted">
+            {myAllTime ? `Vous avez ${myAllTime.points} points. ` : ""}Le classement s’affichera dès que {MIN_PLAYERS_FOR_BOARD} Valyors auront marqué des points.
+          </p>
+        )}
       </section>
     </div>
   );

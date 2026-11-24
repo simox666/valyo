@@ -26,6 +26,9 @@ export interface Frise {
 }
 
 export const DAILY_SIZE = 7;
+/** Un quiz de thème : 3 questions à choix et 2 vrai ou faux, tirés dans la banque du thème. */
+export const QUIZ_MCQ = 3;
+export const QUIZ_VF = 2;
 export const FRISE_EVENTS = 4;
 export const VF_ROUND = 8;
 export const DUEL_ROUND = 8;
@@ -73,10 +76,10 @@ function fromStatement(s: TrueFalseStatement): PlayableQuestion {
   return { prompt: s.statement, choices: ["Vrai", "Faux"], answer: s.isTrue ? 0 : 1, explain: s.explain, theme: s.theme };
 }
 
-/** Quiz d'un thème : ses QCM et ses vrai/faux. */
+/** Quiz d'un thème : quelques QCM et vrai/faux tirés dans sa banque, différents d'une partie à l'autre. */
 export function themeRound(theme: string, rnd: Random | null): PlayableQuestion[] {
-  const mcq = QUIZ_QUESTIONS.filter((q) => q.theme === theme).map((q) => fromQuiz(q, rnd));
-  const vf = TRUE_FALSE_STATEMENTS.filter((s) => s.theme === theme).map(fromStatement);
+  const mcq = mix(QUIZ_QUESTIONS.filter((q) => q.theme === theme), rnd).slice(0, QUIZ_MCQ).map((q) => fromQuiz(q, rnd));
+  const vf = mix(TRUE_FALSE_STATEMENTS.filter((s) => s.theme === theme), rnd).slice(0, QUIZ_VF).map(fromStatement);
   return mix([...mcq, ...vf], rnd);
 }
 
@@ -85,14 +88,31 @@ export function trueFalseRound(count: number, rnd: Random): PlayableQuestion[] {
   return shuffle(TRUE_FALSE_STATEMENTS, rnd).slice(0, count).map(fromStatement);
 }
 
+const frNumber = (n: number, digits: number) => new Intl.NumberFormat("fr-FR", { maximumSignificantDigits: digits }).format(n);
+
+/** « environ 3 fois plus », « un écart de 8 % »… : ce que les deux valeurs d'un duel donnent une fois comparées. */
+export function ratioNote(small: number, big: number): string {
+  if (!(small > 0) || !(big > small)) return "";
+  const r = big / small;
+  if (r < 1.5) return `un écart de ${Math.round((r - 1) * 100)} % seulement`;
+  if (r >= 1e9) return "des milliards de fois plus";
+  if (r >= 1e6) return "des millions de fois plus";
+  return `environ ${frNumber(r, r < 10 ? 2 : r < 100 ? 2 : 1)} fois plus`;
+}
+
+// Un duel oppose deux éléments voisins dans leur série (rangs consécutifs, ou séparés d'un seul) :
+// comparer un guépard à la lumière n'apprend rien, un TGV à un avion fait hésiter.
 function duelFrom(set: RankedSet, rnd: Random): PlayableQuestion {
-  const [first, second] = shuffle(set.items, rnd);
-  const bigger = first.n > second.n ? 0 : 1;
+  const gap = set.items.length > 2 && rnd() < 0.35 ? 2 : 1;
+  const low = Math.floor(rnd() * (set.items.length - gap));
+  const pair = [set.items[low], set.items[low + gap]];
+  const [first, second] = rnd() < 0.5 ? pair : [pair[1], pair[0]];
+  const note = set.noRatio ? "" : ratioNote(pair[0].n, pair[1].n);
   return {
     prompt: set.question,
     choices: [first.label, second.label],
-    answer: bigger,
-    explain: `${first.label} : ${first.display} · ${second.label} : ${second.display}.`,
+    answer: first.n > second.n ? 0 : 1,
+    explain: `${first.label} : ${first.display} · ${second.label} : ${second.display}${note ? ` — ${note}` : ""}.`,
     theme: set.theme,
   };
 }
@@ -125,22 +145,28 @@ export function friseScore(frise: Frise, proposed: readonly RankedItem[]): numbe
   return frise.solution.filter((event, i) => proposed[i] === event).length;
 }
 
+/** Numéro d'un jour AAAA-MM-JJ (jours écoulés depuis le 1ᵉʳ janvier 2026). */
+function dayNumber(day: string): number {
+  return Math.round((Date.parse(`${day}T12:00:00Z`) - Date.parse("2026-01-01T12:00:00Z")) / 86_400_000);
+}
+
+/**
+ * Les `perDay` éléments du jour, sans répétition : la banque est mélangée une fois par cycle
+ * puis servie par tranches, si bien qu'une question ne revient qu'une fois la banque épuisée.
+ */
+export function scheduled<T>(pool: readonly T[], perDay: number, day: string, salt: string): T[] {
+  const cycleDays = Math.max(1, Math.floor(pool.length / perDay));
+  const n = dayNumber(day);
+  const cycle = Math.floor(n / cycleDays);
+  const position = n - cycle * cycleDays;
+  return shuffle(pool, seededRandom(`${salt}-${cycle}`)).slice(position * perDay, (position + 1) * perDay);
+}
+
 /** Le défi du jour : identique pour tous à une date donnée (AAAA-MM-JJ, heure de Paris). */
 export function dailyChallenge(day: string): PlayableQuestion[] {
   const rnd = seededRandom(`valyo-defi-${day}`);
-  const themes = new Set<string>();
-  const pickDistinct = <T extends { theme: string }>(pool: readonly T[], count: number): T[] => {
-    const picked: T[] = [];
-    for (const item of shuffle(pool, rnd)) {
-      if (picked.length === count) break;
-      if (themes.has(item.theme)) continue;
-      themes.add(item.theme);
-      picked.push(item);
-    }
-    return picked;
-  };
-  const mcq = pickDistinct(QUIZ_QUESTIONS, 3).map((q) => fromQuiz(q, rnd));
-  const vf = pickDistinct(TRUE_FALSE_STATEMENTS, 2).map(fromStatement);
+  const mcq = scheduled(QUIZ_QUESTIONS, 3, day, "defi-qcm").map((q) => fromQuiz(q, rnd));
+  const vf = scheduled(TRUE_FALSE_STATEMENTS, 2, day, "defi-vf").map(fromStatement);
   const duels = duelRound(DAILY_SIZE - mcq.length - vf.length, rnd);
   return shuffle([...mcq, ...vf, ...duels], rnd);
 }

@@ -1024,4 +1024,13 @@ export const MIGRATIONS: Migration[] = [
       `CREATE INDEX post_audio_created ON post_audio (created_at)`,
     ],
   },
+  {
+    id: "035_jeux_quiz_par_theme",
+    statements: [
+      // Jeux (24 novembre 2026) : un quiz compte une fois par jour et par thème. La colonne
+      // `game` porte alors « quiz:<slug du thème> » ; les anciennes lignes « quiz » restent valides.
+      `ALTER TABLE game_scores DROP CONSTRAINT IF EXISTS game_scores_game_check`,
+      `ALTER TABLE game_scores ADD CONSTRAINT game_scores_game_check CHECK (game ~ '^(defi|vf|duel|frise|quiz(:[a-z0-9-]{1,40})?)$')`,
+    ],
+  },
 ];

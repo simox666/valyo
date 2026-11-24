@@ -3,6 +3,18 @@
 // questions n'apparaît simplement pas sur la page des jeux. Les faits choisis sont
 // établis et stables (histoire, science de base), jamais liés à l'actualité récente.
 
+import ia from "./banque/ia.ts";
+import robotique from "./banque/robotique.ts";
+import espace from "./banque/espace.ts";
+import sciences from "./banque/sciences.ts";
+import tech from "./banque/tech.ts";
+import sante from "./banque/sante.ts";
+import climat from "./banque/climat.ts";
+import energie from "./banque/energie.ts";
+import physique from "./banque/physique.ts";
+import biologie from "./banque/biologie.ts";
+import cyber from "./banque/cyber.ts";
+
 export interface QuizQuestion {
   /** Slug du thème (table themes). */
   theme: string;
@@ -21,7 +33,7 @@ export interface TrueFalseStatement {
   explain: string;
 }
 
-export const QUIZ_QUESTIONS: QuizQuestion[] = [
+const BASE_QUIZ: QuizQuestion[] = [
   // Intelligence artificielle
   {
     theme: "ia",
@@ -43,7 +55,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     choices: [
       "Des programmes écrits règle par règle par des experts",
       "Des réseaux de neurones artificiels à nombreuses couches entraînés sur des données",
-      "Une base de données de connaissances rédigée à la main",
+      "Une vaste base de données de connaissances rédigée entièrement à la main par des spécialistes",
       "Un ordinateur quantique dédié à l'IA",
     ],
     answer: 1,
@@ -57,7 +69,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       "D'une pièce de théâtre tchèque de 1920",
       "D'un roman d'Isaac Asimov",
       "Du nom d'un ingénieur japonais",
-      "D'un acronyme militaire américain",
+      "D'un acronyme de l'armée américaine des années 1940",
     ],
     answer: 0,
     explain: "Karel Čapek l'emploie dans sa pièce R.U.R. (1920) ; « robota » signifie corvée en tchèque. Asimov, lui, a inventé « robotique ».",
@@ -133,7 +145,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     question: "Que décrit la « loi de Moore », énoncée en 1965 ?",
     choices: [
       "Le doublement régulier du nombre de transistors sur une puce",
-      "La croissance du nombre d'internautes",
+      "La croissance régulière du nombre d'internautes connectés dans le monde",
       "La baisse du prix des écrans",
       "La vitesse maximale d'un réseau",
     ],
@@ -173,7 +185,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
   {
     theme: "climat",
     question: "Quel gaz est le principal responsable du réchauffement climatique d'origine humaine ?",
-    choices: ["Le méthane", "Le dioxyde de carbone (CO₂)", "L'ozone", "Le protoxyde d'azote"],
+    choices: ["Le méthane", "Le dioxyde de carbone (CO₂)", "L'ozone", "L'hexafluorure de soufre (SF₆)"],
     answer: 1,
     explain: "Le CO₂ issu des énergies fossiles domine ; le méthane réchauffe plus fort par molécule mais reste moins abondant.",
   },
@@ -199,7 +211,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       "La fusion d'atomes d'hydrogène",
       "La fission d'atomes lourds comme l'uranium",
       "La combustion d'uranium",
-      "Des panneaux solaires de secours",
+      "Des panneaux solaires de secours installés sur le toit",
     ],
     answer: 1,
     explain: "La fission chauffe de l'eau, la vapeur entraîne une turbine. La fusion, elle, reste au stade expérimental (ITER).",
@@ -218,7 +230,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       "À partir de gaz naturel",
       "Par électrolyse de l'eau avec de l'électricité renouvelable",
       "Dans des puits d'hydrogène naturel",
-      "En raffinant du pétrole",
+      "En raffinant du pétrole brut dans des unités spécialisées de craquage",
     ],
     answer: 1,
     explain: "L'électrolyse sépare l'eau en hydrogène et oxygène ; « vert » si l'électricité utilisée est bas carbone renouvelable.",
@@ -274,7 +286,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     choices: [
       "Il affiche de la publicité",
       "Il chiffre des fichiers et exige un paiement",
-      "Il vole des mots de passe en silence",
+      "Il vole des mots de passe en silence pour les revendre",
       "Il ralentit volontairement un réseau",
     ],
     answer: 1,
@@ -286,7 +298,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     choices: [
       "Saturer un site de requêtes",
       "Se faire passer pour un tiers de confiance pour voler des identifiants",
-      "Exploiter une faille logicielle inconnue",
+      "Exploiter une faille logicielle que l'éditeur ne connaît pas encore pour s'introduire",
       "Intercepter le Wi-Fi public",
     ],
     answer: 1,
@@ -301,7 +313,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
   },
 ];
 
-export const TRUE_FALSE_STATEMENTS: TrueFalseStatement[] = [
+const BASE_TRUE_FALSE: TrueFalseStatement[] = [
   { theme: "ia", statement: "Le terme « intelligence artificielle » a été inventé lors de la conférence de Dartmouth, en 1956.", isTrue: true, explain: "John McCarthy l'emploie pour l'atelier fondateur de l'été 1956." },
   { theme: "ia", statement: "Deep Blue, l'ordinateur qui a battu Garry Kasparov aux échecs en 1997, apprenait tout seul par réseaux de neurones.", isTrue: false, explain: "Deep Blue reposait sur la force de calcul et des règles programmées, pas sur l'apprentissage automatique." },
   { theme: "robotique", statement: "Le mot « robotique » a été popularisé par l'écrivain Isaac Asimov.", isTrue: true, explain: "Il l'emploie dès 1941 dans ses nouvelles, avant que le mot n'entre dans la langue courante." },
@@ -325,6 +337,11 @@ export const TRUE_FALSE_STATEMENTS: TrueFalseStatement[] = [
   { theme: "cyber", statement: "« 123456 » reste l'un des mots de passe les plus utilisés au monde.", isTrue: true, explain: "Les fuites de données le confirment année après année : un gestionnaire de mots de passe vaut mieux." },
   { theme: "cyber", statement: "Le mode de navigation privée rend invisible sur Internet.", isTrue: false, explain: "Il efface l'historique local, mais le fournisseur d'accès et les sites voient toujours la connexion." },
 ];
+
+// La banque complète : les questions d'origine ci-dessus, puis un fichier par thème (banque/).
+const BANKS = [ia, robotique, espace, sciences, tech, sante, climat, energie, physique, biologie, cyber];
+export const QUIZ_QUESTIONS: QuizQuestion[] = [...BASE_QUIZ, ...BANKS.flatMap((b) => b.mcq)];
+export const TRUE_FALSE_STATEMENTS: TrueFalseStatement[] = [...BASE_TRUE_FALSE, ...BANKS.flatMap((b) => b.vf)];
 
 /** Les slugs de thèmes qui ont au moins une question, dans l'ordre d'apparition. */
 export function themesWithGames(): Set<string> {

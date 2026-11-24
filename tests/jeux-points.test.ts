@@ -3,7 +3,7 @@
 // efface les scores. PGlite en mémoire.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { dailyResult, grade, leaderboard, pointsFor, recordScore, standing, weekStart } from "../lib/jeux/points.ts";
+import { dailyResult, dailyStats, grade, leaderboard, playerCount, pointsFor, recordScore, standing, weekStart } from "../lib/jeux/points.ts";
 import { dailyChallenge, friseGame, questionRound, DAILY_SIZE, FRISE_EVENTS, FRISE_ROUND } from "../lib/jeux/tirage.ts";
 import { eraseAccount } from "../lib/social/account.ts";
 import { createTestDb } from "./editorial-helpers.ts";
@@ -13,7 +13,12 @@ const TODAY = "2026-11-23"; // un lundi
 test("barème : le défi pèse lourd, bonus au sans-faute", () => {
   assert.equal(pointsFor("defi", DAILY_SIZE, DAILY_SIZE), 100);
   assert.equal(pointsFor("defi", 5, DAILY_SIZE), 50);
-  assert.equal(pointsFor("vf", 8, 8), 16);
+  // Jeux libres : même maximum pour tous, au prorata des bonnes réponses.
+  assert.equal(pointsFor("vf", 8, 8), 5);
+  assert.equal(pointsFor("frise", 12, 12), 5);
+  assert.equal(pointsFor("quiz", 5, 5), 5);
+  assert.equal(pointsFor("quiz", 3, 5), 3);
+  assert.equal(pointsFor("duel", 0, 8), 0);
   assert.equal(weekStart("2026-11-23"), "2026-11-23");
   assert.equal(weekStart("2026-11-29"), "2026-11-23");
   assert.equal(weekStart("2026-12-01"), "2026-11-30");
@@ -65,9 +70,13 @@ test("points, classement, rang, série et suppression de compte", async () => {
   const all = (n: number, ok: number) => Array.from({ length: n }, (_, i) => i < ok);
 
   // Première partie comptée, la seconde du même jeu le même jour ne rapporte rien.
-  assert.deepEqual(await recordScore(db.query, ana, "defi", TODAY, all(7, 7)), { counted: true, points: 100, correct: 7, total: 7 });
-  assert.deepEqual(await recordScore(db.query, ana, "defi", TODAY, all(7, 1)), { counted: false, points: 0, correct: 1, total: 7 });
-  assert.equal((await recordScore(db.query, ana, "vf", TODAY, all(8, 4))).points, 8);
+  assert.deepEqual(await recordScore(db.query, ana, "defi", TODAY, all(7, 7)), { counted: true, points: 100, correct: 7, total: 7, streakBonus: 0 });
+  assert.deepEqual(await recordScore(db.query, ana, "defi", TODAY, all(7, 1)), { counted: false, points: 0, correct: 1, total: 7, streakBonus: 0 });
+  assert.equal((await recordScore(db.query, ana, "vf", TODAY, all(8, 4))).points, 3);
+  // Un quiz compte une fois par jour et par thème.
+  assert.equal((await recordScore(db.query, ana, "quiz", TODAY, all(5, 5), "espace")).points, 5);
+  assert.equal((await recordScore(db.query, ana, "quiz", TODAY, all(5, 5), "espace")).counted, false);
+  assert.equal((await recordScore(db.query, ana, "quiz", TODAY, all(5, 0), "ia")).counted, true);
   await recordScore(db.query, ben, "defi", TODAY, all(7, 5)); // 50
   await recordScore(db.query, ben, "defi", "2026-11-20", all(7, 7)); // 100, semaine précédente
   await recordScore(db.query, cyd, "defi", TODAY, all(7, 0)); // 0 point : absent du classement
@@ -88,6 +97,9 @@ test("points, classement, rang, série et suppression de compte", async () => {
   const daily = await dailyResult(db.query, ana, TODAY);
   assert.deepEqual(daily, { day: TODAY, marks: all(7, 7), streak: 3 });
   assert.equal(await dailyResult(db.query, cyd, "2026-11-24"), null);
+  assert.equal(await playerCount(db.query), 2, "cyd n'a marqué aucun point");
+  assert.deepEqual(await dailyStats(db.query, TODAY), { players: 3, average: 4 });
+  assert.equal(await dailyStats(db.query, "2026-01-01"), null);
 
   // Un membre suspendu disparaît du classement ; un compte supprimé perd ses scores.
   await db.query(`UPDATE users SET status = 'suspended' WHERE id = $1`, [ben]);
@@ -96,4 +108,16 @@ test("points, classement, rang, série et suppression de compte", async () => {
   const [{ n }] = await db.query<{ n: number }>(`SELECT count(*)::int AS n FROM game_scores WHERE user_id = $1`, [ana]);
   assert.equal(n, 0);
   assert.deepEqual(await leaderboard(db.query, null), []);
+});
+
+test("série : le septième défi d'affilée rapporte un bonus, pas les autres", async () => {
+  const { db } = await createTestDb();
+  const [{ id }] = await db.query<{ id: string }>(`INSERT INTO users (email, handle, display_name, rules_accepted_at) VALUES ('eve@exemple.fr', 'eve', 'Eve', now()) RETURNING id`);
+  const bonuses: number[] = [];
+  for (let i = 1; i <= 8; i++) {
+    const day = `2026-12-0${i}`;
+    bonuses.push((await recordScore(db.query, id, "defi", day, [true, true, false, false, false, false, false])).streakBonus);
+  }
+  assert.deepEqual(bonuses, [0, 0, 0, 0, 0, 0, 50, 0]);
+  assert.deepEqual(await standing(db.query, id, "2026-12-01"), { points: 8 * 20 + 50, rank: 1 });
 });
