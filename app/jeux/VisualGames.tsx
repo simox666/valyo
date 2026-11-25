@@ -6,7 +6,7 @@
 //  - La frise : glisser des événements dans l'ordre sur une ligne du temps.
 // Chaque jeu se joue aussi au clavier. Le serveur rejoue la partie à partir de sa graine pour noter.
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { COURBE_TOLERANCE, courbeGame, height, toDraw, valueAt, type Curve } from "@/lib/jeux/courbes.ts";
 import { ECHELLE_TOLERANCE, echelleGame, type ScaleBoard } from "@/lib/jeux/echelle.ts";
 import { friseGame, FRISE_EVENTS, type Frise } from "@/lib/jeux/tirage.ts";
@@ -15,7 +15,7 @@ import { EndScreen, type VisualGameProps } from "./shared";
 const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
 
 /** Nouvelle manche : on revient en haut de la carte (la correction précédente a pu faire défiler la page). */
-const backToTop = () => requestAnimationFrame(() => document.getElementById("jeu")?.scrollIntoView({ block: "start", behavior: "smooth" }));
+const backToTop = () => void requestAnimationFrame(() => document.getElementById("jeu")?.scrollIntoView({ block: "start", behavior: "smooth" }));
 
 function Head({ title, step, total, theme, subject }: { title: string; step: number; total: number; theme: string; subject: string }) {
   return (
@@ -32,6 +32,10 @@ function Head({ title, step, total, theme, subject }: { title: string; step: num
 
 // ───────────────────────────── À l'échelle ─────────────────────────────
 
+/** Hauteur utile de la règle et écart minimal entre deux étiquettes, en pixels. */
+const RULER = 280;
+const LABEL_GAP = 40;
+
 export function EchelleGame({ seed, themeNames, isMember, outcome, onFinish, onReplay, onExit }: VisualGameProps) {
   const [boards] = useState<ScaleBoard[]>(() => echelleGame(seed));
   const [b, setB] = useState(0);
@@ -42,6 +46,7 @@ export function EchelleGame({ seed, themeNames, isMember, outcome, onFinish, onR
   const [all, setAll] = useState<number[][]>([]);
   const [score, setScore] = useState(0);
   const track = useRef<HTMLDivElement>(null);
+  useEffect(backToTop, []);
   const dragging = useRef(false);
   const total = boards.reduce((n, board) => n + board.items.length, 0);
 
@@ -57,12 +62,16 @@ export function EchelleGame({ seed, themeNames, isMember, outcome, onFinish, onR
     const rect = track.current?.getBoundingClientRect();
     if (rect) setPos(clamp((100 * (rect.bottom - clientY)) / rect.height));
   };
-  // Les repères connus, du plus grand au plus petit : les deux extrêmes, puis les objets déjà placés.
+  // Ce qui est écrit sur la règle : ses deux extrémités, puis les objets déjà placés, chacun en face de son point.
   const known = [
-    { key: "haut", mark: "▲", label: board.high.label, display: board.high.display, n: board.high.n },
-    ...board.items.slice(0, i + (checked ? 1 : 0)).map((it, k) => ({ key: it.label, mark: String(k + 1), label: it.label, display: it.display, n: it.n })),
-    { key: "bas", mark: "▼", label: board.low.label, display: board.low.display, n: board.low.n },
-  ].sort((x, y) => y.n - x.n);
+    { key: "haut", pos: 100, label: board.high.label, display: board.high.display, caption: "maximum" },
+    ...board.items.slice(0, i + (checked ? 1 : 0)).map((it, k) => ({ key: it.label, pos: board.answers[k], label: it.label, display: it.display, caption: "" })),
+    { key: "bas", pos: 0, label: board.low.label, display: board.low.display, caption: "minimum" },
+  ].sort((x, y) => y.pos - x.pos);
+  // Deux points proches : leurs étiquettes s'écartent (un trait les relie à leur point).
+  const tops = known.map((k) => (1 - k.pos / 100) * RULER);
+  for (let k = 1; k < tops.length; k++) tops[k] = Math.max(tops[k], tops[k - 1] + LABEL_GAP);
+  for (let k = tops.length - 1; k >= 0; k--) tops[k] = Math.min(tops[k], k === tops.length - 1 ? RULER : tops[k + 1] - LABEL_GAP);
 
   const validate = () => {
     setChecked(true);
@@ -87,14 +96,29 @@ export function EchelleGame({ seed, themeNames, isMember, outcome, onFinish, onR
   };
 
   return (
-    <section id="jeu" className="card p-5 sm:p-6">
+    <section id="jeu" className="card scroll-mt-20 p-5 sm:p-6 lg:scroll-mt-6">
       <Head title="À l’échelle" step={b} total={boards.length} theme={themeNames.get(board.theme) ?? board.theme} subject={board.title} />
-      <div className="mt-4 flex gap-4">
-        {/* La règle : le plus petit en bas, le plus grand en haut. */}
+      <div className="mt-3 flex items-end justify-between gap-3" aria-live="polite">
+        {!checked ? (
+          <p className="min-w-0 text-sm text-soft">Où placer<span className="block text-lg font-bold leading-snug text-ink">{item.label} ?</span></p>
+        ) : (
+          <p className="min-w-0 text-sm text-soft">
+            <span className={`block text-lg font-bold leading-snug ${right ? "text-accent" : "text-ink"}`}>{right ? "Bien placé !" : pos > answer ? "Trop haut." : "Trop bas."}</span>
+            {item.label} : <strong className="text-ink">{item.display}</strong>
+          </p>
+        )}
+        <button type="button" onClick={checked ? next : validate} className="btn-primary shrink-0">
+          {!checked ? "Valider" : i + 1 < board.items.length ? "Suivant" : b + 1 < boards.length ? "Règle suivante" : "Mon score"}
+        </button>
+      </div>
+      {!checked && b === 0 && i === 0 && <p className="mt-1 text-xs text-muted">Glissez le repère orange le long de la règle, entre ses deux extrémités (ou flèches du clavier).</p>}
+
+      {/* La règle : la plus petite valeur en bas, la plus grande en haut, chacune nommée en face de son point. */}
+      <div className="relative mt-4" style={{ height: RULER + 32 }}>
         <div
-          role="slider" tabIndex={checked ? -1 : 0} aria-label={`Position de : ${item.label}`} aria-orientation="vertical"
+          role="slider" tabIndex={checked ? -1 : 0} aria-label={`Position de : ${item.label}, entre ${board.low.label} (en bas) et ${board.high.label} (en haut)`} aria-orientation="vertical"
           aria-valuemin={0} aria-valuemax={100} aria-valuenow={pos} aria-disabled={checked}
-          className="relative h-[340px] w-[124px] shrink-0 cursor-ns-resize touch-none select-none rounded-lg outline-offset-4"
+          className="absolute inset-y-0 left-0 w-[112px] cursor-ns-resize touch-none select-none rounded-lg outline-offset-4"
           onPointerDown={(e) => { if (checked) return; dragging.current = true; e.currentTarget.setPointerCapture(e.pointerId); fromPointer(e.clientY); }}
           onPointerMove={(e) => { if (dragging.current && !checked) fromPointer(e.clientY); }}
           onPointerUp={() => { dragging.current = false; }}
@@ -106,46 +130,32 @@ export function EchelleGame({ seed, themeNames, isMember, outcome, onFinish, onR
           }}
         >
           <div ref={track} className="absolute inset-x-0 bottom-[16px] top-[16px]">
-            <span aria-hidden className="absolute bottom-0 left-[104px] top-0 w-0.5 -translate-x-1/2 bg-line-strong" />
+            <span aria-hidden className="absolute bottom-0 left-[84px] top-0 w-[3px] -translate-x-1/2 rounded bg-line-strong" />
             {board.ticks.map((t) => (
-              <span key={t.pos} aria-hidden className="absolute left-0 flex w-[110px] translate-y-1/2 items-center justify-end gap-1.5 whitespace-nowrap" style={{ bottom: `${t.pos}%` }}>
+              <span key={t.pos} aria-hidden className="absolute left-0 flex w-[90px] translate-y-1/2 items-center justify-end gap-1.5 whitespace-nowrap" style={{ bottom: `${t.pos}%` }}>
                 <span className="font-mono text-[10px] text-muted">{t.label}</span>
                 <span className="h-px w-3 bg-line-strong" />
               </span>
             ))}
-            <Dot pos={100} tone="ink">▲</Dot>
-            <Dot pos={0} tone="ink">▼</Dot>
-            {board.items.slice(0, i).map((it, k) => <Dot key={it.label} pos={board.answers[k]} tone="ink">{k + 1}</Dot>)}
-            {checked && <Dot pos={answer} tone="ink">{i + 1}</Dot>}
-            <Dot pos={pos} tone={checked ? (right ? "good" : "ghost") : "accent"} big={!checked}>{checked ? "" : i + 1}</Dot>
+            {known.map((k) => <Dot key={k.key} pos={k.pos} tone="ink" />)}
+            <Dot pos={pos} tone={checked ? (right ? "good" : "ghost") : "accent"} big={!checked}>{checked ? "" : "?"}</Dot>
           </div>
         </div>
-
-        <div className="min-w-0 flex-1">
-          {!checked ? (
-            <>
-              <p className="text-sm text-soft">Où placer</p>
-              <p className="text-lg font-bold leading-snug">{item.label} ?</p>
-              <p className="mt-1 text-xs text-muted">Glissez le repère orange le long de la règle (ou flèches du clavier).</p>
-            </>
-          ) : (
-            <p aria-live="polite" className="text-sm text-soft">
-              <span className={`block text-lg font-bold ${right ? "text-accent" : "text-ink"}`}>{right ? "Bien placé !" : pos > answer ? "Trop haut." : "Trop bas."}</span>
-              {item.label} : <strong className="text-ink">{item.display}</strong>
-            </p>
-          )}
-          <ul className="mt-3 space-y-1.5 text-sm">
-            {known.map((k) => (
-              <li key={k.key} className="flex items-baseline gap-2">
-                <span aria-hidden className="w-4 shrink-0 text-center font-mono text-xs font-bold text-muted">{k.mark}</span>
-                <span className="min-w-0"><span className="font-medium">{k.label}</span> <span className="whitespace-nowrap text-xs text-muted">{k.display}</span></span>
+        {/* Traits de rappel entre un point et son étiquette, quand elle a dû s'écarter. */}
+        <svg aria-hidden className="pointer-events-none absolute left-[92px] top-0" width="22" height={RULER + 32}>
+          {known.map((k, n) => <line key={k.key} x1="0" y1={16 + (1 - k.pos / 100) * RULER} x2="22" y2={16 + tops[n]} className="stroke-line-strong" strokeWidth="1" />)}
+        </svg>
+        <ul className="absolute inset-y-0 left-[120px] right-0">
+          {known.map((k, n) => {
+            const fresh = checked && k.key === item.label;
+            return (
+              <li key={k.key} className="absolute inset-x-0 -translate-y-1/2 leading-tight" style={{ top: 16 + tops[n] }}>
+                <span className={`block truncate text-sm font-semibold ${fresh ? "text-accent" : ""}`}>{k.label}</span>
+                <span className="block truncate text-xs text-muted">{k.caption && <span className="font-semibold uppercase tracking-wide">{k.caption} · </span>}{k.display}</span>
               </li>
-            ))}
-          </ul>
-          <button type="button" onClick={checked ? next : validate} className="btn-primary mt-4">
-            {!checked ? "Valider" : i + 1 < board.items.length ? "Objet suivant" : b + 1 < boards.length ? "Règle suivante" : "Voir mon score"}
-          </button>
-        </div>
+            );
+          })}
+        </ul>
       </div>
       <p className="mt-3 text-xs text-muted">
         {board.log
@@ -157,12 +167,12 @@ export function EchelleGame({ seed, themeNames, isMember, outcome, onFinish, onR
 }
 
 function Dot({ pos, tone, big = false, children }: { pos: number; tone: "ink" | "accent" | "good" | "ghost"; big?: boolean; children?: React.ReactNode }) {
-  const skin = tone === "accent" ? "bg-accent text-white shadow"
-    : tone === "good" ? "bg-accent-soft ring-2 ring-accent"
-    : tone === "ghost" ? "border-2 border-dashed border-line-strong bg-white"
-    : "bg-ink text-white";
+  const skin = tone === "accent" ? "h-8 w-8 bg-accent text-white shadow"
+    : tone === "good" ? "h-6 w-6 bg-accent-soft ring-2 ring-accent"
+    : tone === "ghost" ? "h-6 w-6 border-2 border-dashed border-line-strong bg-white"
+    : "h-3.5 w-3.5 bg-ink ring-2 ring-white";
   return (
-    <span aria-hidden className={`absolute left-[104px] flex -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full font-mono text-[11px] font-bold ${big ? "h-8 w-8" : "h-[22px] w-[22px]"} ${skin}`} style={{ bottom: `${pos}%` }}>
+    <span aria-hidden className={`absolute left-[84px] flex -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full font-mono text-sm font-bold ${big ? "z-10" : ""} ${skin}`} style={{ bottom: `${pos}%` }}>
       {children}
     </span>
   );
@@ -189,6 +199,7 @@ export function CourbeGame({ seed, themeNames, isMember, outcome, onFinish, onRe
   const [all, setAll] = useState<number[][]>([]);
   const [score, setScore] = useState(0);
   const drawing = useRef(false);
+  useEffect(backToTop, []);
   const total = curves.reduce((n, curve) => n + toDraw(curve), 0);
 
   if (c >= curves.length) {
@@ -231,7 +242,7 @@ export function CourbeGame({ seed, themeNames, isMember, outcome, onFinish, onRe
   };
 
   return (
-    <section id="jeu" className="card p-5 sm:p-6">
+    <section id="jeu" className="card scroll-mt-20 p-5 sm:p-6 lg:scroll-mt-6">
       <Head title="Dessine la courbe" step={c} total={curves.length} theme={themeNames.get(curve.theme) ?? curve.theme} subject={curve.title} />
       {!checked && (
         <p className="mt-1 text-sm text-soft">
@@ -345,6 +356,7 @@ export function FriseGame({ seed, themeNames, isMember, outcome, onFinish, onRep
     el.style.transform = `translateY(${d.pointerY - d.grab - top}px)`;
   };
   useLayoutEffect(follow);
+  useEffect(backToTop, []);
 
   if (step >= frises.length) {
     return <EndScreen title="La frise" score={score} total={total} unit="événements à la bonne place" outcome={outcome} isMember={isMember} onReplay={onReplay} onExit={onExit} />;
@@ -408,7 +420,7 @@ export function FriseGame({ seed, themeNames, isMember, outcome, onFinish, onRep
   };
 
   return (
-    <section id="jeu" className="card p-5 sm:p-6">
+    <section id="jeu" className="card scroll-mt-20 p-5 sm:p-6 lg:scroll-mt-6">
       <Head title="La frise" step={step} total={frises.length} theme={themeNames.get(frise.theme) ?? frise.theme} subject={frise.title} />
       {!checked ? (
         <p className="mt-1 text-sm text-soft">Glissez les événements par leur poignée pour les ranger du plus ancien (en haut) au plus récent (en bas).</p>
