@@ -121,7 +121,7 @@
     background-image: linear-gradient(rgb(var(--c-grid)) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--c-grid)) 1px, transparent 1px);
     background-size: 24px 24px;
   }
-  h1, h2, h3 {
+  h1, h2, h3, .font-display {
     font-family: var(--font-display), var(--font-sans), sans-serif;
     /* Police à chasse fixe : lettres à peine resserrées, espaces entre les mots un peu réduites
        (une espace pleine largeur creuse trop les titres longs). */

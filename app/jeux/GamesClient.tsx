@@ -1,7 +1,9 @@
 "use client";
 
-// Les jeux liés aux thèmes : le défi du jour (le même pour tous, une fois par jour),
-// « Quiz du thème », « Vrai ou faux express », « Plus ou moins » et « La frise ».
+// La page Jeux, en deux familles :
+//  - Culture générale : le défi du jour (le même pour tous, une fois par jour), le quiz de la semaine
+//    et le quiz libre (un thème ou tous) ;
+//  - Coup d'œil : les jeux visuels (app/jeux/VisualGames.tsx).
 // Tout se joue sans compte : le résultat du défi du jour est alors gardé dans le navigateur.
 // Un membre connecté envoie en fin de partie ses réponses et la graine de la manche à
 // /api/jeux : le serveur rejoue, note et attribue les points du classement.
@@ -10,19 +12,21 @@ import Link from "next/link";
 import { Picto, type PictoId } from "@/components/Picto";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import type { RankedItem } from "@/lib/jeux/classements.ts";
+import { COURBE_ROUND } from "@/lib/jeux/courbes.ts";
+import { ECHELLE_BOARDS, ECHELLE_ITEMS } from "@/lib/jeux/echelle.ts";
 import { weeklyRound, type WeeklyQuestion } from "@/lib/jeux/hebdo.ts";
-import {
-  friseGame, friseScore, previousDay, questionRound,
-  DAILY_SIZE, DUEL_ROUND, FRISE_EVENTS, FRISE_ROUND, VF_ROUND, type Frise, type Game, type PlayableQuestion,
-} from "@/lib/jeux/tirage.ts";
+import { previousDay, questionRound, ALL_THEMES, DAILY_SIZE, FRISE_EVENTS, FRISE_ROUND, type PlayableQuestion } from "@/lib/jeux/tirage.ts";
+import { PointsNote, scoreMessage, sendScore, type Outcome } from "./shared";
+import { CourbeGame, EchelleGame, FriseGame } from "./VisualGames";
 
 interface ThemeOption {
   slug: string;
   name: string;
 }
 
-type Mode = { kind: "quiz"; theme: string } | { kind: "vf" } | { kind: "duel" } | { kind: "defi" } | { kind: "hebdo" } | { kind: "frise" } | null;
+type Visual = "echelle" | "courbe" | "frise";
+type Mode = { kind: "quiz"; theme: string } | { kind: "defi" } | { kind: "hebdo" } | { kind: Visual } | null;
+const isVisual = (mode: Mode): mode is { kind: Visual } => mode?.kind === "echelle" || mode?.kind === "courbe" || mode?.kind === "frise";
 
 /** Le quiz de la semaine en cours : son lundi, ses questions et, pour un membre, son score déjà compté. */
 export interface WeeklyQuiz {
@@ -43,31 +47,6 @@ const DAILY_KEY = "valyo:defi";
 
 const newSeed = () => Math.random().toString(36).slice(2, 12);
 
-/** Ce que le serveur a fait de la partie : points gagnés, ou partie déjà comptée aujourd'hui. */
-type Outcome = { state: "sending" } | { state: "done"; counted: boolean; points: number; streakBonus: number } | { state: "error" } | null;
-
-async function sendScore(body: { game: Game; seed: string; theme?: string; day?: string; picks: number[] | number[][] }): Promise<Outcome> {
-  try {
-    const response = await fetch("/api/jeux", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    if (!response.ok) return { state: "error" };
-    const data = await response.json();
-    return { state: "done", counted: Boolean(data.counted), points: Number(data.points) || 0, streakBonus: Number(data.streakBonus) || 0 };
-  } catch {
-    return { state: "error" };
-  }
-}
-
-function PointsNote({ outcome, isMember }: { outcome: Outcome; isMember: boolean }) {
-  if (!isMember) {
-    return <p className="mt-3 text-sm text-soft"><Link href="/connexion?next=/jeux" className="btn-link">Connectez-vous</Link> pour marquer des points et entrer au classement.</p>;
-  }
-  if (!outcome || outcome.state === "sending") return <p className="mt-3 text-sm text-muted">Calcul des points…</p>;
-  if (outcome.state === "error") return <p className="mt-3 text-sm text-muted">Les points n’ont pas pu être enregistrés cette fois.</p>;
-  return outcome.counted
-    ? <p className="mt-3 text-sm font-semibold text-accent">+{outcome.points} points au classement{outcome.streakBonus > 0 ? ` (dont ${outcome.streakBonus} de série)` : ""}</p>
-    : <p className="mt-3 text-sm text-muted">Partie déjà comptée pour ce jeu : seule la première rapporte des points.</p>;
-}
-
 function readDaily(): DailyResult | null {
   try {
     const parsed = JSON.parse(window.localStorage.getItem(DAILY_KEY) ?? "null");
@@ -83,16 +62,8 @@ function writeDaily(result: DailyResult) {
   try { window.localStorage.setItem(DAILY_KEY, JSON.stringify(result)); } catch { /* idem */ }
 }
 
-function scoreMessage(score: number, total: number): string {
-  const ratio = score / total;
-  if (ratio === 1) return "Sans faute ! Vous avez votre place dans les salons.";
-  if (ratio >= 0.75) return "Très solide. Encore une partie et c'est le sans-faute ?";
-  if (ratio >= 0.5) return "Pas mal du tout — les explications sous chaque question aident à progresser.";
-  return "L'occasion d'apprendre ! Suivez les thèmes sur Valyo pour creuser le sujet.";
-}
-
 function buildRound(mode: Mode, day: string, seed: string, weekly: WeeklyQuiz | null): PlayableQuestion[] {
-  if (!mode || mode.kind === "frise") return [];
+  if (!mode || isVisual(mode)) return [];
   if (mode.kind === "hebdo") return weekly ? weeklyRound(weekly.questions, seed) : [];
   return questionRound(mode.kind, { seed, theme: mode.kind === "quiz" ? mode.theme : undefined, day });
 }
@@ -145,6 +116,8 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
     setPicked(null);
     setPicks([]);
     setOutcome(null);
+    // La carte choisie pouvait être bas dans la page : le jeu s'ouvre en haut de l'écran.
+    window.scrollTo({ top: 0 });
   };
 
   const report = async (body: Parameters<typeof sendScore>[0]) => {
@@ -154,7 +127,11 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
     router.refresh(); // Le classement, rendu par le serveur, se met à jour.
   };
 
-  if (mode?.kind === "frise") return <FriseGame key={seed} seed={seed} themeNames={themeNames} isMember={isMember} outcome={outcome} onFinish={(all) => report({ game: "frise", seed, picks: all })} onReplay={() => start({ kind: "frise" })} onExit={() => start(null)} />;
+  if (isVisual(mode)) {
+    const kind = mode.kind;
+    const Game = kind === "echelle" ? EchelleGame : kind === "courbe" ? CourbeGame : FriseGame;
+    return <Game key={seed} seed={seed} themeNames={themeNames} isMember={isMember} outcome={outcome} onFinish={(all) => report({ game: kind, seed, picks: all })} onReplay={() => start({ kind })} onExit={() => start(null)} />;
+  }
 
   // Écran d'accueil : le défi du jour, puis les jeux libres.
   if (!mode || round.length === 0) {
@@ -171,10 +148,11 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
             </>
           )}
         </section>
+        <FamilyHead title="Culture générale" text="Des questions, et une explication à chaque réponse." />
         {weekly && (
-          <section className="card border-l-4 border-ink p-5 sm:p-6">
+          <section className="card p-5 sm:p-6">
             <CardHead picto="hebdo" label="Quiz de la semaine" title={`${weekly.questions.length} questions sur l’actualité du fil`} />
-            <p className="mt-1 text-sm text-soft">
+            <p className="mt-2 text-sm text-soft">
               Tirées des articles publiés sur Valyo ces sept derniers jours ; chaque réponse renvoie à son article. Questions écrites et relues par l’IA.
             </p>
             {weekly.played && <p className="mt-2 text-sm font-semibold">Votre score cette semaine : {weekly.played.correct} / {weekly.played.total}</p>}
@@ -184,9 +162,14 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
           </section>
         )}
         <section className="card p-5 sm:p-6">
-          <CardHead picto="quiz" label="Quiz du thème" title="Cinq questions sur un thème" />
-          <p className="mt-1 text-sm text-soft">Choisissez un thème : cinq questions tirées au hasard, différentes à chaque partie, avec une explication à chaque réponse.</p>
+          <CardHead picto="quiz" label="Quiz libre" title="Cinq questions, sur le thème de votre choix" />
+          <p className="mt-2 text-sm text-soft">Questions à choix et vrai ou faux, tirés au hasard : différents à chaque partie.</p>
           <ul className="mt-3 flex flex-wrap gap-2">
+            <li>
+              <button type="button" onClick={() => start({ kind: "quiz", theme: ALL_THEMES })} className="inline-flex min-h-10 items-center rounded-lg bg-ink px-3 text-sm font-semibold text-white transition hover:opacity-90">
+                Tous les thèmes
+              </button>
+            </li>
             {themes.map((t) => (
               <li key={t.slug}>
                 <button type="button" onClick={() => start({ kind: "quiz", theme: t.slug })} className="inline-flex min-h-10 items-center rounded-lg bg-white px-3 text-sm font-medium text-ink ring-1 ring-line transition hover:ring-ink">
@@ -196,19 +179,21 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
             ))}
           </ul>
         </section>
+
+        <FamilyHead title="Coup d’œil" text="On place, on trace, on glisse : moins de lecture, plus d’intuition." />
         <div className="grid gap-5 sm:grid-cols-3">
-          <GameCard picto="vf" label="Vrai ou faux express" title="Idées reçues" text={`${VF_ROUND} affirmations piochées dans tous les thèmes.`} onStart={() => start({ kind: "vf" })} />
-          <GameCard picto="duel" label="Plus ou moins" title="Ordres de grandeur" text={`${DUEL_ROUND} duels serrés : lequel est le plus grand, le plus rapide, le plus chaud ?`} onStart={() => start({ kind: "duel" })} />
-          <GameCard picto="frise" label="La frise" title="Dans l'ordre" text={`${FRISE_ROUND} séries de ${FRISE_EVENTS} événements à remettre du plus ancien au plus récent.`} onStart={() => start({ kind: "frise" })} />
+          <GameCard picto="echelle" label="À l’échelle" title="Sur la règle" text={`${ECHELLE_BOARDS} règles, ${ECHELLE_ITEMS} objets à placer sur chacune, entre le plus petit et le plus grand.`} onStart={() => start({ kind: "echelle" })} />
+          <GameCard picto="courbe" label="Dessine la courbe" title="À main levée" text={`${COURBE_ROUND} évolutions à tracer au doigt, puis la vraie courbe apparaît par-dessus.`} onStart={() => start({ kind: "courbe" })} />
+          <GameCard picto="frise" label="La frise" title="Dans l’ordre" text={`${FRISE_ROUND} séries de ${FRISE_EVENTS} événements à glisser du plus ancien au plus récent.`} onStart={() => start({ kind: "frise" })} />
         </div>
       </div>
     );
   }
 
-  const title = mode.kind === "vf" ? "Vrai ou faux express"
-    : mode.kind === "duel" ? "Plus ou moins"
-    : mode.kind === "defi" ? `Défi du jour · ${dayLabel}`
+  const anyTheme = mode.kind === "quiz" && mode.theme === ALL_THEMES;
+  const title = mode.kind === "defi" ? `Défi du jour · ${dayLabel}`
     : mode.kind === "hebdo" ? "Quiz de la semaine"
+    : anyTheme ? "Quiz · tous les thèmes"
     : `Quiz ${themeNames.get(mode.theme) ?? mode.theme}`;
   const score = marks.filter(Boolean).length;
 
@@ -229,7 +214,7 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
         <div className="mt-5 flex flex-wrap justify-center gap-2">
           {mode.kind !== "defi" && <button type="button" onClick={() => start(mode)} className="btn-primary">Rejouer</button>}
           <button type="button" onClick={() => start(null)} className="btn-secondary">{mode.kind === "defi" ? "Voir les autres jeux" : "Changer de jeu"}</button>
-          {mode.kind === "quiz" && <Link href={`/theme/${mode.theme}`} className="btn-secondary">Voir le thème</Link>}
+          {mode.kind === "quiz" && !anyTheme && <Link href={`/theme/${mode.theme}`} className="btn-secondary">Voir le thème</Link>}
         </div>
       </section>
     );
@@ -256,7 +241,7 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
         <p className="label-mono text-accent">{title}</p>
         <p className="shrink-0 text-sm text-muted">{step + 1} / {round.length}</p>
       </div>
-      {mode.kind !== "quiz" && q.theme && <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-muted">{themeNames.get(q.theme) ?? q.theme}</p>}
+      {(mode.kind !== "quiz" || anyTheme) && q.theme && <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-muted">{themeNames.get(q.theme) ?? q.theme}</p>}
       <p className="mt-2 text-lg font-bold">{q.prompt}</p>
       <ul className="mt-4 space-y-2">
         {q.choices.map((choice, i) => {
@@ -305,8 +290,18 @@ function CardHead({ picto, label, title }: { picto: PictoId; label: string; titl
       <Picto id={picto} />
       <div className="min-w-0">
         <p className="label-mono">{label}</p>
-        <h2 className="mt-0.5 text-lg font-bold leading-snug">{title}</h2>
+        <h3 className="mt-0.5 text-lg font-bold leading-snug">{title}</h3>
       </div>
+    </div>
+  );
+}
+
+/** Titre d'une famille de jeux. */
+function FamilyHead({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="pt-3">
+      <h2 className="text-xl font-bold">{title}</h2>
+      <p className="mt-0.5 text-sm text-soft">{text}</p>
     </div>
   );
 }
@@ -350,106 +345,5 @@ function DailySummary({ result, dayLabel, centered = false }: { result: DailyRes
       </p>
       <button type="button" onClick={share} className="btn-primary mt-3">{copied ? "Score copié" : "Partager mon score"}</button>
     </div>
-  );
-}
-
-/** La frise : toucher les événements du plus ancien au plus récent, puis valider. */
-function FriseGame({ seed, themeNames, isMember, outcome, onFinish, onReplay, onExit }: {
-  /** Graine de la partie : le parent remonte le composant (key) à chaque nouvelle graine. */
-  seed: string;
-  themeNames: Map<string, string>;
-  isMember: boolean;
-  outcome: Outcome;
-  /** Fin de partie : pour chaque frise, les index d'événements dans l'ordre proposé. */
-  onFinish: (picks: number[][]) => void;
-  onReplay: () => void;
-  onExit: () => void;
-}) {
-  const [frises] = useState<Frise[]>(() => friseGame(seed));
-  const [step, setStep] = useState(0);
-  const [order, setOrder] = useState<RankedItem[]>([]);
-  const [checked, setChecked] = useState(false);
-  const [score, setScore] = useState(0);
-  const [allPicks, setAllPicks] = useState<number[][]>([]);
-  const total = frises.length * FRISE_EVENTS;
-
-  if (step >= frises.length) {
-    return (
-      <section className="card p-6 text-center" aria-live="polite">
-        <p className="label-mono text-accent">La frise</p>
-        <p className="mt-3 text-4xl font-bold">{score} / {total}</p>
-        <p className="mt-1 text-sm text-muted">événements à la bonne place</p>
-        <p className="mt-2 text-soft">{scoreMessage(score, total)}</p>
-        <PointsNote outcome={outcome} isMember={isMember} />
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
-          <button type="button" onClick={onReplay} className="btn-primary">Rejouer</button>
-          <button type="button" onClick={onExit} className="btn-secondary">Changer de jeu</button>
-        </div>
-      </section>
-    );
-  }
-
-  const frise = frises[step];
-  const complete = order.length === frise.events.length;
-  const toggle = (event: RankedItem) => setOrder((o) => (o.includes(event) ? o.filter((e) => e !== event) : [...o, event]));
-  const right = checked ? friseScore(frise, order) : 0;
-
-  return (
-    <section className="card p-5 sm:p-6">
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="label-mono text-accent">La frise</p>
-        <p className="shrink-0 text-sm text-muted">{step + 1} / {frises.length}</p>
-      </div>
-      <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-muted">{themeNames.get(frise.theme) ?? frise.theme}</p>
-      <p className="mt-2 text-lg font-bold">{frise.title}</p>
-
-      {!checked ? (
-        <>
-          <p className="mt-1 text-sm text-soft">Touchez les événements du plus ancien au plus récent. Touchez à nouveau pour retirer un numéro.</p>
-          <ul className="mt-4 space-y-2">
-            {frise.events.map((event) => {
-              const rank = order.indexOf(event);
-              return (
-                <li key={event.label}>
-                  <button type="button" onClick={() => toggle(event)} aria-pressed={rank >= 0}
-                    className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-[15px] transition ${rank >= 0 ? "bg-accent-soft ring-2 ring-accent" : "ring-1 ring-line hover:ring-accent"}`}>
-                    <span aria-hidden className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${rank >= 0 ? "bg-accent text-white" : "bg-chip text-muted"}`}>{rank >= 0 ? rank + 1 : ""}</span>
-                    <span>{event.label}{rank >= 0 && <span className="sr-only"> — position {rank + 1}</span>}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button type="button" disabled={!complete} onClick={() => { setChecked(true); setScore((s) => s + friseScore(frise, order)); setAllPicks((p) => [...p, order.map((e) => frise.events.indexOf(e))]); }} className="btn-primary">Valider l’ordre</button>
-            {order.length > 0 && <button type="button" onClick={() => setOrder([])} className="btn-secondary">Recommencer</button>}
-          </div>
-        </>
-      ) : (
-        <div aria-live="polite">
-          <p className="mt-3 text-sm text-soft">
-            <span className={`font-bold ${right === frise.events.length ? "text-accent" : ""}`}>
-              {right === frise.events.length ? "Ordre parfait !" : `${right} sur ${frise.events.length} à la bonne place.`}
-            </span>{" "}
-            Voici la chronologie :
-          </p>
-          <ol className="mt-3 space-y-2">
-            {frise.solution.map((event, i) => {
-              const ok = order[i] === event;
-              return (
-                <li key={event.label} className={`flex items-center gap-3 rounded-lg px-4 py-3 text-[15px] ${ok ? "bg-accent-soft ring-2 ring-accent" : "ring-1 ring-line"}`}>
-                  <span className="w-12 shrink-0 font-mono text-sm font-bold">{event.display}</span>
-                  <span className="flex-1">{event.label}</span>
-                  <span className="shrink-0 text-xs text-muted">{ok ? "bien placé" : `vous : ${order.indexOf(event) + 1}ᵉ`}</span>
-                </li>
-              );
-            })}
-          </ol>
-          <button type="button" onClick={() => { if (step + 1 === frises.length) onFinish(allPicks); setStep((s) => s + 1); setOrder([]); setChecked(false); }} className="btn-primary mt-4">
-            {step + 1 < frises.length ? "Frise suivante" : "Voir mon score"}
-          </button>
-        </div>
-      )}
-    </section>
   );
 }

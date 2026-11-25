@@ -12,7 +12,7 @@ import { GamesClient } from "./GamesClient";
 
 export const metadata: Metadata = {
   title: "Jeux",
-  description: "Défi du jour, quiz de la semaine sur l’actualité, quiz, vrai ou faux, ordres de grandeur et frises chronologiques sur l’IA, l’espace, les sciences et la tech. Marquez des points et grimpez au classement.",
+  description: "Défi du jour, quiz de la semaine sur l’actualité, quiz par thème, et des jeux visuels : placer un objet sur une règle des grandeurs, dessiner une courbe, ranger une frise. Marquez des points et grimpez au classement.",
   // /jeux?theme=… ouvre le quiz d'un thème : une seule adresse canonique.
   alternates: { canonical: "/jeux" },
 };
@@ -62,8 +62,8 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
         <p className="label-mono text-accent">Pour s’amuser</p>
         <h1 className="mt-1 text-2xl font-bold sm:text-[28px]">Jeux</h1>
         <p className="mt-1 text-soft">
-          Testez vos connaissances sur les thèmes de Valyo. Chaque réponse vient avec une
-          explication — de quoi briller ensuite dans les salons.
+          Deux familles : des questions de culture générale, et des jeux où l’on place, trace et glisse.
+          Chaque réponse vient avec son explication.
         </p>
       </header>
       <GamesClient themes={themes} initialTheme={initialTheme} initialSeed={initialSeed} day={day} dayLabel={dayLabel} isMember={Boolean(member)} serverDaily={played} weekly={weekly} />

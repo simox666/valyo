@@ -5,7 +5,8 @@ import { loadWeeklyQuiz, weeklyRound } from "@/lib/jeux/hebdo.ts";
 import { grade, parisDay, recordScore, weekStart } from "@/lib/jeux/points.ts";
 import { GAMES } from "@/lib/jeux/tirage.ts";
 
-const pick = z.number().int().min(0).max(20);
+// Index de réponse (questions, frise) ou position de 0 à 100 (À l'échelle, Dessine la courbe).
+const pick = z.number().int().min(0).max(100);
 const bodySchema = z.object({
   game: z.enum(GAMES),
   seed: z.string().max(40).regex(/^[a-z0-9]*$/),

@@ -1053,4 +1053,12 @@ export const MIGRATIONS: Migration[] = [
       `ALTER TABLE game_scores ADD CONSTRAINT game_scores_game_check CHECK (game ~ '^(defi|vf|duel|frise|hebdo|quiz(:[a-z0-9-]{1,40})?)$')`,
     ],
   },
+  {
+    id: "037_jeux_visuels",
+    statements: [
+      // Jeux visuels (25 novembre 2026) : « À l'échelle » et « Dessine la courbe ».
+      `ALTER TABLE game_scores DROP CONSTRAINT IF EXISTS game_scores_game_check`,
+      `ALTER TABLE game_scores ADD CONSTRAINT game_scores_game_check CHECK (game ~ '^(defi|vf|duel|frise|hebdo|echelle|courbe|quiz(:[a-z0-9-]{1,40})?)$')`,
+    ],
+  },
 ];

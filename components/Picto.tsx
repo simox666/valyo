@@ -12,6 +12,8 @@ const PICTOS = {
   vf: <><path d="m3 8.5 3.2 3.2L11.5 5" /><path d="m14 13.5 6 6M20 13.5l-6 6" /><path d="M15.5 4 8.5 20" strokeOpacity=".35" /></>,
   duel: <><path d="M12 4v16M7.5 20h9M5 7h14" /><path d="M5 7l-2.5 6a2.7 2.7 0 0 0 5 0z" /><path d="M19 7l-2.5 6a2.7 2.7 0 0 0 5 0z" /></>,
   frise: <><path d="M2.5 12h2.2M8.3 12h1.9M13.8 12h1.9M19.3 12h2.2" /><circle cx="6.5" cy="12" r="1.8" /><circle cx="12" cy="12" r="1.8" /><circle cx="17.5" cy="12" r="1.8" /><path d="M6.5 10.2V6M12 13.8V18M17.5 10.2V6" /></>,
+  echelle: <><path d="M9 3v18" /><path d="M9 5.5h3M9 9h2M9 12.5h3M9 16h2M9 19.5h3" /><circle cx="16.5" cy="9" r="2.5" className={dot} /><path d="M12.5 9h1.2" /></>,
+  courbe: <><path d="M4 4v16h16" /><path d="M6.5 16.5c3-.5 4.5-2 6-4.5s3-5 6.5-6" strokeDasharray="0.1 3.2" strokeWidth="2.2" /><path d="m16.5 11.5 3.2 3.2-1.4 1.4-3.2-3.2.3-1.7z" /></>,
   // ——— Simulateurs ———
   creature: <><path d="M12 6.5c-4 0-6.5 2.7-6.5 6.3S8.4 20.5 12 20.5s6.5-4.1 6.5-7.7S16 6.5 12 6.5z" /><circle cx="9.5" cy="12.6" r="1.3" className={dot} /><circle cx="14.5" cy="12.6" r="1.3" className={dot} /><path d="M9 7.2 7.5 3.5M15 7.2l1.5-3.7" /><path d="M10 16.4c1.2.8 2.8.8 4 0" /></>,
   orbite: <><circle cx="12" cy="12" r="2.4" className={dot} /><ellipse cx="12" cy="12" rx="9.5" ry="4.6" transform="rotate(-25 12 12)" /><circle cx="19.3" cy="6.6" r="1.5" className={dot} /></>,

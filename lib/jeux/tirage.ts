@@ -36,7 +36,12 @@ export const VF_ROUND = 8;
 export const DUEL_ROUND = 8;
 export const FRISE_ROUND = 3;
 
-export const GAMES = ["defi", "quiz", "vf", "duel", "frise", "hebdo"] as const;
+/** Thème fictif du quiz libre « tous les thèmes ». */
+export const ALL_THEMES = "tous";
+
+// « vf » et « duel » n'ont plus de carte sur la page Jeux (leurs questions vivent dans les quiz et le défi du jour),
+// mais le serveur sait toujours les noter.
+export const GAMES = ["defi", "quiz", "vf", "duel", "frise", "hebdo", "echelle", "courbe"] as const;
 export type Game = (typeof GAMES)[number];
 
 /** Générateur déterministe (hachage de la graine puis mulberry32). */
@@ -80,8 +85,9 @@ function fromStatement(s: TrueFalseStatement): PlayableQuestion {
 
 /** Quiz d'un thème : quelques QCM et vrai/faux tirés dans sa banque, différents d'une partie à l'autre. */
 export function themeRound(theme: string, rnd: Random | null): PlayableQuestion[] {
-  const mcq = mix(QUIZ_QUESTIONS.filter((q) => q.theme === theme), rnd).slice(0, QUIZ_MCQ).map((q) => fromQuiz(q, rnd));
-  const vf = mix(TRUE_FALSE_STATEMENTS.filter((s) => s.theme === theme), rnd).slice(0, QUIZ_VF).map(fromStatement);
+  const within = (t: string) => theme === ALL_THEMES || t === theme;
+  const mcq = mix(QUIZ_QUESTIONS.filter((q) => within(q.theme)), rnd).slice(0, QUIZ_MCQ).map((q) => fromQuiz(q, rnd));
+  const vf = mix(TRUE_FALSE_STATEMENTS.filter((s) => within(s.theme)), rnd).slice(0, QUIZ_VF).map(fromStatement);
   return mix([...mcq, ...vf], rnd);
 }
 
@@ -185,7 +191,7 @@ export function previousDay(day: string): string {
  * le navigateur la joue, le serveur la rejoue pour noter les réponses. Graine vide pour
  * un quiz = ordre du fichier (première manche rendue côté serveur).
  */
-export function questionRound(game: Exclude<Game, "frise" | "hebdo">, opts: { seed: string; theme?: string; day: string }): PlayableQuestion[] {
+export function questionRound(game: "defi" | "quiz" | "vf" | "duel", opts: { seed: string; theme?: string; day: string }): PlayableQuestion[] {
   if (game === "defi") return dailyChallenge(opts.day);
   if (game === "quiz") return themeRound(opts.theme ?? "", opts.seed ? seededRandom(`quiz-${opts.seed}`) : null);
   if (game === "vf") return trueFalseRound(VF_ROUND, seededRandom(`vf-${opts.seed}`));

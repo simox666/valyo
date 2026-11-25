@@ -4,6 +4,8 @@
 // game_scores), ce qui borne le total quotidien et rend le rejeu sans intérêt pour tricher.
 
 import type { Query } from "../editorial/types.ts";
+import { courbeGame, markCourbes, toDraw } from "./courbes.ts";
+import { echelleGame, markEchelle } from "./echelle.ts";
 import { friseGame, markAnswers, markFrises, previousDay, questionRound, type Game, type PlayableQuestion } from "./tirage.ts";
 
 /** Barème : le défi du jour pèse lourd, les jeux libres complètent, la régularité est récompensée. */
@@ -49,7 +51,10 @@ export interface Submission {
   day?: string;
   /** Quiz de la semaine : ses questions, chargées par l'appelant (elles vivent en base, pas dans le code). */
   weekly?: readonly PlayableQuestion[];
-  /** Questions : l'index choisi à chaque question. Frise : pour chaque frise, les index d'événements dans l'ordre proposé. */
+  /**
+   * Questions : l'index choisi à chaque question. Frise : pour chaque frise, les index d'événements dans l'ordre proposé.
+   * À l'échelle et Dessine la courbe : pour chaque règle ou courbe, les positions proposées (0 à 100).
+   */
   picks: number[] | number[][];
 }
 
@@ -67,6 +72,16 @@ export function grade(submission: Submission, today: string): Graded {
       if (!Array.isArray(order) || order.length !== size || new Set(order).size !== size || order.some((k) => !Number.isInteger(k) || k < 0 || k >= size)) return invalid;
     }
     return { ok: true, day: today, marks: markFrises(frises, picks as number[][]) };
+  }
+  if (submission.game === "echelle" || submission.game === "courbe") {
+    const sizes = submission.game === "echelle" ? echelleGame(submission.seed).map((b) => b.items.length) : courbeGame(submission.seed).map(toDraw);
+    const picks = submission.picks;
+    if (picks.length !== sizes.length) return invalid;
+    for (const [i, row] of picks.entries()) {
+      if (!Array.isArray(row) || row.length !== sizes[i] || row.some((p) => !Number.isInteger(p) || p < 0 || p > 100)) return invalid;
+    }
+    const marks = submission.game === "echelle" ? markEchelle(echelleGame(submission.seed), picks as number[][]) : markCourbes(courbeGame(submission.seed), picks as number[][]);
+    return { ok: true, day: today, marks };
   }
   if (submission.game === "hebdo") {
     // Le « jour » d'un quiz de la semaine est son lundi : il compte une fois par semaine.
