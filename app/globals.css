@@ -216,7 +216,10 @@ body[data-nav-pending] #fil-theme {
   [class*="animate-[toast-in"] { animation: none !important; }
 }
 
-/* Essai de police de titres (voir app/layout.tsx) : n'agit que sur l'appareil qui l'a demandé. */
-html[data-police="bricolage"] body {
-  --font-display: var(--font-essai);
-}
+/* Essai de polices de titres (voir app/layout.tsx) : n'agit que sur l'appareil qui l'a demandé.
+   Une police de machine à écrire est plus large : on resserre un peu les lettres des titres. */
+html[data-police="dactylo"] body { --font-display: var(--font-essai-dactylo); }
+html[data-police="plex"] body { --font-display: var(--font-essai-plex); }
+html[data-police="space"] body { --font-display: var(--font-essai-space); }
+html[data-police="elite"] body { --font-display: var(--font-essai-elite); }
+html[data-police] :is(h1, h2, h3, .font-display) { letter-spacing: -0.04em; word-spacing: -0.2em; }

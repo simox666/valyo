@@ -12,9 +12,14 @@ const inter = localFont({ src: "./fonts/Inter-Variable.woff2", weight: "100 900"
 const interTight = localFont({ src: "./fonts/InterTight-Variable.woff2", weight: "100 900", style: "normal", display: "swap", variable: "--font-display" });
 const martian = localFont({ src: "./fonts/MartianMono-Variable.woff2", weight: "100 800", style: "normal", display: "swap", variable: "--font-mono" });
 
-// Police de titres à l'essai : chargée seulement chez qui a ouvert le site avec ?police=bricolage
-// (choix gardé sur l'appareil ; ?police=inter revient à la police habituelle).
-const essai = localFont({ src: "./fonts/BricolageGrotesque-Variable.woff2", weight: "200 800", style: "normal", display: "swap", variable: "--font-essai", preload: false });
+// Polices de titres à l'essai (machine à écrire) : chargées seulement chez qui a ouvert le site avec
+// ?police=dactylo | plex | space | elite (choix gardé sur l'appareil ; ?police=inter revient à l'habituelle).
+const essaiDactylo = localFont({ src: [{ path: "./fonts/CourierPrime-400.woff2", weight: "400" }, { path: "./fonts/CourierPrime-700.woff2", weight: "700" }], display: "swap", variable: "--font-essai-dactylo", preload: false });
+const essaiPlex = localFont({ src: [{ path: "./fonts/IBMPlexMono-500.woff2", weight: "500" }, { path: "./fonts/IBMPlexMono-700.woff2", weight: "700" }], display: "swap", variable: "--font-essai-plex", preload: false });
+const essaiSpace = localFont({ src: [{ path: "./fonts/SpaceMono-400.woff2", weight: "400" }, { path: "./fonts/SpaceMono-700.woff2", weight: "700" }], display: "swap", variable: "--font-essai-space", preload: false });
+// Une seule graisse, déclarée pour toutes : le navigateur ne fabrique pas de faux gras baveux.
+const essaiElite = localFont({ src: "./fonts/SpecialElite-400.woff2", weight: "100 900", style: "normal", display: "swap", variable: "--font-essai-elite", preload: false });
+const ESSAIS = `${essaiDactylo.variable} ${essaiPlex.variable} ${essaiSpace.variable} ${essaiElite.variable}`;
 
 const SITE_DESCRIPTION =
   "Valyo est le réseau social des passionnés d’IA, d’espace, de sciences et de technologie : suivez l’actualité sourcée et discutez-en avec les Valyors.";
@@ -46,7 +51,7 @@ export const viewport: Viewport = {
 };
 
 // Applique le choix « Apparence » avant le premier affichage (pas d'éclair clair en mode sombre).
-const THEME_SCRIPT = `try{var t=localStorage.getItem("valyo:apparence");if(t==="clair"||t==="sombre")document.documentElement.setAttribute("data-theme",t==="sombre"?"dark":"light")}catch(e){}try{var p=new URLSearchParams(location.search).get("police");if(p==="bricolage")localStorage.setItem("valyo:police",p);else if(p)localStorage.removeItem("valyo:police");if(localStorage.getItem("valyo:police")==="bricolage")document.documentElement.setAttribute("data-police","bricolage")}catch(e){}`;
+const THEME_SCRIPT = `try{var t=localStorage.getItem("valyo:apparence");if(t==="clair"||t==="sombre")document.documentElement.setAttribute("data-theme",t==="sombre"?"dark":"light")}catch(e){}try{var L=["dactylo","plex","space","elite"],p=new URLSearchParams(location.search).get("police");if(L.indexOf(p)>=0)localStorage.setItem("valyo:police",p);else if(p)localStorage.removeItem("valyo:police");var c=localStorage.getItem("valyo:police");if(L.indexOf(c)>=0)document.documentElement.setAttribute("data-police",c)}catch(e){}`;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -54,7 +59,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body className={`${inter.variable} ${interTight.variable} ${martian.variable} ${essai.variable} min-h-screen bg-paper font-sans text-ink antialiased`}>
+      <body className={`${inter.variable} ${interTight.variable} ${martian.variable} ${ESSAIS} min-h-screen bg-paper font-sans text-ink antialiased`}>
         <IconSprite />
         <a href="#contenu" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-20 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2">
           Aller au contenu
