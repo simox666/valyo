@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Picto } from "@/components/Picto";
 import { SIMULATORS } from "@/lib/simulateurs/catalogue.ts";
 
 export const metadata: Metadata = {
@@ -20,9 +21,14 @@ export default function SimulatorsPage() {
         {SIMULATORS.map((s) => (
           <li key={s.slug}>
             <Link href={`/simulateurs/${s.slug}`} className="card flex h-full flex-col p-5 hover:ring-accent">
-              <span className="label-mono text-accent">{s.theme}</span>
-              <span className="mt-1 font-display text-lg font-bold leading-snug">{s.title}</span>
-              <span className="mt-1 flex-1 text-sm text-soft">{s.pitch}</span>
+              <span className="flex items-center gap-3">
+                <Picto id={s.slug} />
+                <span className="min-w-0">
+                  <span className="label-mono block text-accent">{s.theme}</span>
+                  <span className="mt-0.5 block font-display text-lg font-bold leading-snug">{s.title}</span>
+                </span>
+              </span>
+              <span className="mt-2 flex-1 text-sm text-soft">{s.pitch}</span>
               <span aria-hidden className="mt-3 text-sm font-semibold text-accent">Essayer →</span>
             </Link>
           </li>

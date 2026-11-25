@@ -7,6 +7,7 @@
 // /api/jeux : le serveur rejoue, note et attribue les points du classement.
 
 import Link from "next/link";
+import { Picto, type PictoId } from "@/components/Picto";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { RankedItem } from "@/lib/jeux/classements.ts";
@@ -160,8 +161,7 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
     return (
       <div className="space-y-5">
         <section className="card border-l-4 border-accent p-5 sm:p-6">
-          <p className="label-mono text-accent">Défi du jour · {dayLabel}</p>
-          <h2 className="mt-1 text-lg font-bold">{DAILY_SIZE} questions, les mêmes pour tout le monde</h2>
+          <CardHead picto="defi" label={`Défi du jour · ${dayLabel}`} title={`${DAILY_SIZE} questions, les mêmes pour tout le monde`} />
           {today ? (
             <DailySummary result={today} dayLabel={dayLabel} />
           ) : (
@@ -173,8 +173,7 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
         </section>
         {weekly && (
           <section className="card border-l-4 border-ink p-5 sm:p-6">
-            <p className="label-mono text-accent">Quiz de la semaine</p>
-            <h2 className="mt-1 text-lg font-bold">{weekly.questions.length} questions sur l’actualité du fil</h2>
+            <CardHead picto="hebdo" label="Quiz de la semaine" title={`${weekly.questions.length} questions sur l’actualité du fil`} />
             <p className="mt-1 text-sm text-soft">
               Tirées des articles publiés sur Valyo ces sept derniers jours ; chaque réponse renvoie à son article. Questions écrites et relues par l’IA.
             </p>
@@ -185,8 +184,7 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
           </section>
         )}
         <section className="card p-5 sm:p-6">
-          <p className="label-mono text-accent">Quiz du thème</p>
-          <h2 className="mt-1 text-lg font-bold">Cinq questions sur un thème</h2>
+          <CardHead picto="quiz" label="Quiz du thème" title="Cinq questions sur un thème" />
           <p className="mt-1 text-sm text-soft">Choisissez un thème : cinq questions tirées au hasard, différentes à chaque partie, avec une explication à chaque réponse.</p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {themes.map((t) => (
@@ -199,9 +197,9 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
           </ul>
         </section>
         <div className="grid gap-5 sm:grid-cols-3">
-          <GameCard label="Vrai ou faux express" title="Idées reçues" text={`${VF_ROUND} affirmations piochées dans tous les thèmes.`} onStart={() => start({ kind: "vf" })} />
-          <GameCard label="Plus ou moins" title="Ordres de grandeur" text={`${DUEL_ROUND} duels serrés : lequel est le plus grand, le plus rapide, le plus chaud ?`} onStart={() => start({ kind: "duel" })} />
-          <GameCard label="La frise" title="Dans l'ordre" text={`${FRISE_ROUND} séries de ${FRISE_EVENTS} événements à remettre du plus ancien au plus récent.`} onStart={() => start({ kind: "frise" })} />
+          <GameCard picto="vf" label="Vrai ou faux express" title="Idées reçues" text={`${VF_ROUND} affirmations piochées dans tous les thèmes.`} onStart={() => start({ kind: "vf" })} />
+          <GameCard picto="duel" label="Plus ou moins" title="Ordres de grandeur" text={`${DUEL_ROUND} duels serrés : lequel est le plus grand, le plus rapide, le plus chaud ?`} onStart={() => start({ kind: "duel" })} />
+          <GameCard picto="frise" label="La frise" title="Dans l'ordre" text={`${FRISE_ROUND} séries de ${FRISE_EVENTS} événements à remettre du plus ancien au plus récent.`} onStart={() => start({ kind: "frise" })} />
         </div>
       </div>
     );
@@ -300,12 +298,24 @@ export function GamesClient({ themes, initialTheme, initialSeed, day, dayLabel, 
   );
 }
 
-function GameCard({ label, title, text, onStart }: { label: string; title: string; text: string; onStart: () => void }) {
+/** En-tête d'une carte de jeu : le pictogramme, puis l'étiquette et le titre. */
+function CardHead({ picto, label, title }: { picto: PictoId; label: string; title: string }) {
+  return (
+    <div className="flex items-center gap-3">
+      <Picto id={picto} />
+      <div className="min-w-0">
+        <p className="label-mono text-accent">{label}</p>
+        <h2 className="mt-0.5 text-lg font-bold leading-snug">{title}</h2>
+      </div>
+    </div>
+  );
+}
+
+function GameCard({ picto, label, title, text, onStart }: { picto: PictoId; label: string; title: string; text: string; onStart: () => void }) {
   return (
     <section className="card flex flex-col p-5">
-      <p className="label-mono text-accent">{label}</p>
-      <h2 className="mt-1 text-lg font-bold">{title}</h2>
-      <p className="mt-1 flex-1 text-sm text-soft">{text}</p>
+      <CardHead picto={picto} label={label} title={title} />
+      <p className="mt-2 flex-1 text-sm text-soft">{text}</p>
       <button type="button" onClick={onStart} className="btn-secondary mt-3 self-start">Jouer</button>
     </section>
   );
