@@ -20,7 +20,7 @@ export default async function MessagesPage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Messages</h1>
+      <h1 className="text-2xl font-bold sm:text-[28px]">Messages</h1>
       {conversations.length > 0 ? (
         <ul className="card divide-y divide-line">
           {conversations.map((c) => (

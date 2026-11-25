@@ -14,7 +14,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="text-2xl font-bold">Se connecter ou créer un compte</h1>
+      <h1 className="text-2xl font-bold sm:text-[28px]">Se connecter ou créer un compte</h1>
       <p className="mt-2 text-soft">
         Indiquez votre adresse e-mail : vous recevrez un lien de connexion. Pas de mot de passe à retenir.
       </p>

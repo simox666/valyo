@@ -4,7 +4,7 @@ import type { DiscussionCard, RoomCard } from "@/lib/rooms/discovery.ts";
 
 function RoomLink({ room }: { room: RoomCard & { unread?: number } }) {
   return <li className="min-w-0 py-3">
-    <Link href={`/s/${room.id}#chat`} className="block font-bold leading-snug text-accent hover:underline">{room.name}</Link>
+    <Link href={`/s/${room.id}#chat`} className="block text-sm font-semibold leading-snug text-ink hover:text-accent">{room.name}</Link>
     <div className="mt-1 flex flex-wrap gap-1.5">
       {room.visibility === "private" && <span className="chip">Sur invitation</span>}
       {room.archived && <span className="chip">Archivé</span>}
@@ -20,17 +20,17 @@ export function CommunitySidebar({ active, discussions, signedIn }: { active: Ro
   return <aside aria-label="La communauté" className="min-w-0 space-y-4">
     <Link href="/recap" className="card block px-5 py-[18px] transition hover:ring-accent">
       <p className="label-mono">Le récap</p>
-      <p className="mt-1.5 font-display text-lg font-semibold leading-snug">L’essentiel sciences & tech, 3 fois par semaine</p>
+      <p className="mt-1.5 font-display text-base font-medium leading-snug">L’essentiel sciences & tech, 3 fois par semaine</p>
       <p className="mt-2 text-sm font-semibold text-accent">Découvrir le récap →</p>
     </Link>
     {signedIn && discussions.length > 0 && <section className="card p-5" aria-labelledby="mes-discussions">
-      <h2 id="mes-discussions" className="text-lg font-bold">Mes discussions</h2>
+      <h2 id="mes-discussions" className="text-base font-semibold">Mes discussions</h2>
       {discussions.length ? <ul className="divide-y divide-line">{discussions.map(room => <RoomLink key={room.id} room={room} />)}</ul> : <p className="my-3 text-sm text-soft">Vous n’avez pas encore de discussion accessible. Rejoignez un salon pour échanger.</p>}
       <Link href="/salons#mes-salons" className="btn-link">Retrouver mes salons →</Link>
     </section>}
     <section className="card p-5" aria-labelledby="salons-actifs">
       <p className="label-mono mb-1">Salons en direct</p>
-      <h2 id="salons-actifs" className="text-lg font-bold">Salons publics actifs</h2>
+      <h2 id="salons-actifs" className="text-base font-semibold">Salons publics actifs</h2>
       <p className="mt-1 text-xs text-muted">L’activité réelle des sept derniers jours.</p>
       {active.length ? <ul className="divide-y divide-line">{active.map(room => <RoomLink key={room.id} room={room} />)}</ul> : <p className="my-3 text-sm text-ink">Ouvrez un salon sur une actu et invitez les curieux à en discuter.</p>}
       <Link href="/salons" className="btn-link">Découvrir les salons →</Link>

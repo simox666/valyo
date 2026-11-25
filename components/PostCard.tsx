@@ -124,7 +124,7 @@ export function PostCard({
       {post.body &&
         (isActu ? (
           <p className="mt-3.5 border-l-2 border-accent pl-3 text-[15px] leading-relaxed text-body">
-            <span className="label-mono mr-2 text-accent">En bref</span>
+            <span className="label-mono mr-2">En bref</span>
             {excerpt(post.body)}
           </p>
         ) : (

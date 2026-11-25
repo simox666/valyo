@@ -304,7 +304,7 @@ function CardHead({ picto, label, title }: { picto: PictoId; label: string; titl
     <div className="flex items-center gap-3">
       <Picto id={picto} />
       <div className="min-w-0">
-        <p className="label-mono text-accent">{label}</p>
+        <p className="label-mono">{label}</p>
         <h2 className="mt-0.5 text-lg font-bold leading-snug">{title}</h2>
       </div>
     </div>

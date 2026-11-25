@@ -20,7 +20,7 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
   if (!invitation) {
     return (
       <div className="mx-auto max-w-md space-y-4">
-        <h1 className="text-2xl font-bold">Invitation indisponible</h1>
+        <h1 className="text-2xl font-bold sm:text-[28px]">Invitation indisponible</h1>
         <p className="text-soft">
           Ce lien d’invitation a déjà servi, a été révoqué ou a expiré. Demandez-en un nouveau à la personne qui vous l’a envoyé.
         </p>
@@ -35,7 +35,7 @@ export default async function JoinPage({ params }: { params: Promise<{ token: st
     <div className="mx-auto max-w-lg space-y-6">
       <section className="rounded-card bg-ink p-5 text-white sm:p-6">
         <p className="label-mono text-white/70">Invitation</p>
-        <h1 className="mt-2 text-2xl font-bold">{invitation.inviterName} vous invite sur Valyo</h1>
+        <h1 className="mt-2 text-2xl font-bold sm:text-[28px]">{invitation.inviterName} vous invite sur Valyo</h1>
         <p className="mt-3 text-white/85">
           Une communauté francophone pour suivre les avancées en IA, robotique et espace, les comprendre, et en discuter — par écrit
           aujourd’hui, à voix haute bientôt.

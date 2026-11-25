@@ -49,15 +49,16 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
     : pathname.startsWith(href);
   const next = encodeURIComponent(pathname);
   const profileHref = user?.onboarded ? `/m/${user.handle}` : `/connexion?next=${next}`;
-  const items: { href: string; label: string; icon: React.ReactNode; badge?: number; show: boolean }[] = [
+  // `gap` : un peu d'air avant l'entrée, pour séparer les groupes (échanger, mon réseau, jouer, moi).
+  const items: { href: string; label: string; icon: React.ReactNode; badge?: number; show: boolean; gap?: boolean }[] = [
     { href: "/", label: "Fil", icon: ICONS.home, show: true },
     { href: "/salons", label: "Salons", icon: ICONS.rooms, show: true },
     { href: "/messages", label: "Messages", icon: ICONS.messages, badge: messages, show: Boolean(user?.onboarded) },
-    { href: followHref, label: "Abonnés", icon: ICONS.people, show: Boolean(user?.onboarded) },
+    { href: followHref, label: "Mon réseau", icon: ICONS.people, show: Boolean(user?.onboarded), gap: true },
     { href: "/a-creuser", label: "À creuser", icon: ICONS.dig, show: Boolean(user?.onboarded) },
-    { href: "/jeux", label: "Jeux", icon: ICONS.game, show: true },
+    { href: "/jeux", label: "Jeux", icon: ICONS.game, show: true, gap: true },
     { href: "/simulateurs", label: "Simulateurs", icon: ICONS.sim, show: true },
-    { href: "/notifications", label: "Notifications", icon: ICONS.bell, badge: unread, show: Boolean(user?.onboarded) },
+    { href: "/notifications", label: "Notifications", icon: ICONS.bell, badge: unread, show: Boolean(user?.onboarded), gap: true },
     { href: profileHref, label: "Profil", icon: ICONS.user, show: Boolean(user?.onboarded) },
   ];
   const Logo = () => (
@@ -77,7 +78,7 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
   <aside aria-label="Menu Valyo" className="sticky top-0 hidden h-screen w-[190px] shrink-0 flex-col gap-0.5 py-7 lg:flex">
     <div className="px-2.5 pb-5">
       <Logo />
-      <p className="mt-1.5 text-[11px] leading-snug text-muted">Le réseau social des passionnés de tech et de sciences : les Valyors.</p>
+      <p className="mt-1.5 text-xs leading-snug text-muted">Le réseau social des passionnés de tech et de sciences : les Valyors.</p>
     </div>
     <form action="/recherche" role="search" className="relative mb-3">
       <label htmlFor="recherche-menu" className="sr-only">Rechercher sur Valyo</label>
@@ -88,8 +89,8 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
     <nav aria-label="Navigation principale" className="flex flex-col gap-0.5">
       {items.filter(i => i.show).map(i => (
         <Link key={i.label} href={i.href} aria-current={active(i.href) ? "page" : undefined}
-          className={`flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-[15px] ${active(i.href) ? "bg-white font-semibold text-ink ring-1 ring-line" : "text-soft hover:bg-white/70 hover:text-ink"}`}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{i.icon}</svg>
+          className={`flex items-center gap-3 rounded-lg px-2.5 py-2.5 text-[15px] ${i.gap ? "mt-3" : ""} ${active(i.href) ? "bg-white font-semibold text-ink ring-1 ring-line" : "text-soft hover:bg-white/70 hover:text-ink"}`}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active(i.href) ? 1.9 : 1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={active(i.href) ? "text-accent" : undefined}>{i.icon}</svg>
           {i.label}<Badge n={i.badge} />
         </Link>
       ))}
@@ -134,7 +135,7 @@ export function HeaderNavigation({ user, initialUnread, initialMessages }: {
   </header>
 
   {/* Mobile : onglets du bas */}
-  <nav aria-label="Navigation mobile" className="fixed inset-x-0 bottom-0 z-20 grid h-[68px] grid-cols-5 items-center border-t border-line bg-white px-1 pb-[env(safe-area-inset-bottom)] text-[11px] lg:hidden">
+  <nav aria-label="Navigation mobile" className="fixed inset-x-0 bottom-0 z-20 grid h-[68px] grid-cols-5 items-center border-t border-line bg-white px-1 pb-[env(safe-area-inset-bottom)] text-xs lg:hidden">
     <TabLink href="/" label="Fil" active={active("/")}>{ICONS.home}</TabLink>
     <TabLink href="/salons" label="Salons" active={active("/salons")}>{ICONS.rooms}</TabLink>
     <Link href={user?.canPublish ? "/publier" : `/connexion?next=${encodeURIComponent("/publier")}`} aria-label="Publier" className="mx-auto flex h-12 w-12 items-center justify-center rounded-card bg-accent text-white">
@@ -214,7 +215,7 @@ const ICONS = {
 
 function TabLink({ href, label, active, badge = 0, children }: { href: string; label: string; active: boolean; badge?: number; children: React.ReactNode }) {
   return <Link href={href} aria-current={active ? "page" : undefined} className={`relative flex flex-col items-center gap-0.5 py-1 ${active ? "font-semibold text-ink" : "text-muted"}`}>
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 1.9 : 1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>{children}</svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 1.9 : 1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden className={active ? "text-accent" : undefined}>{children}</svg>
     {label}
     {badge > 0 && <span aria-label={`${badge} non lues`} className="absolute right-[22%] top-0 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] leading-4 text-white">{badge}</span>}
   </Link>;

@@ -16,7 +16,7 @@ export default async function CreaturePage({ searchParams }: { searchParams: Pro
     <div className="space-y-5">
       <header>
         <p className="label-mono text-accent">Simulateur</p>
-        <h1 className="mt-1 text-2xl font-bold">La créature d’une autre planète</h1>
+        <h1 className="mt-1 text-2xl font-bold sm:text-[28px]">La créature d’une autre planète</h1>
         <p className="mt-1 text-soft">
           Réglez la gravité, la température, l’atmosphère, la lumière et les mers : découvrez l’animal qui pourrait y vivre, et pourquoi il aurait cette allure.
         </p>

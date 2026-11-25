@@ -12,7 +12,7 @@ export function SimShell({ slug, intro, note, children }: { slug: SimulatorSlug;
         <div className="flex items-center gap-3">
           <Picto id={slug} size="lg" />
           <div className="min-w-0">
-            <p className="label-mono text-accent">Simulateur · {sim.theme}</p>
+            <p className="label-mono">Simulateur · {sim.theme}</p>
             <h1 className="mt-0.5 text-2xl font-bold leading-tight">{sim.title}</h1>
           </div>
         </div>

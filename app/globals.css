@@ -27,7 +27,7 @@
   --c-success: 21 128 61;
   --c-success-soft: 240 250 242;
   --c-success-line: 187 227 196;
-  --c-grid: 236 236 229;
+  --c-grid: 240 240 235;
   --c-red-50: 254 242 242;
   --c-red-100: 254 226 226;
   --c-red-200: 254 202 202;
@@ -63,7 +63,7 @@
     --c-success: 74 222 128;
     --c-success-soft: 18 48 29;
     --c-success-line: 34 84 50;
-    --c-grid: 24 29 36;
+    --c-grid: 21 26 32;
     --c-red-50: 58 24 24;
     --c-red-100: 74 28 28;
     --c-red-200: 120 44 44;
@@ -99,7 +99,7 @@
   --c-success: 74 222 128;
   --c-success-soft: 18 48 29;
   --c-success-line: 34 84 50;
-  --c-grid: 24 29 36;
+  --c-grid: 21 26 32;
   --c-red-50: 58 24 24;
   --c-red-100: 74 28 28;
   --c-red-200: 120 44 44;
@@ -123,7 +123,10 @@
   }
   h1, h2, h3 {
     font-family: var(--font-display), var(--font-sans), sans-serif;
-    letter-spacing: -0.015em;
+    /* Police à chasse fixe : lettres à peine resserrées, espaces entre les mots un peu réduites
+       (une espace pleine largeur creuse trop les titres longs). */
+    letter-spacing: -0.01em;
+    word-spacing: -0.12em;
   }
   :focus-visible {
     outline: 2px solid rgb(var(--c-accent));
@@ -200,7 +203,7 @@ body[data-nav-pending] #fil-theme {
     @apply rounded-card bg-white ring-1 ring-line;
   }
   .label-mono {
-    @apply font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted;
+    @apply font-mono text-xs font-medium uppercase tracking-[0.05em] text-muted;
   }
   .chip {
     @apply inline-flex items-center rounded-md bg-chip px-2 py-0.5 text-xs font-medium text-soft;
@@ -215,11 +218,3 @@ body[data-nav-pending] #fil-theme {
 @media (prefers-reduced-motion: reduce) {
   [class*="animate-[toast-in"] { animation: none !important; }
 }
-
-/* Essai de polices de titres (voir app/layout.tsx) : n'agit que sur l'appareil qui l'a demandé.
-   Une police de machine à écrire est plus large : on resserre un peu les lettres des titres. */
-html[data-police="dactylo"] body { --font-display: var(--font-essai-dactylo); }
-html[data-police="plex"] body { --font-display: var(--font-essai-plex); }
-html[data-police="space"] body { --font-display: var(--font-essai-space); }
-html[data-police="elite"] body { --font-display: var(--font-essai-elite); }
-html[data-police] :is(h1, h2, h3, .font-display) { letter-spacing: -0.04em; word-spacing: -0.2em; }

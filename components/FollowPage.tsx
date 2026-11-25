@@ -19,7 +19,7 @@ export async function FollowPage({ handle, direction }: { handle: string; direct
   return (
     <div className="space-y-4">
       <Link href={`/m/${member.handle}`} className="btn-link">← {member.displayName}</Link>
-      <h1 className="text-2xl font-bold">{isSelf ? "Vos" : "Ses"} {direction === "followers" ? "abonnés" : "abonnements"}</h1>
+      <h1 className="text-2xl font-bold sm:text-[28px]">{isSelf ? "Vos" : "Ses"} {direction === "followers" ? "abonnés" : "abonnements"}</h1>
       <nav aria-label="Abonnés et abonnements" className="flex gap-2 border-b border-line">
         {tab(`/m/${member.handle}/abonnes`, `${member.followers} abonné${member.followers > 1 ? "s" : ""}`, direction === "followers")}
         {tab(`/m/${member.handle}/abonnements`, `${member.following} abonnement${member.following > 1 ? "s" : ""}`, direction === "following")}

@@ -99,16 +99,15 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
       <div className="grid grid-cols-1 items-start gap-8 xl:grid-cols-[minmax(0,1fr)_17.5rem]">
       <div className="mx-auto w-full min-w-0 max-w-[760px] space-y-[18px] 2xl:max-w-[840px]">
       {/* La définition du site, visible de tous dès l'ouverture (les visiteurs ont en plus l'encart ci-dessous). */}
+      {/* Sur ordinateur, la même phrase figure déjà sous le logo du menu : on ne la répète pas. */}
       {signedIn && (
-        <p className="text-sm text-soft">
-          <strong className="font-semibold text-ink">Valyo</strong>, le réseau social des passionnés
-          <span className="sm:hidden"> de tech et de sciences : les </span>
-          <span className="hidden sm:inline"> d’IA, d’espace, de sciences et de technologie. Ici, les membres s’appellent les </span>
+        <p className="text-sm text-soft lg:hidden">
+          <strong className="font-semibold text-ink">Valyo</strong>, le réseau social des passionnés de tech et de sciences : les{" "}
           <strong className="font-semibold text-ink">Valyors</strong>.
         </p>
       )}
 
-      <p className="label-mono !-mb-2.5">Filtrer par thème{myThemes.length > 0 && <span className="normal-case tracking-normal"> · <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-accent align-middle" /> vos thèmes</span>}</p>
+      <p className="label-mono !-mb-2.5">Filtrer par thème{myThemes.length > 0 && <span className="normal-case tracking-normal"> · <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-accent align-middle" /> vos thèmes{signedIn && <span className="hidden sm:inline"> · <Link href="/parametres#profil-titre" className="font-semibold text-accent hover:underline">modifier</Link></span>}</span>}{signedIn && myThemes.length === 0 && <span className="normal-case tracking-normal"> · <Link href="/parametres#profil-titre" className="font-semibold text-accent hover:underline">choisir mes thèmes</Link></span>}</p>
       <ThemeNav
         allHref={feedHref({ vue })}
         current={theme?.slug ?? null}
@@ -164,16 +163,6 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
         ))}
       </nav>
 
-      {signedIn && !theme && vue === "pour-vous" && (
-        <p className="-mt-2 hidden text-sm text-soft sm:block">
-          {myThemes.length ? (
-            <>Vos thèmes : <strong className="font-semibold text-ink">{myThemes.map((t) => t.name).join(" · ")}</strong>, et les membres que vous suivez. </>
-          ) : (
-            <>Vous ne suivez encore aucun thème : ce fil montre tout. </>
-          )}
-          <Link href="/parametres#profil-titre" className="font-semibold text-accent hover:underline">{myThemes.length ? "Modifier mes thèmes" : "Choisir mes thèmes"}</Link>
-        </p>
-      )}
 
       {params.theme && !theme && (
         <p role="alert" className="card p-4">

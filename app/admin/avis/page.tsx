@@ -17,7 +17,7 @@ export default async function AdminFeedbackPage() {
   return (
     <div className="wide-page space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">Avis des testeurs</h1>
+        <h1 className="text-2xl font-bold sm:text-[28px]">Avis des testeurs</h1>
         <p className="mt-1 text-soft">{fresh} nouveau{fresh > 1 ? "x" : ""} · {items.length} au total</p>
       </header>
       {items.length === 0 ? (

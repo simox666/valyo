@@ -16,7 +16,7 @@ export default async function MetricsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Indicateurs</h1>
+        <h1 className="text-2xl font-bold sm:text-[28px]">Indicateurs</h1>
         <p className="mt-1 text-soft">Chiffres agrégés. Aucun contenu de conversation n’est lu pour les calculer.</p>
       </div>
 

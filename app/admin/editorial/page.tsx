@@ -50,7 +50,7 @@ export default async function EditorialAdminPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Agent éditorial</h1>
+        <h1 className="text-2xl font-bold sm:text-[28px]">Agent éditorial</h1>
         <p className="mt-1 text-soft">Brouillons uniquement : aucune publication publique. Aucun appel à Claude tant que le worker n’est pas lancé et que la configuration est incomplète.</p>
         <p className="mt-1 flex flex-wrap gap-4">
           <Link href="/admin/indicateurs" className="btn-link">Indicateurs de la communauté →</Link>

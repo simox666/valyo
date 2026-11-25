@@ -37,7 +37,7 @@ export default async function RecapPreviewPage({ params }: { params: Promise<{ i
         <p className="text-sm text-soft">
           Agent éditorial · créneau du <LocalTime iso={new Date(recap.slot_at as string).toISOString()} mode="full" />
         </p>
-        <h1 className="mt-1 text-2xl font-bold">La semaine en sciences et tech</h1>
+        <h1 className="mt-1 text-2xl font-bold sm:text-[28px]">La semaine en sciences et tech</h1>
         {items.length === 0 ? (
           <p className="mt-4 text-soft">Aucune nouvelle retenue : un récapitulatif vide n’est pas publié.</p>
         ) : (

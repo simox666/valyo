@@ -24,7 +24,7 @@ export function ShareButton({ path, title }: { path: string; title: string }) {
   return (
     <button type="button" onClick={share} aria-label="Partager" className="inline-flex h-10 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-soft hover:bg-chip hover:text-ink">
       <Icon id="partager" />
-      {copied && <span className="text-xs">Lien copié</span>}
+      {copied ? <span className="text-xs">Lien copié</span> : <span className="hidden sm:inline">Partager</span>}
     </button>
   );
 }

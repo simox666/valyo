@@ -60,7 +60,7 @@ export default async function GamesPage({ searchParams }: { searchParams: Promis
     <div className="space-y-5">
       <header>
         <p className="label-mono text-accent">Pour s’amuser</p>
-        <h1 className="mt-1 text-2xl font-bold">Jeux</h1>
+        <h1 className="mt-1 text-2xl font-bold sm:text-[28px]">Jeux</h1>
         <p className="mt-1 text-soft">
           Testez vos connaissances sur les thèmes de Valyo. Chaque réponse vient avec une
           explication — de quoi briller ensuite dans les salons.

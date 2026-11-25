@@ -23,7 +23,7 @@ export default async function ContestationPage({ searchParams }: { searchParams:
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Contester une sanction</h1>
+      <h1 className="text-2xl font-bold sm:text-[28px]">Contester une sanction</h1>
       {!holder ? (
         <div className="card space-y-3 p-5">
           <p className="text-soft">

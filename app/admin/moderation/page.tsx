@@ -30,7 +30,7 @@ export default async function ModerationPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Modération</h1>
+        <h1 className="text-2xl font-bold sm:text-[28px]">Modération</h1>
         <p className="mt-1 text-soft">
           Signalements et contestations. Chaque action est journalisée et notifiée avec son motif ; l’identité du signalant reste confidentielle.
         </p>

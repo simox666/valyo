@@ -14,7 +14,7 @@ export default function SimulatorsPage() {
     <div className="space-y-5">
       <header>
         <p className="label-mono text-accent">Pour comprendre en manipulant</p>
-        <h1 className="mt-1 text-2xl font-bold">Simulateurs</h1>
+        <h1 className="mt-1 text-2xl font-bold sm:text-[28px]">Simulateurs</h1>
         <p className="mt-1 text-soft">Bougez un curseur, regardez ce qui change. Chaque simulateur explique ce qu’il calcule et ce qu’il laisse de côté.</p>
       </header>
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -24,7 +24,7 @@ export default function SimulatorsPage() {
               <span className="flex items-center gap-3">
                 <Picto id={s.slug} />
                 <span className="min-w-0">
-                  <span className="label-mono block text-accent">{s.theme}</span>
+                  <span className="label-mono block">{s.theme}</span>
                   <span className="mt-0.5 block font-display text-lg font-bold leading-snug">{s.title}</span>
                 </span>
               </span>

@@ -23,7 +23,7 @@ export default async function SearchPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Recherche</h1>
+      <h1 className="text-2xl font-bold sm:text-[28px]">Recherche</h1>
       <form action="/recherche" method="get" className="flex gap-2" role="search">
         <label htmlFor="q" className="sr-only">Rechercher</label>
         <input id="q" name="q" defaultValue={q} minLength={2} maxLength={100} placeholder="Publications, membres, thèmes, salons publics…" className="input flex-1" />

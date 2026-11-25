@@ -24,7 +24,7 @@ export default async function SanctionsPage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Mes sanctions</h1>
+      <h1 className="text-2xl font-bold sm:text-[28px]">Mes sanctions</h1>
       {user.status === "suspended" && (
         <p role="alert" className="card border-amber-300 bg-amber-50 p-3">
           Votre compte est actuellement suspendu : la lecture reste possible, pas la contribution.

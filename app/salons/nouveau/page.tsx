@@ -27,7 +27,7 @@ export default async function NewRoomPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Créer un salon</h1>
+      <h1 className="text-2xl font-bold sm:text-[28px]">Créer un salon</h1>
       {origin && (
         <p className="text-soft">
           Depuis la publication <Link href={`/p/${origin.id}`} className="btn-link">{origin.title}</Link>. Le thème est prérempli et la

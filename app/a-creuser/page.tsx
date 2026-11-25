@@ -30,7 +30,7 @@ export default async function DigPage({ searchParams }: { searchParams: Promise<
     <div className="mx-auto max-w-[760px] space-y-5">
       <header>
         <p className="label-mono text-accent">Ma liste</p>
-        <h1 className="mt-1 text-2xl font-bold">À creuser</h1>
+        <h1 className="mt-1 text-2xl font-bold sm:text-[28px]">À creuser</h1>
         <p className="mt-1 text-soft">Les sujets que vous avez marqués de la loupe pour y revenir. Cliquez de nouveau sur la loupe d’une carte pour la retirer de la liste.</p>
       </header>
       {posts.length === 0 ? (

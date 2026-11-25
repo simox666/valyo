@@ -16,7 +16,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold">Paramètres</h1>
+      <h1 className="text-2xl font-bold sm:text-[28px]">Paramètres</h1>
 
       <section className="card space-y-4 p-5" aria-labelledby="compte-titre">
         <h2 id="compte-titre" className="text-lg font-bold">
