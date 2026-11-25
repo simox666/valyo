@@ -215,3 +215,8 @@ body[data-nav-pending] #fil-theme {
 @media (prefers-reduced-motion: reduce) {
   [class*="animate-[toast-in"] { animation: none !important; }
 }
+
+/* Essai de police de titres (voir app/layout.tsx) : n'agit que sur l'appareil qui l'a demandé. */
+html[data-police="bricolage"] body {
+  --font-display: var(--font-essai);
+}
