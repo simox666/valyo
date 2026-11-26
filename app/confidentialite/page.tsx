@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const EXPLOITANT = "M2S Consulting";
 const CONTACT = "rgpd@valyo.si";
 
-const MAJ = "23 novembre 2026";
+const MAJ = "26 novembre 2026";
 
 export default function PrivacyPage() {
   return (
@@ -60,6 +60,12 @@ export default function PrivacyPage() {
         Et c’est tout : pas d’outil d’analyse d’audience, pas de traceur publicitaire, pas de script tiers, et l’application n’enregistre pas vos
         adresses IP. Les photos sont ré-encodées à l’envoi, ce qui supprime leurs métadonnées (position GPS comprise). Le seul cookie est le
         cookie de session, strictement nécessaire pour rester connecté (60 jours).
+      </p>
+      <p>
+        Votre navigateur garde aussi, sur votre appareil seulement, quelques réglages de confort : l’apparence choisie (claire ou sombre),
+        le brouillon d’une publication en cours, votre résultat au défi du jour, et la date à laquelle vous avez ouvert chaque thème pour
+        la dernière fois (c’est ce qui colore la case d’un thème quand il a du nouveau). Ces informations ne nous sont pas envoyées et ne
+        servent à aucun suivi ; vous les effacez en supprimant les données du site dans votre navigateur.
       </p>
 
       <h2 className="text-lg font-bold">Combien de temps</h2>
