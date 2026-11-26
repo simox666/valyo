@@ -192,7 +192,7 @@ function AccountMenu({ user, pathname }: { user: { handle: string | null; displa
         <Link href="/parametres" className="account-link">Paramètres</Link>
         <Link href="/avis" className="account-link">Votre avis sur la bêta</Link>
         <Link href="/sanctions" className="account-link">Sanctions et contestations</Link>
-        {user.isAdmin && <><Link href="/admin/editorial" className="account-link">Administration</Link><Link href="/admin/moderation" className="account-link">Modération</Link><Link href="/admin/avis" className="account-link">Avis des testeurs</Link></>}
+        {user.isAdmin && <><Link href="/admin/indicateurs" className="account-link">Statistiques</Link><Link href="/admin/editorial" className="account-link">Administration</Link><Link href="/admin/moderation" className="account-link">Modération</Link><Link href="/admin/avis" className="account-link">Avis des testeurs</Link></>}
         <div className="mt-1 border-t border-line px-3 py-3"><LogoutButton /></div>
       </nav>
     </details>

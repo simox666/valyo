@@ -124,3 +124,155 @@ export interface ActivitySplit extends Record<string, unknown> {
   published_posts: number;
   weekly_active_members: number;
 }
+
+// ───────────────────────── Tableau de bord d'utilisation ─────────────────────────
+// Agrégats uniquement, comme le reste : aucun contenu n'est lu, les comptes de l'agent éditorial
+// sont écartés. « Actif » = membre connecté qui a ouvert le site ce jour-là (user_activity_days).
+// Les visiteurs non connectés ne sont pas mesurés : Valyo n'a pas d'outil d'audience.
+
+const MEMBER = `u.role <> 'agent' AND u.rules_accepted_at IS NOT NULL AND u.status <> 'deleted'`;
+const ACTIVE = (where: string) => `(SELECT count(DISTINCT a.user_id)::int FROM user_activity_days a JOIN users u ON u.id = a.user_id WHERE u.role <> 'agent' AND ${where})`;
+const TODAY = `(now() AT TIME ZONE 'UTC')::date`;
+
+export const USAGE_OVERVIEW_SQL = `
+SELECT
+  (SELECT count(*)::int FROM users u WHERE ${MEMBER}) AS members,
+  (SELECT count(*)::int FROM users u WHERE ${MEMBER} AND u.rules_accepted_at > now() - interval '7 days') AS new_7d,
+  (SELECT count(*)::int FROM users u WHERE ${MEMBER} AND u.rules_accepted_at <= now() - interval '7 days' AND u.rules_accepted_at > now() - interval '14 days') AS new_prev_7d,
+  ${ACTIVE(`a.day = ${TODAY}`)} AS active_today,
+  ${ACTIVE(`a.day > ${TODAY} - 7`)} AS active_7d,
+  ${ACTIVE(`a.day <= ${TODAY} - 7 AND a.day > ${TODAY} - 14`)} AS active_prev_7d,
+  ${ACTIVE(`a.day > ${TODAY} - 30`)} AS active_30d,
+  (SELECT count(DISTINCT s.user_id)::int FROM push_subscriptions s) AS push_members`;
+
+export interface UsageOverview extends Record<string, unknown> {
+  members: number;
+  new_7d: number;
+  new_prev_7d: number;
+  active_today: number;
+  active_7d: number;
+  active_prev_7d: number;
+  active_30d: number;
+  push_members: number;
+}
+
+// Toutes les actions des membres sur 30 jours, ramenées à (type, date, auteur).
+const EVENTS = `
+  SELECT 'publications' AS kind, p.created_at AS at, p.author_id AS uid FROM posts p WHERE p.status <> 'deleted'
+  UNION ALL SELECT 'commentaires', c.created_at, c.author_id FROM comments c WHERE c.status <> 'deleted'
+  UNION ALL SELECT 'reactions', r.created_at, r.user_id FROM post_reactions r
+  UNION ALL SELECT 'relais', r.created_at, r.user_id FROM post_relays r
+  UNION ALL SELECT 'messages_salon', m.created_at, m.author_id FROM room_messages m WHERE m.deleted_at IS NULL
+  UNION ALL SELECT 'messages_prives', d.created_at, d.sender_id FROM direct_messages d
+  UNION ALL SELECT 'abonnements', f.created_at, f.follower_id FROM member_follows f
+  UNION ALL SELECT 'parties', g.created_at, g.user_id FROM game_scores g
+  UNION ALL SELECT 'syntheses', s.created_at, s.user_id FROM synthesis_attempts s WHERE s.user_id IS NOT NULL`;
+
+/** Par type d'action : volume sur 7 et 30 jours, et nombre de membres différents sur 30 jours. */
+export const USAGE_ACTIONS_SQL = `
+WITH events AS (${EVENTS})
+SELECT e.kind,
+       count(*) FILTER (WHERE e.at > now() - interval '7 days')::int AS d7,
+       count(*)::int AS d30,
+       count(DISTINCT e.uid)::int AS members_30d
+FROM events e JOIN users u ON u.id = e.uid
+WHERE u.role <> 'agent' AND e.at > now() - interval '30 days'
+GROUP BY e.kind`;
+
+export interface UsageAction extends Record<string, unknown> {
+  kind: string;
+  d7: number;
+  d30: number;
+  members_30d: number;
+}
+
+/** Série quotidienne sur $1 jours (UTC) : membres actifs, inscriptions, actions de membres. */
+export const USAGE_DAILY_SQL = `
+WITH days AS (SELECT generate_series(${TODAY} - ($1::int - 1), ${TODAY}, interval '1 day')::date AS day),
+events AS (${EVENTS})
+SELECT to_char(d.day, 'YYYY-MM-DD') AS day,
+  (SELECT count(*)::int FROM user_activity_days a JOIN users u ON u.id = a.user_id WHERE a.day = d.day AND u.role <> 'agent') AS active,
+  (SELECT count(*)::int FROM users u WHERE ${MEMBER} AND (u.rules_accepted_at AT TIME ZONE 'UTC')::date = d.day) AS signups,
+  (SELECT count(*)::int FROM events e JOIN users u ON u.id = e.uid WHERE u.role <> 'agent' AND (e.at AT TIME ZONE 'UTC')::date = d.day) AS actions
+FROM days d ORDER BY d.day`;
+
+export interface UsageDay extends Record<string, unknown> {
+  day: string;
+  active: number;
+  signups: number;
+  actions: number;
+}
+
+/** Jeux sur 30 jours : parties comptées, joueurs différents, part de bonnes réponses. Les quiz par thème sont regroupés. */
+export const USAGE_GAMES_SQL = `
+SELECT split_part(g.game, ':', 1) AS game,
+       count(*)::int AS plays,
+       count(DISTINCT g.user_id)::int AS players,
+       round(100.0 * sum(g.correct) / NULLIF(sum(g.total), 0))::int AS success
+FROM game_scores g
+WHERE g.created_at > now() - interval '30 days'
+GROUP BY 1 ORDER BY plays DESC`;
+
+export interface UsageGame extends Record<string, unknown> {
+  game: string;
+  plays: number;
+  players: number;
+  success: number | null;
+}
+
+/** Thèmes : abonnés, articles publiés sur 7 jours, réactions et commentaires de membres sur 30 jours. */
+export const USAGE_THEMES_SQL = `
+SELECT t.name,
+  (SELECT count(*)::int FROM theme_follows f WHERE f.theme_id = t.id) AS followers,
+  (SELECT count(*)::int FROM post_themes pt JOIN posts p ON p.id = pt.post_id
+    WHERE pt.theme_id = t.id AND p.status = 'published' AND p.created_at > now() - interval '7 days') AS posts_7d,
+  (SELECT count(*)::int FROM post_themes pt JOIN post_reactions r ON r.post_id = pt.post_id
+    WHERE pt.theme_id = t.id AND r.created_at > now() - interval '30 days')
+  + (SELECT count(*)::int FROM post_themes pt JOIN comments c ON c.post_id = pt.post_id JOIN users u ON u.id = c.author_id
+    WHERE pt.theme_id = t.id AND u.role <> 'agent' AND c.status <> 'deleted' AND c.created_at > now() - interval '30 days') AS engagement_30d
+FROM themes t
+ORDER BY engagement_30d DESC, followers DESC, t.name`;
+
+export interface UsageTheme extends Record<string, unknown> {
+  name: string;
+  followers: number;
+  posts_7d: number;
+  engagement_30d: number;
+}
+
+/** Les publications qui ont le plus fait réagir sur 30 jours (réactions + commentaires de membres). */
+export const USAGE_TOP_POSTS_SQL = `
+SELECT p.id, p.title, p.source_name,
+  (SELECT count(*)::int FROM post_reactions r WHERE r.post_id = p.id) AS reactions,
+  (SELECT count(*)::int FROM comments c JOIN users u ON u.id = c.author_id WHERE c.post_id = p.id AND u.role <> 'agent' AND c.status <> 'deleted') AS comments
+FROM posts p
+WHERE p.status = 'published' AND p.created_at > now() - interval '30 days'
+ORDER BY (SELECT count(*) FROM post_reactions r WHERE r.post_id = p.id)
+       + (SELECT count(*) FROM comments c JOIN users u ON u.id = c.author_id WHERE c.post_id = p.id AND u.role <> 'agent' AND c.status <> 'deleted') DESC,
+       p.created_at DESC
+LIMIT 5`;
+
+export interface UsageTopPost extends Record<string, unknown> {
+  id: string;
+  title: string;
+  source_name: string | null;
+  reactions: number;
+  comments: number;
+}
+
+/** Dépense d'IA estimée sur 30 jours (jetons consommés × tarif), et lectures audio générées. */
+export const USAGE_AI_SQL = `
+SELECT
+  (SELECT coalesce(sum(cost_micros), 0)::float FROM synthesis_attempts WHERE created_at > now() - interval '30 days') AS syntheses_micros,
+  (SELECT count(*)::int FROM synthesis_attempts WHERE created_at > now() - interval '30 days') AS syntheses,
+  (SELECT coalesce(sum(cost_micros), 0)::float FROM weekly_quiz WHERE created_at > now() - interval '30 days') AS quiz_micros,
+  (SELECT count(*)::int FROM post_audio WHERE created_at > now() - interval '30 days') AS audio,
+  (SELECT coalesce(sum(chars), 0)::int FROM post_audio WHERE created_at > now() - interval '30 days') AS audio_chars`;
+
+export interface UsageAi extends Record<string, unknown> {
+  syntheses_micros: number;
+  syntheses: number;
+  quiz_micros: number;
+  audio: number;
+  audio_chars: number;
+}
