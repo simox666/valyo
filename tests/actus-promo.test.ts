@@ -7,6 +7,8 @@ test("réclames écartées : prix dans le titre, produit à acheter, rubrique co
   const promos: [string, string, string?][] = [
     ["Après le billet d’avion, pensez à l’eSIM : 50 Go en Thaïlande pour 12,95 €", "Pour rester connecté pendant un séjour en Thaïlande, eTravelSim propose un forfait eSIM de 50 Go valable 10 jours à 12,95 €."],
     ["Ce casque audio passe à 49 euros seulement", ""],
+    ["Test Shark AquaReach Premium : un aspirateur-laveur sans fil polyvalent qui aspire et lave séparément", "En France, Shark le vend en trois versions."],
+    ["On a testé la nouvelle montre connectée de la marque", ""],
     ["Ryanair change l'attribution des sièges avant le décollage", "La compagnie modifie ses règles."],
     ["Ce VPN protège toute la famille", "Une offre valable ce week-end."],
     ["Test d'une enceinte connectée", "Contenu sponsorisé par la marque."],
@@ -21,6 +23,7 @@ test("vraies nouvelles gardées, même avec un montant ou un pourcentage dans le
   const news: [string, string, string?][] = [
     ["Le télescope James Webb observe une galaxie née 300 millions d'années après le Big Bang", "Une équipe internationale publie ses résultats."],
     ["ITER : un budget revu à 25 milliards d'euros", "Le chantier prend du retard."],
+    ["Un test sanguin détecte la maladie d'Alzheimer dix ans plus tôt", "Résultats d'un essai clinique."],
     ["Une start-up française lève 40 millions d'euros pour ses batteries", ""],
     ["La banquise arctique a perdu 13 % de sa surface par décennie", "Les mesures satellitaires le confirment."],
     ["Un vaccin contre le paludisme réduit de 75 % les cas graves", "Essai clinique sur 4 800 enfants.", "https://www.exemple.fr/sante/actualites/vaccin-paludisme/"],

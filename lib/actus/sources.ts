@@ -75,7 +75,7 @@ const OFF_TOPIC = /(black friday|cyber monday|french days|prime day|bon plan|bon
 // titre, un produit à acheter, ou une rubrique commerciale dans l'adresse. Un montant en millions ou en
 // milliards (budget d'un télescope, levée de fonds) reste une information.
 const RETAIL_PRICE = /\b\d{1,4}(?:[.,]\d{1,2})?\s?(?:€|euros?\b)(?!\s*(?:de\s+)?(?:millions?|milliards?))|-\s?\d{1,2}\s?%/i;
-const SHOPPING = /(\beSIM\b|\bforfaits?\b|\bVPN\b|abonnement (mobile|internet|box)|billets? d'avion|compagnie aérienne|ryanair|easyjet|carte cadeau|idées? cadeaux?|guide d'achat|\bcomparatif\b|quel .{0,30} choisir|notre sélection)/i;
+const SHOPPING = /(^\s*test\b[^:]{0,80}:|\bon a testé(?![a-zà-ÿ])|\bprise en main\b|\baspirateurs?\b|\beSIM\b|\bforfaits?\b|\bVPN\b|abonnement (mobile|internet|box)|billets? d'avion|compagnie aérienne|ryanair|easyjet|carte cadeau|idées? cadeaux?|guide d'achat|\bcomparatif\b|quel .{0,30} choisir|notre sélection)/i;
 const SPONSORED = /(contenu (sponsorisé|partenaire)|article sponsorisé|publi-?rédactionnel|publi-?reportage)/i;
 const SHOPPING_URL = /\/(bons?-plans?|bon-plan|deals?|shopping|promos?|guide-achat|guides?-d-achat|comparatifs?|partenaires?|sponsor[a-z]*|publi[a-z-]*)(\/|-|$)/i;
 

@@ -33,6 +33,10 @@ function feedHref(params: { vue: string; theme?: string | null; n?: number }) {
   return `/?${search.toString()}`;
 }
 
+// Pas de fichier loading.tsx pour le fil, et il ne faut pas en remettre : avec lui, un changement de thème ou
+// de tri (même page, autres paramètres) laissait le routeur de Next en attente infinie dès que la liste
+// contenait des cartes — écran figé, constaté le 26 novembre 2026 (Next 15.5.29). Le fil répond en quelques
+// dizaines de millisecondes ; ThemeNav estompe la liste pendant le chargement.
 export default async function FeedPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   // Actus réelles : importation en arrière-plan, au plus une fois par heure, sans attendre.
