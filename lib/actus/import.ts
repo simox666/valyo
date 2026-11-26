@@ -87,7 +87,7 @@ export async function importActus(deps: { db: Db; transport: Transport; now?: Da
     const normalized = normalizeUrl(item.link);
     if (!normalized) continue;
     if (isPromotional(item.title, item.summary, item.link)) continue;
-    const theme = classify(source, `${item.title} ${item.summary}`);
+    const theme = classify(source, `${item.title} ${item.summary}`, item.title);
     if (!theme || !themes.has(theme)) continue;
     const [known] = await db.query(`SELECT 1 FROM post_sources ps JOIN posts p ON p.id = ps.post_id WHERE ps.normalized_url = $1 AND p.status <> 'deleted'`, [normalized]);
     if (known) continue;
