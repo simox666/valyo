@@ -3,7 +3,7 @@ import type { Transport } from "../editorial/fetch.ts";
 import type { Db } from "../editorial/types.ts";
 import { normalizeUrl } from "../urls.ts";
 import { fullArticle, isPaywalled, ogImage } from "./page.ts";
-import { ACTU_SOURCES, MAX_PER_RUN, classify, type ActuSource } from "./sources.ts";
+import { ACTU_SOURCES, MAX_PER_RUN, classify, isPromotional, type ActuSource } from "./sources.ts";
 import { autoSynthesize, type AutoSynthesisInput, type Summarizer } from "./synthesis.ts";
 
 // Importation des actus réelles. Chaque nouvelle devient une publication de « Valyo Actus » :
@@ -86,6 +86,7 @@ export async function importActus(deps: { db: Db; transport: Transport; now?: Da
   for (const { source, item } of queue.slice(0, MAX_PER_RUN)) {
     const normalized = normalizeUrl(item.link);
     if (!normalized) continue;
+    if (isPromotional(item.title, item.summary, item.link)) continue;
     const theme = classify(source, `${item.title} ${item.summary}`);
     if (!theme || !themes.has(theme)) continue;
     const [known] = await db.query(`SELECT 1 FROM post_sources ps JOIN posts p ON p.id = ps.post_id WHERE ps.normalized_url = $1 AND p.status <> 'deleted'`, [normalized]);

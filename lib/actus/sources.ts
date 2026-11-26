@@ -61,7 +61,24 @@ const KEYWORDS: [ActuTheme, RegExp][] = [
 ];
 
 /** Contenus promotionnels ou hors sujet écartés (bons plans, séries, jeux…). */
-const OFF_TOPIC = /(black friday|bon plan|bons plans|\bpromo|réduction|soldes|\bcode promo|prime video|netflix|disney\+|\bsérie\b|\bfilm\b|meilleures? offres?|\bprix\b.{0,20}(baisse|chute)|jeu vidéo|\bjeux?\b|\bPS5\b|xbox|nintendo|pokémon|\bGTA\b|loto|euromillions|horoscope)/i;
+const OFF_TOPIC = /(black friday|cyber monday|french days|prime day|bon plan|bons plans|\bpromo|réduction|\bremise|soldes|\bcode promo|vente flash|à saisir|pas cher|moins cher|à prix (cassé|réduit|mini)|économisez|prime video|netflix|disney\+|\bsérie\b|\bfilm\b|meilleures? offres?|\boffres?\b.{0,25}(limitée|spéciale|exceptionnelle|du moment)|\bprix\b.{0,20}(baisse|chute)|jeu vidéo|\bjeux?\b|\bPS5\b|xbox|nintendo|pokémon|\bGTA\b|loto|euromillions|horoscope)/i;
+
+// Publicité déguisée en article (« 50 Go en Thaïlande pour 12,95 € ») : un prix de grande consommation dans le
+// titre, un produit à acheter, ou une rubrique commerciale dans l'adresse. Un montant en millions ou en
+// milliards (budget d'un télescope, levée de fonds) reste une information.
+const RETAIL_PRICE = /\b\d{1,4}(?:[.,]\d{1,2})?\s?(?:€|euros?\b)(?!\s*(?:de\s+)?(?:millions?|milliards?))|-\s?\d{1,2}\s?%/i;
+const SHOPPING = /(\beSIM\b|\bforfaits?\b|\bVPN\b|abonnement (mobile|internet|box)|billets? d'avion|compagnie aérienne|ryanair|easyjet|carte cadeau|idées? cadeaux?|guide d'achat|\bcomparatif\b|quel .{0,30} choisir|notre sélection|en partenariat avec|contenu (sponsorisé|partenaire)|\bsponsorisé)/i;
+const SHOPPING_URL = /\/(bons?-plans?|bon-plan|deals?|shopping|promos?|guide-achat|guides?-d-achat|comparatifs?|partenaires?|sponsor[a-z]*|publi[a-z-]*)(\/|-|$)/i;
+
+/** Vrai si l'article est une réclame : il n'entre pas dans le fil. */
+export function isPromotional(title: string, summary: string, link = ""): boolean {
+  if (RETAIL_PRICE.test(title) || SHOPPING.test(`${title} ${summary}`)) return true;
+  try {
+    return SHOPPING_URL.test(new URL(link).pathname);
+  } catch {
+    return false;
+  }
+}
 
 export function classify(source: ActuSource, text: string): ActuTheme | null {
   if (OFF_TOPIC.test(text)) return null;
