@@ -5,7 +5,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { ThemeTile } from "./ThemeTile";
 
-type Tile = { slug: string; name: string; href: string; mine: boolean };
+type Tile = { slug: string; name: string; href: string; mine: boolean; /** Date ISO du dernier article publié dans le thème. */ latest: string | null };
+
+// « Du nouveau » : un thème dont le dernier article est plus récent que la dernière fois que ce
+// navigateur l'a ouvert. La mémoire vit sur l'appareil (aucune donnée envoyée) ; à la première
+// visite tout est considéré comme vu, pour ne pas allumer toutes les cases d'un coup.
+const SEEN_KEY = "valyo:themes-vus";
+
+function readSeen(): Record<string, string> {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(SEEN_KEY) ?? "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch { return {}; }
+}
 
 /**
  * Cases de thèmes du fil. Réponse immédiate au clic : la case choisie s'allume tout de suite
@@ -16,6 +28,21 @@ export function ThemeNav({ tiles, allHref, current, mineCount }: { tiles: Tile[]
   const [pending, startTransition] = useTransition();
   const [chosen, setChosen] = useState<string | null>(current);
   useEffect(() => setChosen(current), [current]);
+  const [fresh, setFresh] = useState<Set<string>>(new Set());
+  const latestKey = tiles.map((t) => `${t.slug}:${t.latest ?? ""}`).join("|");
+  useEffect(() => {
+    const seen = readSeen();
+    const now = new Date().toISOString();
+    const next = new Set<string>();
+    for (const t of tiles) {
+      // Thème ouvert, ou jamais rencontré : vu maintenant.
+      if (t.slug === current || !seen[t.slug]) seen[t.slug] = now;
+      else if (t.latest && t.latest > seen[t.slug]) next.add(t.slug);
+    }
+    try { window.localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch { /* stockage indisponible : pas de signal, rien de cassé */ }
+    setFresh(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current, latestKey]);
   useEffect(() => {
     if (pending) document.body.dataset.navPending = "1";
     else delete document.body.dataset.navPending;
@@ -40,11 +67,11 @@ export function ThemeNav({ tiles, allHref, current, mineCount }: { tiles: Tile[]
         <span key={t.slug} className="flex shrink-0 gap-1.5 sm:gap-1">
           {i === mineCount && mineCount > 0 && <span aria-hidden className="mx-1 w-px self-stretch bg-line" />}
           <Link href={t.href} onClick={(e) => go(e, t.slug, t.href)} aria-current={chosen === t.slug ? "page" : undefined}
-            title={t.mine ? `${t.name} — un de vos thèmes` : t.name}
+            title={`${t.name}${t.mine ? " — un de vos thèmes" : ""}${fresh.has(t.slug) && chosen !== t.slug ? " — du nouveau" : ""}`}
             className="relative rounded-md hover:ring-1 hover:ring-ink">
-            <ThemeTile slug={t.slug} name={t.name} size="lg" active={chosen === t.slug} />
+            <ThemeTile slug={t.slug} name={t.name} size="lg" active={chosen === t.slug} fresh={fresh.has(t.slug)} />
             {t.mine && <span aria-hidden className={`absolute right-1.5 top-1.5 h-2 w-2 rounded-full ${chosen === t.slug ? "bg-white" : "bg-accent"}`} />}
-            <span className="sr-only">{t.name}{t.mine ? " (un de vos thèmes)" : ""}</span>
+            <span className="sr-only">{t.name}{t.mine ? " (un de vos thèmes)" : ""}{fresh.has(t.slug) && chosen !== t.slug ? " (du nouveau)" : ""}</span>
           </Link>
         </span>
       ))}

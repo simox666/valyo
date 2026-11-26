@@ -52,7 +52,9 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
 
   // Lectures indépendantes en parallèle : un seul aller-retour d'attente vers la base.
   const t0 = performance.now();
-  const [{ posts, hasMore }, myThemeIds, community, newcomer, trending, people] = await Promise.all([
+  const [latestRows, { posts, hasMore }, myThemeIds, community, newcomer, trending, people] = await Promise.all([
+    // Date du dernier article publié dans chaque thème : la case d'un thème qui a du nouveau change de couleur.
+    db.query<{ theme_id: string; latest: string }>(`SELECT pt.theme_id, max(p.created_at)::text AS latest FROM post_themes pt JOIN posts p ON p.id = pt.post_id WHERE p.status = 'published' GROUP BY pt.theme_id`),
     // Un thème choisi dans les cases s'affiche en entier, même s'il ne fait pas partie de « mes thèmes ».
     listFeed({ view: theme ? "recent" : view, viewerId: user?.id, themeId: theme?.id, limit }),
     user ? followedThemeIds(user.id) : Promise.resolve([] as string[]),
@@ -83,6 +85,7 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
 
   const viewer = { signedIn, canReact: Boolean(signedIn && user?.status === "active") };
 
+  const latestByTheme = new Map(latestRows.map((r) => [r.theme_id, new Date(r.latest).toISOString()]));
   return (
     <div className="wide-page">
       <h1 className="sr-only">Valyo — l’actualité tech et sciences, et la communauté des Valyors</h1>
@@ -107,12 +110,12 @@ export default async function FeedPage({ searchParams }: { searchParams: SearchP
         </p>
       )}
 
-      <p className="label-mono !-mb-2.5">Filtrer par thème{myThemes.length > 0 && <span className="normal-case tracking-normal"> · <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-accent align-middle" /> vos thèmes{signedIn && <span className="hidden sm:inline"> · <Link href="/parametres#profil-titre" className="font-semibold text-accent hover:underline">modifier</Link></span>}</span>}{signedIn && myThemes.length === 0 && <span className="normal-case tracking-normal"> · <Link href="/parametres#profil-titre" className="font-semibold text-accent hover:underline">choisir mes thèmes</Link></span>}</p>
+      <p className="label-mono !-mb-2.5">Filtrer par thème{myThemes.length > 0 && <span className="normal-case tracking-normal"> · <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-accent align-middle" /> vos thèmes<span className="hidden sm:inline"> · <span aria-hidden className="inline-block h-2.5 w-2.5 rounded-sm bg-accent-soft align-middle ring-1 ring-accent" /> du nouveau</span>{signedIn && <span className="hidden sm:inline"> · <Link href="/parametres#profil-titre" className="font-semibold text-accent hover:underline">modifier</Link></span>}</span>}{signedIn && myThemes.length === 0 && <span className="normal-case tracking-normal"> · <Link href="/parametres#profil-titre" className="font-semibold text-accent hover:underline">choisir mes thèmes</Link></span>}</p>
       <ThemeNav
         allHref={feedHref({ vue })}
         current={theme?.slug ?? null}
         mineCount={myThemes.length}
-        tiles={orderedThemes.map((t) => ({ slug: t.slug, name: t.name, href: feedHref({ vue, theme: t.slug }), mine: myThemeIds.includes(t.id) }))}
+        tiles={orderedThemes.map((t) => ({ slug: t.slug, name: t.name, href: feedHref({ vue, theme: t.slug }), mine: myThemeIds.includes(t.id), latest: latestByTheme.get(t.id) ?? null }))}
       />
 
       {signedIn ? (
