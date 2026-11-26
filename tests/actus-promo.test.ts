@@ -57,7 +57,7 @@ test("sources généralistes : un article hors thème n'entre pas, un article de
 
 test("une réduction de la mortalité ou la remise d'un prix ne sont pas des promotions", () => {
   const inserm = ACTU_SOURCES.find((x) => x.id === "inserm")!;
-  assert.equal(classify(inserm, "Alerte canicule : un dispositif associé à une réduction de la mortalité"), "sante");
+  assert.equal(classify(inserm, "Alerte canicule : un dispositif associé à une réduction de la mortalité"), "climat", "gardé (le mot « canicule » le range en climat)");
   assert.equal(classify(inserm, "Prix Inserm 2026 : la remise des prix aura lieu en décembre"), "sante");
   assert.equal(classify(inserm, "Ce tensiomètre profite de 30 % de réduction"), null);
 });
