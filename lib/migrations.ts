@@ -1061,4 +1061,20 @@ export const MIGRATIONS: Migration[] = [
       `ALTER TABLE game_scores ADD CONSTRAINT game_scores_game_check CHECK (game ~ '^(defi|vf|duel|frise|hebdo|echelle|courbe|quiz(:[a-z0-9-]{1,40})?)$')`,
     ],
   },
+  {
+    id: "038_shorts_quotidiens",
+    statements: [
+      // Shorts quotidiens (27 novembre 2026) : une ligne par jour. `post_ids` sert d'anti-doublon :
+      // un article utilisé dans une vidéo n'est plus jamais proposé.
+      `CREATE TABLE short_runs (
+        day DATE PRIMARY KEY,
+        post_ids UUID[] NOT NULL,
+        plan JSONB NOT NULL,
+        status TEXT NOT NULL DEFAULT 'prepared' CHECK (status IN ('prepared', 'sent')),
+        cost_micros BIGINT NOT NULL DEFAULT 0,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        sent_at TIMESTAMPTZ
+      )`,
+    ],
+  },
 ];
