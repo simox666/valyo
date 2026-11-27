@@ -9,13 +9,13 @@ export const metadata: Metadata = {
 const EXPLOITANT = "M2S Consulting";
 const CONTACT = "rgpd@valyo.si";
 
-const MAJ = "26 novembre 2026";
+const MAJ = "27 novembre 2026";
 
 export default function PrivacyPage() {
   return (
     <article className="space-y-5 leading-relaxed">
       <h1 className="text-2xl font-bold sm:text-[28px]">Confidentialité</h1>
-      <p className="text-sm text-muted">Dernière mise à jour : {MAJ}. Valyo est en bêta sur invitation ; cette politique s’applique dès maintenant.</p>
+      <p className="text-sm text-muted">Dernière mise à jour : {MAJ}. Valyo est en bêta ; cette politique s’applique dès maintenant.</p>
 
       <h2 className="text-lg font-bold">Qui est responsable</h2>
       <p>
