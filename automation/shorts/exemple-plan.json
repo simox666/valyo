@@ -1,0 +1,22 @@
+{
+  "day": "2026-11-27",
+  "recorded": false,
+  "items": [
+    { "postId": "exemple-1", "theme": "Intelligence artificielle", "themeSlug": "ia", "source": "Source d'exemple" },
+    { "postId": "exemple-2", "theme": "Espace", "themeSlug": "espace", "source": "Agence d'exemple" },
+    { "postId": "exemple-3", "theme": "Santé & médecine", "themeSlug": "sante", "source": "Institut d'exemple" }
+  ],
+  "script": {
+    "hook": "Trois infos science qui vont te surprendre ce matin",
+    "news": [
+      { "card": "Une IA résout des problèmes de maths restés ouverts", "spoken": "Une IA vient de résoudre des centaines de problèmes de maths restés sans réponse. Les mathématiciens se demandent ce qu'il leur reste à faire." },
+      { "card": "Une sonde photographie la face cachée d'un astéroïde", "spoken": "Une sonde européenne a envoyé les premières images d'un astéroïde double. Elles serviront à apprendre comment dévier un caillou dangereux." },
+      { "card": "Un test sanguin repère la maladie dix ans plus tôt", "spoken": "Un simple test sanguin détecterait une maladie du cerveau dix ans avant les premiers signes. Reste à savoir quoi faire de cette avance." }
+    ],
+    "question": "Tu ferais confiance à une IA pour vérifier une preuve de maths ?",
+    "cta": "Rejoins le débat sur valyo.si",
+    "youtubeTitle": "Les 3 news science et IA du jour #Shorts",
+    "description": "Fichier d'exemple pour les essais hors ligne.",
+    "tags": ["sciences", "ia"]
+  }
+}

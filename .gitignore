@@ -10,3 +10,8 @@ out
 
 # Illustrations d’origine (PNG lourds) : seules les versions WebP de public/creatures sont publiées.
 creatures-originaux
+
+# Automate des Shorts : environnement Python et vidéos produites
+automation/shorts/.venv/
+automation/shorts/out/
+__pycache__/
