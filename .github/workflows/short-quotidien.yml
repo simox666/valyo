@@ -28,28 +28,44 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: Vérifier que le jeton est configuré
+        id: jeton
+        env:
+          JETON: ${{ secrets.VALYO_SHORTS_TOKEN }}
+        run: |
+          if [ -z "$JETON" ]; then
+            echo "::notice::Secret VALYO_SHORTS_TOKEN absent : rien à faire. Voir automation/shorts/README.md."
+            echo "pret=non" >> "$GITHUB_OUTPUT"
+          else
+            echo "pret=oui" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        if: steps.jeton.outputs.pret == 'oui'
         with:
           ref: reseau-social-v1 # la branche où vit le code du site et de l'automate
       - uses: actions/setup-python@v5
+        if: steps.jeton.outputs.pret == 'oui'
         with:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: automation/shorts/requirements.txt
       - name: Installer les outils
+        if: steps.jeton.outputs.pret == 'oui'
         working-directory: automation/shorts
         run: pip install -r requirements.txt
       - name: Tests de l'automate
+        if: steps.jeton.outputs.pret == 'oui'
         working-directory: automation/shorts
         run: python -m unittest discover -s tests
       - name: Fabriquer le Short
+        if: steps.jeton.outputs.pret == 'oui'
         working-directory: automation/shorts
         env:
           VALYO_URL: https://www.valyo.si
           VALYO_SHORTS_TOKEN: ${{ secrets.VALYO_SHORTS_TOKEN }}
         run: python -m valyo_shorts.main ${{ (github.event_name == 'workflow_dispatch' && inputs.essai) && '--dry-run' || '' }}
       - name: Garder la vidéo 7 jours
-        if: always()
+        if: always() && steps.jeton.outputs.pret == 'oui'
         uses: actions/upload-artifact@v4
         with:
           name: short-${{ github.run_id }}
